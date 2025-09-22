@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { EmployerController } from '@/controllers/employerController';
-import { authenticate, requireRole, requireEmailVerification } from '@/middleware/authMiddleware';
+import { authenticate, requireRole } from '@/middleware/authMiddleware';
 import { validateBody } from '@/middleware/validationMiddleware';
 import { createEmployerSchema, createJobSchema } from '@/utils/validation';
 
@@ -8,7 +8,6 @@ const router: ReturnType<typeof Router> = Router();
 const employerController = new EmployerController();
 
 router.use(authenticate);
-router.use(requireEmailVerification);
 
 router.post('/', requireRole(['JOBPROVIDER']), validateBody(createEmployerSchema), employerController.createEmployer);
 router.get('/me', requireRole(['JOBPROVIDER']), employerController.getUserEmployer);

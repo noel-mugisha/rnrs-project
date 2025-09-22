@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { JobController } from '@/controllers/jobController';
-import { authenticate, requireRole, requireEmailVerification } from '@/middleware/authMiddleware';
+import { authenticate, requireRole } from '@/middleware/authMiddleware';
 import { validateBody, validateQuery } from '@/middleware/validationMiddleware';
 import { updateJobSchema, jobSearchSchema } from '@/utils/validation';
 
@@ -11,7 +11,6 @@ router.get('/search', validateQuery(jobSearchSchema), jobController.searchJobs);
 router.get('/:id', jobController.getJob);
 
 router.use(authenticate);
-router.use(requireEmailVerification);
 router.use(requireRole(['JOBPROVIDER']));
 
 router.patch('/:id', validateBody(updateJobSchema), jobController.updateJob);

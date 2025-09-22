@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { verifyAccessToken } from '@/utils/auth';
 import { prisma } from '@/config/database';
 import { sendUnauthorized, sendForbidden } from '@/utils/response';
