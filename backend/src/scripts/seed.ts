@@ -10,12 +10,12 @@ async function seed() {
     // Create admin user
     const adminPassword = await hashPassword('Admin123!');
     const admin = await prisma.user.upsert({
-      where: { email: 'admin@jobportal.com' },
+      where: { email: 'admin@rnrs.com' },
       update: {},
       create: {
         firstName: 'Admin',
         lastName: 'User',
-        email: 'admin@jobportal.com',
+        email: 'admin@rnrs.com',
         passwordHash: adminPassword,
         role: 'ADMIN',
         emailVerified: true,
@@ -36,7 +36,7 @@ async function seed() {
         passwordHash: jobSeekerPassword,
         role: 'JOBSEEKER',
         emailVerified: true,
-        phone: '+1234567890',
+        phone: '+250791234567',
         jobSeekerProfile: {
           create: {
             desiredTitle: 'Software Engineer',
@@ -58,22 +58,22 @@ async function seed() {
     // Create job provider
     const jobProviderPassword = await hashPassword('JobProvider123!');
     const jobProvider = await prisma.user.upsert({
-      where: { email: 'employer@example.com' },
+      where: { email: 'jobprovider@example.com' },
       update: {},
       create: {
         firstName: 'Jane',
         lastName: 'Smith',
-        email: 'employer@example.com',
+        email: 'jobprovider@example.com',
         passwordHash: jobProviderPassword,
         role: 'JOBPROVIDER',
         emailVerified: true,
-        phone: '+1234567891',
+        phone: '+250791234568',
         employerProfile: {
           create: {
             name: 'TechCorp Inc.',
             website: 'https://techcorp.com',
             industry: 'Technology',
-            location: 'San Francisco, CA',
+            location: 'Kigali, Rwanda',
           },
         },
       },
@@ -162,9 +162,9 @@ async function seed() {
 
     console.log('🎉 Database seeded successfully!');
     console.log('\n📋 Test Accounts:');
-    console.log('Admin: admin@jobportal.com / Admin123!');
+    console.log('Admin: admin@rnrs.com / Admin123!');
     console.log('Job Seeker: jobseeker@example.com / JobSeeker123!');
-    console.log('Job Provider: employer@example.com / JobProvider123!');
+    console.log('Job Provider: jobprovider@example.com / JobProvider123!');
 
   } catch (error) {
     console.error('❌ Error seeding database:', error);
