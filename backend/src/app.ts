@@ -17,7 +17,7 @@ app.use(cors({
 }));
 
 // Rate limiting
-// app.use(generalLimiter);
+app.use(generalLimiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));

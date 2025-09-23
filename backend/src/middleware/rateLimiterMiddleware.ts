@@ -1,6 +1,8 @@
 import rateLimit from 'express-rate-limit';
-import { redis } from '@/config/redis';
 import { Request } from 'express';
+
+// We have completely removed the Redis import and the complex store configuration.
+// The library will now handle everything in memory automatically.
 
 const createRateLimiter = (options: {
   windowMs: number;
@@ -17,24 +19,11 @@ const createRateLimiter = (options: {
       code: 'RATE_LIMIT_EXCEEDED',
     },
     keyGenerator: options.keyGenerator || ((req) => req.ip || 'fallback-ip'),
-    store: {
-      incr: async (key: string) => {
-        const current = await redis.incr(key);
-        if (current === 1) {
-          await redis.expire(key, Math.ceil(options.windowMs / 1000));
-        }
-        return { totalHits: current, resetTime: new Date(Date.now() + options.windowMs) };
-      },
-      decrement: async (key: string) => {
-        await redis.decr(key);
-      },
-      resetKey: async (key: string) => {
-        await redis.del(key);
-      },
-    },
+    // The custom Redis 'store' object has been completely removed.
   });
 };
 
+// The rest of the file remains the same.
 export const authLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // 5 attempts per window
