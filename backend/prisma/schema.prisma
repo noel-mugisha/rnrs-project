@@ -27,6 +27,7 @@ model User {
   consents           Consent[]
   employerAdmins     EmployerAdmin[]
   emailVerifications EmailVerification[]
+  passwordResetTokens PasswordResetToken[]
   
   @@map("users")
 }
@@ -218,4 +219,16 @@ model Consent {
   acceptedAt DateTime @default(now())
   
   @@map("consents")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@map("password_reset_tokens")
 }

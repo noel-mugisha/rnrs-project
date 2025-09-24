@@ -101,3 +101,15 @@ export const jobSearchSchema = paginationSchema.extend({
   salaryMin: z.coerce.number().optional(),
   salaryMax: z.coerce.number().optional(),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'A password reset token is required'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters long').regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+  ),
+});
