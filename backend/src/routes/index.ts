@@ -7,6 +7,7 @@ import jobRoutes from './jobRoutes';
 import applicationRoutes from './applicationRoutes';
 import notificationRoutes from './notificationRoutes';
 import passwordResetRoutes from './passwordResetRoutes';
+import metaRoutes from './metaRoutes'; 
 
 const router: ReturnType<typeof Router> = Router();
 
@@ -18,6 +19,7 @@ router.use('/jobs', jobRoutes);
 router.use('/applications', applicationRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/password', passwordResetRoutes);
+router.use('/meta', metaRoutes);
 
 // Health check endpoint
 router.get('/health', (req, res) => {

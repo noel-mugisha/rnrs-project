@@ -111,6 +111,7 @@ model Employer {
   website      String?
   industry     String?
   location     String?
+  jobTypes     String[] @default([]) 
   logoKey      String?
   jobs         Job[]
   admins       EmployerAdmin[]

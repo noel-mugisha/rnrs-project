@@ -29,11 +29,13 @@ export const updateProfileSchema = z.object({
   phone: z.string().optional(),
   desiredTitle: z.string().optional(),
   about: z.string().optional(),
+  // For Job Seekers: an array of selected skills
   skills: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    confidence: z.number().min(1).max(5),
+    category: z.string(),
+    work: z.string(),
   })).optional(),
+  // For Job Providers: an array of job types they offer
+  jobTypes: z.array(z.string()).optional(),
   privacy: z.object({
     hideContact: z.boolean().optional(),
   }).optional(),
