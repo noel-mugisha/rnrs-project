@@ -6,6 +6,8 @@ import { generalLimiter } from '@/middleware/rateLimiterMiddleware';
 import { errorHandler, notFoundHandler } from '@/middleware/errorHandlerMiddleware';
 import { logger } from '@/config/logger';
 import routes from '@/routes';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from '@/config/swagger';
 
 const app:Express = express();
 
@@ -32,6 +34,13 @@ app.use((req, res, next) => {
   });
   next();
 });
+
+// Swagger UI setup
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }', 
+  customSiteTitle: "RNRS Job Portal API Docs"
+}));
+
 
 // API routes
 app.use('/api/v1', routes);

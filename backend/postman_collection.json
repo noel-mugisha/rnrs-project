@@ -1,654 +1,660 @@
 {
   "info": {
-    "name": "Job Portal API",
-    "description": "Complete API collection for Job Portal Backend",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "version": "1.0.0"
-  },
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{accessToken}}",
-        "type": "string"
-      }
-    ]
+    "name": "Job Portal API - Presentation Flow (Work Categories)",
+    "description": "A step-by-step collection demonstrating the API with a focus on creating and applying for jobs from the predefined work categories.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:4000/api/v1",
-      "type": "string"
+      "value": "http://localhost:4000/api/v1"
     },
     {
-      "key": "accessToken",
-      "value": "",
-      "type": "string"
+      "key": "jobSeekerEmail",
+      "value": ""
     },
     {
-      "key": "userId",
-      "value": "",
-      "type": "string"
+      "key": "jobSeekerPassword",
+      "value": "SeekerPass123!"
+    },
+    {
+      "key": "jobSeekerUserId",
+      "value": ""
+    },
+    {
+      "key": "jobSeekerAccessToken",
+      "value": ""
+    },
+    {
+      "key": "jobProviderEmail",
+      "value": ""
+    },
+    {
+      "key": "jobProviderPassword",
+      "value": "ProviderPass123!"
+    },
+    {
+      "key": "jobProviderUserId",
+      "value": ""
+    },
+    {
+      "key": "jobProviderAccessToken",
+      "value": ""
     },
     {
       "key": "employerId",
-      "value": "",
-      "type": "string"
+      "value": ""
     },
     {
       "key": "jobId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "applicationId",
-      "value": "",
-      "type": "string"
+      "value": ""
     },
     {
       "key": "resumeId",
-      "value": "",
-      "type": "string"
+      "value": ""
+    },
+    {
+      "key": "sampleCategory",
+      "value": "Farming"
+    },
+    {
+      "key": "sampleWork",
+      "value": "Rice planting"
+    },
+    {
+      "key": "otp",
+      "value": "123456"
     }
   ],
   "item": [
     {
-      "name": "Health Check",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/health",
-          "host": ["{{baseUrl}}"],
-          "path": ["health"]
-        }
-      }
-    },
-    {
-      "name": "Authentication",
+      "name": "1. Setup: Get Work Categories",
       "item": [
         {
-          "name": "Signup Job Seeker",
+          "name": "Get Work Categories (Metadata)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 201) {",
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains work categories data\", function () {",
                   "    const response = pm.response.json();",
-                  "    pm.collectionVariables.set('userId', response.data.userId);",
+                  "    pm.expect(response.status).to.eql('success');",
+                  "    pm.expect(response.data).to.be.an('array').with.length.above(0);",
+                  "});",
+                  "",
+                  "// Capture a sample category and work for the entire collection to use",
+                  "const response = pm.response.json();",
+                  "if (response.data && response.data.length > 0) {",
+                  "    const firstCategory = response.data[0];",
+                  "    if (firstCategory.works && firstCategory.works.length > 0) {",
+                  "        pm.collectionVariables.set(\"sampleCategory\", firstCategory.category);",
+                  "        pm.collectionVariables.set(\"sampleWork\", firstCategory.works[0]);",
+                  "        console.log(`Captured for demo: Category='${firstCategory.category}', Work='${firstCategory.works[0]}'`);",
+                  "    }",
                   "}"
-                ]
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meta/work-categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meta",
+                "work-categories"
+              ]
+            },
+            "description": "First, we fetch the predefined list of jobs. The script saves the first job type (e.g., 'Farming in the swamp') to a variable to be used in later steps."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Job Provider Journey",
+      "item": [
+        {
+          "name": "Sign up as Job Provider",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const randomEmail = `provider_${Date.now()}@example.com`;",
+                  "pm.collectionVariables.set(\"jobProviderEmail\", randomEmail);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"User ID received\", () => pm.expect(response.data).to.have.property('userId'));",
+                  "pm.collectionVariables.set(\"jobProviderUserId\", response.data.userId);"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"JOBSEEKER\"\n}"
+              "raw": "{\n  \"firstName\": \"Agro\",\n  \"lastName\": \"Corp\",\n  \"email\": \"{{jobProviderEmail}}\",\n  \"password\": \"{{jobProviderPassword}}\",\n  \"role\": \"JOBPROVIDER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/auth/signup",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "signup"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Signup Job Provider",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Smith\",\n  \"email\": \"jane.smith@company.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"JOBPROVIDER\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/signup",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "signup"]
-            }
-          }
-        },
-        {
-          "name": "Verify Email OTP",
+          "name": "Verify Email (Job Provider)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const response = pm.response.json();",
-                  "    pm.collectionVariables.set('accessToken', response.data.accessToken);",
-                  "}"
-                ]
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Access token received\", () => pm.expect(response.data).to.have.property('accessToken'));",
+                  "pm.collectionVariables.set(\"jobProviderAccessToken\", response.data.accessToken);"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"otp\": \"123456\"\n}"
+              "raw": "{\n  \"userId\": \"{{jobProviderUserId}}\",\n  \"otp\": \"{{otp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/auth/verify-email-otp",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "verify-email-otp"]
-            }
-          }
-        },
-        {
-          "name": "Resend Email OTP",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email-otp"
+              ]
             },
-            "url": {
-              "raw": "{{baseUrl}}/auth/resend-email-otp",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "resend-email-otp"]
-            }
-          }
+            "description": "NOTE: Your backend generates a real OTP. For this test, you must either check your logs/database for the OTP or temporarily hardcode it to '123456' for the demo."
+          },
+          "response": []
         },
         {
-          "name": "Login",
+          "name": "Create Employer Profile",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const response = pm.response.json();",
-                  "    pm.collectionVariables.set('accessToken', response.data.accessToken);",
-                  "}"
-                ]
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Employer ID received\", () => pm.expect(response.data).to.have.property('id'));",
+                  "pm.collectionVariables.set(\"employerId\", response.data.id);"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"jobseeker@example.com\",\n  \"password\": \"JobSeeker123!\"\n}"
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobProviderAccessToken}}",
+                  "type": "string"
+                }
+              ]
             },
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
-            }
-          }
-        },
-        {
-          "name": "Refresh Token",
-          "request": {
             "method": "POST",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/auth/refresh",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "refresh"]
-            }
-          }
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/auth/logout",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "logout"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "User Profile",
-      "item": [
-        {
-          "name": "Get Current User",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "me"]
-            }
-          }
-        },
-        {
-          "name": "Update Profile",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phone\": \"+1234567890\",\n  \"desiredTitle\": \"Senior Software Engineer\",\n  \"about\": \"Experienced full-stack developer with expertise in React and Node.js\",\n  \"skills\": [\n    {\n      \"id\": \"1\",\n      \"name\": \"JavaScript\",\n      \"confidence\": 5\n    },\n    {\n      \"id\": \"2\",\n      \"name\": \"React\",\n      \"confidence\": 5\n    },\n    {\n      \"id\": \"3\",\n      \"name\": \"Node.js\",\n      \"confidence\": 4\n    }\n  ],\n  \"privacy\": {\n    \"hideContact\": false\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "me"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Resume Management",
-      "item": [
-        {
-          "name": "Request Upload URL",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const response = pm.response.json();",
-                  "    pm.collectionVariables.set('resumeId', response.data.resumeId);",
-                  "}"
-                ]
+              "raw": "{\n  \"name\": \"Kigali Farming Collective\",\n  \"website\": \"https://kigalifarming.rw\",\n  \"industry\": \"Agriculture\",\n  \"location\": \"Kigali, Rwanda\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
               }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fileName\": \"john_doe_resume.pdf\",\n  \"fileType\": \"application/pdf\",\n  \"fileSize\": 1048576\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/resumes/request-upload",
-              "host": ["{{baseUrl}}"],
-              "path": ["resumes", "request-upload"]
-            }
-          }
-        },
-        {
-          "name": "Complete Upload",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"resumeId\": \"{{resumeId}}\",\n  \"storageKey\": \"job-portal/resumes/resume-id\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/resumes/complete-upload",
-              "host": ["{{baseUrl}}"],
-              "path": ["resumes", "complete-upload"]
-            }
-          }
-        },
-        {
-          "name": "Get My Resumes",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/resumes",
-              "host": ["{{baseUrl}}"],
-              "path": ["resumes"]
-            }
-          }
-        },
-        {
-          "name": "Get Resume by ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/resumes/{{resumeId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["resumes", "{{resumeId}}"]
-            }
-          }
-        },
-        {
-          "name": "Delete Resume",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/resumes/{{resumeId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["resumes", "{{resumeId}}"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Employer Management",
-      "item": [
-        {
-          "name": "Create Employer",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    const response = pm.response.json();",
-                  "    pm.collectionVariables.set('employerId', response.data.id);",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"TechCorp Inc.\",\n  \"website\": \"https://techcorp.com\",\n  \"industry\": \"Technology\",\n  \"location\": \"San Francisco, CA\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/employers",
-              "host": ["{{baseUrl}}"],
-              "path": ["employers"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employers"
+              ]
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "Get My Employer",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/employers/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["employers", "me"]
-            }
-          }
-        },
-        {
-          "name": "Get Employer by ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/employers/{{employerId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["employers", "{{employerId}}"]
-            }
-          }
-        },
-        {
-          "name": "Update Employer",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"TechCorp Solutions Inc.\",\n  \"website\": \"https://techcorpsolutions.com\",\n  \"industry\": \"Software Development\",\n  \"location\": \"San Francisco, CA\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/employers/{{employerId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["employers", "{{employerId}}"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Job Management",
-      "item": [
-        {
-          "name": "Create Job",
+          "name": "Create a New Job (Using Metadata)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    const response = pm.response.json();",
-                  "    pm.collectionVariables.set('jobId', response.data.id);",
-                  "}"
-                ]
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Job ID received\", () => pm.expect(response.data).to.have.property('id'));",
+                  "pm.test(\"Job title matches the sample work\", () => pm.expect(response.data.title).to.eql(pm.collectionVariables.get('sampleWork')));",
+                  "pm.collectionVariables.set(\"jobId\", response.data.id);"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobProviderAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Senior Full Stack Developer\",\n  \"description\": \"We are looking for an experienced full stack developer to join our growing team. You will be responsible for developing and maintaining web applications using modern technologies.\",\n  \"responsibilities\": [\n    \"Develop and maintain web applications\",\n    \"Collaborate with cross-functional teams\",\n    \"Write clean, maintainable code\",\n    \"Mentor junior developers\"\n  ],\n  \"requirements\": [\n    \"5+ years of experience in full stack development\",\n    \"Proficiency in JavaScript, React, and Node.js\",\n    \"Experience with databases (PostgreSQL, MongoDB)\",\n    \"Strong problem-solving skills\"\n  ],\n  \"location\": \"San Francisco, CA\",\n  \"remote\": true,\n  \"jobType\": \"FULL_TIME\",\n  \"experienceLevel\": \"SENIOR\",\n  \"salaryRange\": {\n    \"min\": 120000,\n    \"max\": 180000,\n    \"currency\": \"USD\"\n  }\n}"
+              "raw": "{\n  \"title\": \"{{sampleWork}}\",\n  \"description\": \"We are hiring skilled individuals for a seasonal '{{sampleWork}}' project. Must be hardworking and able to work outdoors. This is a great opportunity to contribute to our local food supply.\",\n  \"responsibilities\": [\n    \"Perform all tasks related to {{sampleWork}}.\",\n    \"Maintain equipment and tools.\",\n    \"Follow safety guidelines and procedures.\"\n  ],\n  \"requirements\": [\n    \"Previous experience in {{sampleCategory}} is preferred but not required.\",\n    \"Must be physically fit and able to lift 20kg.\",\n    \"Strong work ethic and reliability.\"\n  ],\n  \"location\": \"Gasabo District, Kigali\",\n  \"remote\": false,\n  \"jobType\": \"CONTRACT\",\n  \"experienceLevel\": \"ENTRY\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/employers/{{employerId}}/jobs",
-              "host": ["{{baseUrl}}"],
-              "path": ["employers", "{{employerId}}", "jobs"]
-            }
-          }
-        },
-        {
-          "name": "Get Employer Jobs",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/employers/{{employerId}}/jobs?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["employers", "{{employerId}}", "jobs"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employers",
+                "{{employerId}}",
+                "jobs"
               ]
-            }
-          }
-        },
-        {
-          "name": "Search Jobs (Public)",
-          "request": {
-            "auth": {
-              "type": "noauth"
             },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/jobs/search?q=developer&location=San Francisco&remote=true&page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs", "search"],
-              "query": [
-                {
-                  "key": "q",
-                  "value": "developer"
-                },
-                {
-                  "key": "location",
-                  "value": "San Francisco"
-                },
-                {
-                  "key": "remote",
-                  "value": "true"
-                },
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
-              ]
-            }
-          }
+            "description": "This request dynamically creates a job using the `title` captured from the metadata endpoint."
+          },
+          "response": []
         },
         {
-          "name": "Get Job by ID (Public)",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/jobs/{{jobId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs", "{{jobId}}"]
-            }
-          }
-        },
-        {
-          "name": "Update Job",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
+          "name": "Publish the Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Job status is PUBLISHED\", () => pm.expect(response.data.status).to.eql(\"PUBLISHED\"));"
+                ],
+                "type": "text/javascript"
               }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Senior Full Stack Developer (Updated)\",\n  \"description\": \"Updated job description with more details about the role and company culture.\",\n  \"remote\": true,\n  \"salaryRange\": {\n    \"min\": 130000,\n    \"max\": 190000,\n    \"currency\": \"USD\"\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/jobs/{{jobId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs", "{{jobId}}"]
             }
-          }
-        },
-        {
-          "name": "Publish Job",
+          ],
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobProviderAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/jobs/{{jobId}}/publish",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs", "{{jobId}}", "publish"]
-            }
-          }
-        },
-        {
-          "name": "Get Job Applicants",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/jobs/{{jobId}}/applicants?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["jobs", "{{jobId}}", "applicants"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "{{jobId}}",
+                "publish"
               ]
             }
-          }
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "Applications",
+      "name": "3. Job Seeker Journey",
       "item": [
         {
-          "name": "Apply to Job",
+          "name": "Sign up as Job Seeker",
           "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const randomEmail = `seeker_${Date.now()}@example.com`;",
+                  "pm.collectionVariables.set(\"jobSeekerEmail\", randomEmail);"
+                ],
+                "type": "text/javascript"
+              }
+            },
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    const response = pm.response.json();",
-                  "    pm.collectionVariables.set('applicationId', response.data.applicationId);",
-                  "}"
-                ]
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"User ID received\", () => pm.expect(response.data).to.have.property('userId'));",
+                  "pm.collectionVariables.set(\"jobSeekerUserId\", response.data.userId);"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Worker\",\n  \"email\": \"{{jobSeekerEmail}}\",\n  \"password\": \"{{jobSeekerPassword}}\",\n  \"role\": \"JOBSEEKER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email (Job Seeker)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Access token received\", () => pm.expect(response.data).to.have.property('accessToken'));",
+                  "pm.collectionVariables.set(\"jobSeekerAccessToken\", response.data.accessToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{jobSeekerUserId}}\",\n  \"otp\": \"{{otp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-email-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email-otp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile with Matching Skills",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobSeekerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+250788123456\",\n  \"desiredTitle\": \"{{sampleWork}}\",\n  \"about\": \"Hardworking individual with experience in {{sampleCategory}}.\",\n  \"skills\": [\n    {\n      \"category\": \"{{sampleCategory}}\",\n      \"work\": \"{{sampleWork}}\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
+            "description": "This request updates the seeker's profile with the skills that match the job created by the provider."
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Resume (Step 1: Request Upload URL)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Resume ID received\", () => pm.expect(response.data).to.have.property('resumeId'));",
+                  "pm.collectionVariables.set(\"resumeId\", response.data.resumeId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobSeekerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"John_Worker_CV.pdf\",\n  \"fileType\": \"application/pdf\",\n  \"fileSize\": 102400\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/resumes/request-upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "resumes",
+                "request-upload"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Resume (Step 2: Complete Upload)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Upload confirmed\", () => pm.expect(response.data.success).to.be.true);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobSeekerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resumeId\": \"{{resumeId}}\",\n  \"storageKey\": \"job-portal/resumes/{{resumeId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/resumes/complete-upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "resumes",
+                "complete-upload"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search for the Job (Using Metadata)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/search?q={{sampleWork}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{sampleWork}}"
+                }
+              ]
+            },
+            "description": "The seeker searches for the specific job type and finds the one posted by the provider."
+          },
+          "response": []
+        },
+        {
+          "name": "Apply to the Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Application ID received\", () => pm.expect(response.data).to.have.property('applicationId'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobSeekerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
               {
                 "key": "Idempotency-Key",
                 "value": "{{$guid}}"
@@ -656,146 +662,78 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"resumeId\": \"{{resumeId}}\",\n  \"coverLetter\": \"I am very interested in this position and believe my skills and experience make me a great fit for your team.\"\n}"
+              "raw": "{\n  \"resumeId\": \"{{resumeId}}\",\n  \"coverLetter\": \"I am very interested in the {{sampleWork}} position. I am a reliable and hardworking individual ready to start immediately.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{baseUrl}}/applications/jobs/{{jobId}}/apply",
-              "host": ["{{baseUrl}}"],
-              "path": ["applications", "jobs", "{{jobId}}", "apply"]
-            }
-          }
-        },
-        {
-          "name": "Get My Applications",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/applications?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["applications"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applications",
+                "jobs",
+                "{{jobId}}",
+                "apply"
               ]
             }
-          }
-        },
-        {
-          "name": "Get Application by ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/applications/{{applicationId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["applications", "{{applicationId}}"]
-            }
-          }
-        },
-        {
-          "name": "Update Application Status",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"VIEWED\",\n  \"note\": \"Application reviewed by hiring manager\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/applications/{{applicationId}}/status",
-              "host": ["{{baseUrl}}"],
-              "path": ["applications", "{{applicationId}}", "status"]
-            }
-          }
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "Notifications",
+      "name": "4. Finalizing the Loop (Job Provider)",
       "item": [
         {
-          "name": "Get Notifications",
+          "name": "View Applicants for the Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Application from seeker is present\", () => {",
+                  "    const application = response.data.applications[0];",
+                  "    pm.expect(application.jobSeeker.user.email).to.eql(pm.collectionVariables.get('jobSeekerEmail'));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobProviderAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/notifications?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["notifications"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                }
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/applicants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "{{jobId}}",
+                "applicants"
               ]
-            }
-          }
-        },
-        {
-          "name": "Get Unread Notifications",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/notifications?read=false&page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["notifications"],
-              "query": [
-                {
-                  "key": "read",
-                  "value": "false"
-                },
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Mark Notification as Read",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/notifications/notification-id/read",
-              "host": ["{{baseUrl}}"],
-              "path": ["notifications", "notification-id", "read"]
-            }
-          }
-        },
-        {
-          "name": "Mark All Notifications as Read",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/notifications/mark-all-read",
-              "host": ["{{baseUrl}}"],
-              "path": ["notifications", "mark-all-read"]
-            }
-          }
+            },
+            "description": "As the job provider, we can now see that John Worker has applied to our job."
+          },
+          "response": []
         }
       ]
     }
