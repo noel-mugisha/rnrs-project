@@ -1,8 +1,6 @@
 import rateLimit from 'express-rate-limit';
 import { Request } from 'express';
 
-// We have completely removed the Redis import and the complex store configuration.
-// The library will now handle everything in memory automatically.
 
 const createRateLimiter = (options: {
   windowMs: number;
@@ -19,7 +17,6 @@ const createRateLimiter = (options: {
       code: 'RATE_LIMIT_EXCEEDED',
     },
     keyGenerator: options.keyGenerator || ((req) => req.ip || 'fallback-ip'),
-    // The custom Redis 'store' object has been completely removed.
   });
 };
 
@@ -31,10 +28,17 @@ export const authLimiter = createRateLimiter({
 });
 
 export const otpLimiter = createRateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  max: 3, // 3 OTP requests per minute
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: process.env.NODE_ENV === 'development' ? 50 : 5, // Much higher limit in development
   message: 'Too many OTP requests, please try again later',
   keyGenerator: (req) => `otp:${req.ip || 'unknown-ip'}:${req.body.userId || req.body.email || 'unknown-user'}`,
+});
+
+export const otpVerificationLimiter = createRateLimiter({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: process.env.NODE_ENV === 'development' ? 100 : 10, // Much higher limit in development
+  message: 'Too many verification attempts, please try again later',
+  keyGenerator: (req) => `otp-verify:${req.ip || 'unknown-ip'}:${req.body.userId || 'unknown-user'}`,
 });
 
 export const generalLimiter = createRateLimiter({

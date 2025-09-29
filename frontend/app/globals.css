@@ -1,0 +1,215 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated to light mode as default with proper red/maroon colors */
+  --background: 255 255 255;
+  --foreground: 15 23 42;
+  --card: 255 255 255;
+  --card-foreground: 15 23 42;
+  --popover: 255 255 255;
+  --popover-foreground: 15 23 42;
+
+  /* Primary colors using the specified maroon/red palette */
+  --primary: 128 0 0; /* #800000 - Main maroon color from logo */
+  --primary-foreground: 255 255 255;
+  --primary-light: 165 42 42; /* #A52A2A - Lighter brown/maroon for hover */
+  --primary-dark: 102 0 0; /* #660000 - Darker shade for active states */
+
+  --secondary: 248 250 252;
+  --secondary-foreground: 15 23 42;
+
+  --muted: 248 250 252;
+  --muted-foreground: 100 116 139;
+  --accent: 248 250 252;
+  --accent-foreground: 15 23 42;
+
+  --success: 34 197 94;
+  --success-foreground: 255 255 255;
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+
+  --border: 226 232 240;
+  --input: 226 232 240;
+  --ring: 128 0 0;
+
+  --chart-1: 128 0 0;
+  --chart-2: 34 197 94;
+  --chart-3: 251 191 36;
+  --chart-4: 168 85 247;
+  --chart-5: 59 130 246;
+
+  --radius: 0.5rem;
+
+  --sidebar: 255 255 255;
+  --sidebar-foreground: 15 23 42;
+  --sidebar-primary: 128 0 0;
+  --sidebar-primary-foreground: 255 255 255;
+  --sidebar-accent: 248 250 252;
+  --sidebar-accent-foreground: 15 23 42;
+  --sidebar-border: 226 232 240;
+  --sidebar-ring: 128 0 0;
+}
+
+.dark {
+  /* Dark theme with proper contrast and red accents */
+  --background: 2 6 23;
+  --foreground: 248 250 252;
+  --card: 15 23 42;
+  --card-foreground: 248 250 252;
+  --popover: 15 23 42;
+  --popover-foreground: 248 250 252;
+
+  /* Primary colors adjusted for dark theme visibility */
+  --primary: 165 42 42; /* Lighter maroon for better visibility in dark mode */
+  --primary-foreground: 248 250 252;
+  --primary-light: 205 92 92;
+  --primary-dark: 128 0 0;
+
+  --secondary: 30 41 59;
+  --secondary-foreground: 248 250 252;
+
+  --muted: 30 41 59;
+  --muted-foreground: 148 163 184;
+  --accent: 30 41 59;
+  --accent-foreground: 248 250 252;
+
+  --success: 34 197 94;
+  --success-foreground: 2 6 23;
+  --destructive: 239 68 68;
+  --destructive-foreground: 2 6 23;
+
+  --border: 30 41 59;
+  --input: 30 41 59;
+  --ring: 165 42 42;
+
+  --chart-1: 165 42 42;
+  --chart-2: 34 197 94;
+  --chart-3: 251 191 36;
+  --chart-4: 168 85 247;
+  --chart-5: 59 130 246;
+
+  --sidebar: 15 23 42;
+  --sidebar-foreground: 248 250 252;
+  --sidebar-primary: 165 42 42;
+  --sidebar-primary-foreground: 248 250 252;
+  --sidebar-accent: 30 41 59;
+  --sidebar-accent-foreground: 248 250 252;
+  --sidebar-border: 30 41 59;
+  --sidebar-ring: 165 42 42;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-card: rgb(var(--card));
+  --color-card-foreground: rgb(var(--card-foreground));
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-primary-light: rgb(var(--primary-light));
+  --color-primary-dark: rgb(var(--primary-dark));
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-success: rgb(var(--success));
+  --color-success-foreground: rgb(var(--success-foreground));
+  --color-destructive: rgb(var(--destructive));
+  --color-destructive-foreground: rgb(var(--destructive-foreground));
+  --color-border: rgb(var(--border));
+  --color-input: rgb(var(--input));
+  --color-ring: rgb(var(--ring));
+  --color-chart-1: rgb(var(--chart-1));
+  --color-chart-2: rgb(var(--chart-2));
+  --color-chart-3: rgb(var(--chart-3));
+  --color-chart-4: rgb(var(--chart-4));
+  --color-chart-5: rgb(var(--chart-5));
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: rgb(var(--sidebar));
+  --color-sidebar-foreground: rgb(var(--sidebar-foreground));
+  --color-sidebar-primary: rgb(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: rgb(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: rgb(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: rgb(var(--sidebar-accent-foreground));
+  --color-sidebar-border: rgb(var(--sidebar-border));
+  --color-sidebar-ring: rgb(var(--sidebar-ring));
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  h1 {
+    @apply text-4xl font-bold tracking-tight;
+  }
+
+  h2 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+
+  h4 {
+    @apply text-xl font-semibold tracking-tight;
+  }
+}
+
+/* Global cursor pointer styles for interactive elements */
+@layer base {
+  button,
+  [role="button"],
+  .cursor-pointer,
+  a[href],
+  label[for],
+  select,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"],
+  [data-radix-collection-item],
+  [data-state],
+  .clickable {
+    cursor: pointer !important;
+  }
+
+  /* Ensure disabled elements don't show pointer cursor */
+  button:disabled,
+  input:disabled,
+  select:disabled,
+  textarea:disabled,
+  [aria-disabled="true"],
+  [data-disabled="true"] {
+    cursor: not-allowed !important;
+  }
+
+  /* Loading states */
+  .loading,
+  [data-loading="true"] {
+    cursor: wait !important;
+  }
+
+  /* Hover effects for buttons */
+  button:not(:disabled):hover,
+  [role="button"]:not([aria-disabled="true"]):hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease;
+  }
+}

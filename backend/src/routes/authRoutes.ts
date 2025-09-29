@@ -3,7 +3,7 @@
 import { Router } from 'express';
 import { AuthController } from '@/controllers/authController';
 import { validateBody } from '@/middleware/validationMiddleware';
-import { authLimiter, otpLimiter } from '@/middleware/rateLimiterMiddleware';
+import { authLimiter, otpLimiter, otpVerificationLimiter } from '@/middleware/rateLimiterMiddleware';
 import { signupSchema, loginSchema, verifyEmailSchema, resendOTPSchema } from '@/utils/validation';
 
 const router: ReturnType<typeof Router> = Router();
@@ -56,7 +56,12 @@ router.post('/signup', authLimiter, validateBody(signupSchema), authController.s
  *       '400':
  *         description: Invalid or expired OTP.
  */
-router.post('/verify-email-otp', otpLimiter, validateBody(verifyEmailSchema), authController.verifyEmail);
+// Temporarily disable rate limiting for development
+if (process.env.NODE_ENV === 'development') {
+  router.post('/verify-email-otp', validateBody(verifyEmailSchema), authController.verifyEmail);
+} else {
+  router.post('/verify-email-otp', otpVerificationLimiter, validateBody(verifyEmailSchema), authController.verifyEmail);
+}
 
 /**
  * @swagger
