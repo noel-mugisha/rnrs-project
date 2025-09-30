@@ -47,14 +47,13 @@ export class ResumeService {
     const timestamp = Math.round(Date.now() / 1000);
     const publicId = `job-portal/resumes/${resume.id}`;
     
-    const params = {
-      timestamp,
+    // Parameters for signature generation (only params that Cloudinary validates)
+    const paramsToSign = {
       public_id: publicId,
-      folder: 'job-portal/resumes',
-      resource_type: 'raw',
+      timestamp,
     };
 
-    const signature = generateUploadSignature(params);
+    const signature = generateUploadSignature(paramsToSign);
 
     const uploadUrl = `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/raw/upload`;
 
@@ -62,7 +61,8 @@ export class ResumeService {
       uploadUrl,
       resumeId: resume.id,
       uploadParams: {
-        ...params,
+        timestamp,
+        public_id: publicId,
         signature,
         api_key: process.env.CLOUDINARY_API_KEY,
       },
@@ -85,7 +85,7 @@ export class ResumeService {
       throw new Error('Resume not found');
     }
 
-    await prisma.resume.update({
+    const updatedResume = await prisma.resume.update({
       where: { id: data.resumeId },
       data: {
         fileKey: data.storageKey,
@@ -96,7 +96,7 @@ export class ResumeService {
     // TODO: Enqueue resume parsing job
     logger.info(`Resume upload completed: ${data.resumeId}`);
 
-    return { success: true, resumeId: data.resumeId };
+    return updatedResume;
   }
 
   async getResumes(userId: string) {

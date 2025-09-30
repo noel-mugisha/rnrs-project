@@ -149,25 +149,36 @@ export default function ProfileSetupPage() {
         throw new Error('Failed to get upload URL')
       }
 
-      const { uploadUrl, fileKey } = uploadRequest.data
+      const { uploadUrl, resumeId, uploadParams } = uploadRequest.data
 
-      // Step 2: Upload file to the provided URL
+      // Step 2: Upload file to Cloudinary with FormData
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('timestamp', uploadParams.timestamp.toString())
+      formData.append('public_id', uploadParams.public_id)
+      formData.append('signature', uploadParams.signature)
+      formData.append('api_key', uploadParams.api_key)
+
       const uploadResponse = await fetch(uploadUrl, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type,
-        },
+        method: 'POST',
+        body: formData,
       })
 
       if (!uploadResponse.ok) {
-        throw new Error('Failed to upload file')
+        const errorData = await uploadResponse.json()
+        throw new Error(errorData.error?.message || 'Failed to upload file')
       }
+
+      const cloudinaryResponse = await uploadResponse.json()
+      const publicId = cloudinaryResponse.public_id
 
       setResumeUpload(prev => ({ ...prev, progress: 80 }))
 
       // Step 3: Complete the upload
-      const completeResponse = await api.completeResumeUpload(fileKey)
+      const completeResponse = await api.completeResumeUpload({
+        resumeId,
+        storageKey: publicId,
+      })
       
       if (!completeResponse.success) {
         throw new Error('Failed to complete upload')

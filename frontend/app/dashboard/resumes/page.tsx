@@ -130,7 +130,15 @@ export default function ResumesPage() {
         throw new Error(uploadResponse.error || 'Failed to get upload URL')
       }
 
-      const { uploadUrl, fileKey } = uploadResponse.data
+      const { uploadUrl, resumeId, uploadParams } = uploadResponse.data
+      
+      // Create FormData with file and all required Cloudinary params
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('timestamp', uploadParams.timestamp.toString())
+      formData.append('public_id', uploadParams.public_id)
+      formData.append('signature', uploadParams.signature)
+      formData.append('api_key', uploadParams.api_key)
       
       const xhr = new XMLHttpRequest()
       
@@ -144,12 +152,21 @@ export default function ResumesPage() {
       xhr.onload = async () => {
         if (xhr.status === 200 || xhr.status === 201) {
           try {
-            const completeResponse = await api.completeResumeUpload(fileKey)
+            const cloudinaryResponse = JSON.parse(xhr.responseText)
+            const publicId = cloudinaryResponse.public_id
+            
+            const completeResponse = await api.completeResumeUpload({
+              resumeId,
+              storageKey: publicId,
+            })
             
             if (completeResponse.success && completeResponse.data) {
               setResumes(prev => [completeResponse.data, ...prev])
               toast.success('Resume uploaded successfully!')
               setShowUploadDialog(false)
+              // Reset the file input
+              const fileInput = document.getElementById('resume-file') as HTMLInputElement
+              if (fileInput) fileInput.value = ''
             } else {
               throw new Error(completeResponse.error || 'Failed to complete upload')
             }
@@ -158,7 +175,8 @@ export default function ResumesPage() {
             setUploadError('Failed to complete upload')
           }
         } else {
-          setUploadError('Failed to upload file')
+          const errorMessage = xhr.responseText ? JSON.parse(xhr.responseText).error?.message || 'Upload failed' : 'Upload failed'
+          setUploadError(errorMessage)
         }
         setIsUploading(false)
         setUploadProgress(0)
@@ -170,8 +188,8 @@ export default function ResumesPage() {
         setUploadProgress(0)
       }
 
-      xhr.open('PUT', uploadUrl)
-      xhr.send(file)
+      xhr.open('POST', uploadUrl)
+      xhr.send(formData)
 
     } catch (err) {
       console.error('Upload error:', err)

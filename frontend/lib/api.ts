@@ -275,17 +275,29 @@ class ApiClient {
     fileName: string
     fileType: string
     fileSize: number
-  }): Promise<ApiResponse<{ uploadUrl: string; fileKey: string }>> {
+  }): Promise<ApiResponse<{ 
+    uploadUrl: string
+    resumeId: string
+    uploadParams: {
+      timestamp: number
+      public_id: string
+      signature: string
+      api_key: string
+    }
+  }>> {
     return this.request('/resumes/request-upload', {
       method: 'POST',
       body: JSON.stringify(fileData),
     })
   }
 
-  async completeResumeUpload(fileKey: string): Promise<ApiResponse<Resume>> {
+  async completeResumeUpload(data: {
+    resumeId: string
+    storageKey: string
+  }): Promise<ApiResponse<Resume>> {
     return this.request('/resumes/complete-upload', {
       method: 'POST',
-      body: JSON.stringify({ fileKey }),
+      body: JSON.stringify(data),
     })
   }
 
