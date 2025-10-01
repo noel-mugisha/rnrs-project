@@ -1,0 +1,6168 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.env.example
+.gitignore
+.wiki.md
+eslint.config.js
+jest.config.js
+nodemon.json
+package.json
+pnpm-workspace.yaml
+postman_collection.json
+prisma/schema.prisma
+src/app.ts
+src/config/cloudinary.ts
+src/config/database.ts
+src/config/email.ts
+src/config/logger.ts
+src/config/swagger.ts
+src/config/workCategories.ts
+src/controllers/applicationController.ts
+src/controllers/authController.ts
+src/controllers/employerController.ts
+src/controllers/jobController.ts
+src/controllers/metaController.ts
+src/controllers/notificationController.ts
+src/controllers/passwordResetController.ts
+src/controllers/resumeController.ts
+src/controllers/userController.ts
+src/middleware/authMiddleware.ts
+src/middleware/errorHandlerMiddleware.ts
+src/middleware/rateLimiterMiddleware.ts
+src/middleware/validationMiddleware.ts
+src/routes/applicationRoutes.ts
+src/routes/authRoutes.ts
+src/routes/employerRoutes.ts
+src/routes/index.ts
+src/routes/jobRoutes.ts
+src/routes/metaRoutes.ts
+src/routes/notificationRoutes.ts
+src/routes/passwordResetRoutes.ts
+src/routes/resumeRoutes.ts
+src/routes/userRoutes.ts
+src/scripts/seed.ts
+src/server.ts
+src/services/applicationService.ts
+src/services/authService.ts
+src/services/employerService.ts
+src/services/jobService.ts
+src/services/notificationService.ts
+src/services/passwordResetService.ts
+src/services/resumeService.ts
+src/services/userService.ts
+src/types/index.ts
+src/utils/auth.ts
+src/utils/response.ts
+src/utils/slugify.ts
+src/utils/swaggerSchemas.ts
+src/utils/validation.ts
+test-cloudinary-signature.js
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".env.example">
+# Server Configuration
+NODE_ENV=your-environment
+PORT=your-port-number
+
+# Database
+DATABASE_URL=postgresql://username:password@localhost:5432/your-database-name
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# JWT Secrets
+JWT_SECRET=your-jwt-secret-key
+REFRESH_TOKEN_SECRET=your-refresh-token-secret-key
+JWT_EXPIRES_IN=jwt-expires-in-min
+REFRESH_TOKEN_EXPIRES_IN=refresh-token-expires-in-days
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+
+# Email Configuration (Nodemailer)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+EMAIL_FROM=noreply@your-email.com
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# File Upload Limits
+MAX_FILE_SIZE=10485760
+ALLOWED_FILE_TYPES=application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document
+
+# Frontend URL (for CORS and email links)
+FRONTEND_URL=http://localhost:3000
+
+# Security
+BCRYPT_ROUNDS=12
+OTP_EXPIRES_IN=600000
+
+# Socket.IO
+SOCKET_IO_CORS_ORIGIN=http://localhost:3000
+</file>
+
+<file path=".gitignore">
+# Change later
+README.md
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Snowpack dependency directory (https://snowpack.dev/)
+web_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for instrumented libs generated by jscoverage/JSCover
+lib-cov
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# TypeScript v1 declaration files
+typings/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+
+# next.js build output
+.next
+
+# Build output
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Prisma
+prisma/migrations/
+</file>
+
+<file path=".wiki.md">
+# Project Summary
+The Job Portal Backend API is designed to facilitate job searching and recruitment processes. This comprehensive backend system allows job seekers to manage their profiles, apply for jobs, and track their applications, while job providers can post job openings, manage applications, and communicate with candidates. Built using Express.js, TypeScript, and Prisma with PostgreSQL, this API integrates essential features such as user authentication, resume management, and notifications, creating a seamless experience for both job seekers and employers.
+
+# Project Module Description
+- **Authentication & Authorization**: Handles user registration, login, and email verification with JWT and OTP.
+- **User Management**: Manages user profiles, including job seekers and employers.
+- **Job Management**: Allows job providers to create, manage, and publish job listings.
+- **Application Management**: Enables job seekers to apply for jobs and track their application status.
+- **Resume Management**: Facilitates uploading and managing resumes using Cloudinary.
+- **Notification System**: Sends notifications to users regarding application statuses and other updates.
+
+# Directory Tree
+```
+src/
+├── config/          # Configuration files (database, redis, cloudinary, etc.)
+├── controllers/     # Request handlers
+├── middleware/      # Express middleware (auth, validation, rate limiting)
+├── routes/          # API route definitions
+├── services/        # Business logic layer
+├── types/           # TypeScript type definitions
+├── utils/           # Utility functions
+├── scripts/         # Database seeds and utility scripts
+├── app.ts           # Express app configuration
+└── server.ts        # Server startup
+```
+
+# File Description Inventory
+- **config/**: Contains configuration files for database, logging, email, and external services.
+- **controllers/**: Implements the logic for handling requests and responses.
+- **middleware/**: Includes middleware for authentication, validation, and error handling.
+- **routes/**: Defines the API endpoints and their corresponding controllers.
+- **services/**: Contains business logic and interactions with the database.
+- **types/**: TypeScript type definitions for better type safety.
+- **utils/**: Utility functions for various common tasks.
+- **scripts/**: Scripts for database seeding and other utility functions.
+- **app.ts**: Main Express application setup.
+- **server.ts**: Entry point for starting the server.
+
+# Technology Stack
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js with TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **File Storage**: Cloudinary
+- **Email**: Nodemailer
+- **Authentication**: JWT with refresh tokens
+- **Validation**: Zod
+- **Testing**: Jest
+- **Logging**: Winston
+
+# Usage
+### 1. Clone and Install Dependencies
+```bash
+git clone <repository-url>
+cd job-portal-backend
+npm install
+```
+
+### 2. Environment Setup
+Copy the `.env.example` file to `.env` and configure your environment variables:
+```bash
+cp .env.example .env
+```
+
+### 3. Database Setup
+```bash
+npm run db:generate      # Generate Prisma client
+npm run db:migrate       # Run database migrations
+npm run db:seed          # Seed the database with sample data
+```
+
+### 4. Start the Server
+```bash
+npm run dev              # Development mode with hot reload
+npm run build            # Build for production
+npm start                # Start production server
+```
+
+### 5. Testing
+Import `postman_collection.json` into Postman for API testing.
+</file>
+
+<file path="eslint.config.js">
+module.exports = {
+  parser: '@typescript-eslint/parser',
+  extends: [
+    'eslint:recommended',
+    '@typescript-eslint/recommended',
+  ],
+  plugins: ['@typescript-eslint'],
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
+  },
+  env: {
+    node: true,
+    es6: true,
+  },
+  rules: {
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'warn',
+    'no-console': 'warn',
+    'prefer-const': 'error',
+    'no-var': 'error',
+  },
+  ignorePatterns: ['dist/', 'node_modules/', '*.js'],
+};
+</file>
+
+<file path="jest.config.js">
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/src'],
+  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
+  },
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.d.ts',
+    '!src/server.ts',
+    '!src/scripts/**',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+  moduleNameMapping: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+};
+</file>
+
+<file path="nodemon.json">
+{
+  "watch": ["src"],
+  "ext": "ts",
+  "ignore": ["src/**/*.test.ts"],
+  "exec": "ts-node -r tsconfig-paths/register src/server.ts"
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "rnrs-backend",
+  "version": "1.0.0",
+  "description": "Job Portal Backend API with Express, TypeScript, and Prisma",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.ts",
+    "build": "tsc && tsc-alias",
+    "start": "node dist/server.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx src/scripts/seed.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "bullmq": "^4.15.0",
+    "cloudinary": "^1.41.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.7",
+    "socket.io": "^4.7.4",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0",
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.24.6"
+  },
+  "devDependencies": {
+    "@prisma/client": "^6.16.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.8",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.9.0",
+    "@types/nodemailer": "^6.4.14",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "prisma": "^6.16.2",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "tsc-alias": "^1.8.16",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.2.2"
+  },
+  "keywords": [
+    "job-portal",
+    "express",
+    "typescript",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "Alex",
+  "license": "MIT"
+}
+</file>
+
+<file path="pnpm-workspace.yaml">
+ignoredBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@scarf/scarf'
+  - core-js
+  - esbuild
+  - msgpackr-extract
+  - prisma
+</file>
+
+<file path="postman_collection.json">
+{
+  "info": {
+    "name": "Job Portal API - Presentation Flow (Work Categories)",
+    "description": "A step-by-step collection demonstrating the API with a focus on creating and applying for jobs from the predefined work categories.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api/v1"
+    },
+    {
+      "key": "jobSeekerEmail",
+      "value": ""
+    },
+    {
+      "key": "jobSeekerPassword",
+      "value": "SeekerPass123!"
+    },
+    {
+      "key": "jobSeekerUserId",
+      "value": ""
+    },
+    {
+      "key": "jobSeekerAccessToken",
+      "value": ""
+    },
+    {
+      "key": "jobProviderEmail",
+      "value": ""
+    },
+    {
+      "key": "jobProviderPassword",
+      "value": "ProviderPass123!"
+    },
+    {
+      "key": "jobProviderUserId",
+      "value": ""
+    },
+    {
+      "key": "jobProviderAccessToken",
+      "value": ""
+    },
+    {
+      "key": "employerId",
+      "value": ""
+    },
+    {
+      "key": "jobId",
+      "value": ""
+    },
+    {
+      "key": "resumeId",
+      "value": ""
+    },
+    {
+      "key": "sampleCategory",
+      "value": "Farming"
+    },
+    {
+      "key": "sampleWork",
+      "value": "Rice planting"
+    },
+    {
+      "key": "otp",
+      "value": "123456"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Setup: Get Work Categories",
+      "item": [
+        {
+          "name": "Get Work Categories (Metadata)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains work categories data\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.status).to.eql('success');",
+                  "    pm.expect(response.data).to.be.an('array').with.length.above(0);",
+                  "});",
+                  "",
+                  "// Capture a sample category and work for the entire collection to use",
+                  "const response = pm.response.json();",
+                  "if (response.data && response.data.length > 0) {",
+                  "    const firstCategory = response.data[0];",
+                  "    if (firstCategory.works && firstCategory.works.length > 0) {",
+                  "        pm.collectionVariables.set(\"sampleCategory\", firstCategory.category);",
+                  "        pm.collectionVariables.set(\"sampleWork\", firstCategory.works[0]);",
+                  "        console.log(`Captured for demo: Category='${firstCategory.category}', Work='${firstCategory.works[0]}'`);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meta/work-categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meta",
+                "work-categories"
+              ]
+            },
+            "description": "First, we fetch the predefined list of jobs. The script saves the first job type (e.g., 'Farming in the swamp') to a variable to be used in later steps."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Job Provider Journey",
+      "item": [
+        {
+          "name": "Sign up as Job Provider",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const randomEmail = `provider_${Date.now()}@example.com`;",
+                  "pm.collectionVariables.set(\"jobProviderEmail\", randomEmail);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"User ID received\", () => pm.expect(response.data).to.have.property('userId'));",
+                  "pm.collectionVariables.set(\"jobProviderUserId\", response.data.userId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Agro\",\n  \"lastName\": \"Corp\",\n  \"email\": \"{{jobProviderEmail}}\",\n  \"password\": \"{{jobProviderPassword}}\",\n  \"role\": \"JOBPROVIDER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email (Job Provider)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Access token received\", () => pm.expect(response.data).to.have.property('accessToken'));",
+                  "pm.collectionVariables.set(\"jobProviderAccessToken\", response.data.accessToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{jobProviderUserId}}\",\n  \"otp\": \"{{otp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-email-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email-otp"
+              ]
+            },
+            "description": "NOTE: Your backend generates a real OTP. For this test, you must either check your logs/database for the OTP or temporarily hardcode it to '123456' for the demo."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Employer Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Employer ID received\", () => pm.expect(response.data).to.have.property('id'));",
+                  "pm.collectionVariables.set(\"employerId\", response.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobProviderAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kigali Farming Collective\",\n  \"website\": \"https://kigalifarming.rw\",\n  \"industry\": \"Agriculture\",\n  \"location\": \"Kigali, Rwanda\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create a New Job (Using Metadata)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Job ID received\", () => pm.expect(response.data).to.have.property('id'));",
+                  "pm.test(\"Job title matches the sample work\", () => pm.expect(response.data.title).to.eql(pm.collectionVariables.get('sampleWork')));",
+                  "pm.collectionVariables.set(\"jobId\", response.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobProviderAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{sampleWork}}\",\n  \"description\": \"We are hiring skilled individuals for a seasonal '{{sampleWork}}' project. Must be hardworking and able to work outdoors. This is a great opportunity to contribute to our local food supply.\",\n  \"responsibilities\": [\n    \"Perform all tasks related to {{sampleWork}}.\",\n    \"Maintain equipment and tools.\",\n    \"Follow safety guidelines and procedures.\"\n  ],\n  \"requirements\": [\n    \"Previous experience in {{sampleCategory}} is preferred but not required.\",\n    \"Must be physically fit and able to lift 20kg.\",\n    \"Strong work ethic and reliability.\"\n  ],\n  \"location\": \"Gasabo District, Kigali\",\n  \"remote\": false,\n  \"jobType\": \"CONTRACT\",\n  \"experienceLevel\": \"ENTRY\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employers/{{employerId}}/jobs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employers",
+                "{{employerId}}",
+                "jobs"
+              ]
+            },
+            "description": "This request dynamically creates a job using the `title` captured from the metadata endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "Publish the Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Job status is PUBLISHED\", () => pm.expect(response.data.status).to.eql(\"PUBLISHED\"));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobProviderAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/publish",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "{{jobId}}",
+                "publish"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Job Seeker Journey",
+      "item": [
+        {
+          "name": "Sign up as Job Seeker",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const randomEmail = `seeker_${Date.now()}@example.com`;",
+                  "pm.collectionVariables.set(\"jobSeekerEmail\", randomEmail);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"User ID received\", () => pm.expect(response.data).to.have.property('userId'));",
+                  "pm.collectionVariables.set(\"jobSeekerUserId\", response.data.userId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Worker\",\n  \"email\": \"{{jobSeekerEmail}}\",\n  \"password\": \"{{jobSeekerPassword}}\",\n  \"role\": \"JOBSEEKER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email (Job Seeker)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Access token received\", () => pm.expect(response.data).to.have.property('accessToken'));",
+                  "pm.collectionVariables.set(\"jobSeekerAccessToken\", response.data.accessToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{jobSeekerUserId}}\",\n  \"otp\": \"{{otp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-email-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email-otp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile with Matching Skills",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobSeekerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+250788123456\",\n  \"desiredTitle\": \"{{sampleWork}}\",\n  \"about\": \"Hardworking individual with experience in {{sampleCategory}}.\",\n  \"skills\": [\n    {\n      \"category\": \"{{sampleCategory}}\",\n      \"work\": \"{{sampleWork}}\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
+            "description": "This request updates the seeker's profile with the skills that match the job created by the provider."
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Resume (Step 1: Request Upload URL)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Resume ID received\", () => pm.expect(response.data).to.have.property('resumeId'));",
+                  "pm.collectionVariables.set(\"resumeId\", response.data.resumeId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobSeekerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"John_Worker_CV.pdf\",\n  \"fileType\": \"application/pdf\",\n  \"fileSize\": 102400\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/resumes/request-upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "resumes",
+                "request-upload"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Resume (Step 2: Complete Upload)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Upload confirmed\", () => pm.expect(response.data.success).to.be.true);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobSeekerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resumeId\": \"{{resumeId}}\",\n  \"storageKey\": \"job-portal/resumes/{{resumeId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/resumes/complete-upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "resumes",
+                "complete-upload"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search for the Job (Using Metadata)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/search?q={{sampleWork}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{sampleWork}}"
+                }
+              ]
+            },
+            "description": "The seeker searches for the specific job type and finds the one posted by the provider."
+          },
+          "response": []
+        },
+        {
+          "name": "Apply to the Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", () => pm.response.to.have.status(201));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Application ID received\", () => pm.expect(response.data).to.have.property('applicationId'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobSeekerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resumeId\": \"{{resumeId}}\",\n  \"coverLetter\": \"I am very interested in the {{sampleWork}} position. I am a reliable and hardworking individual ready to start immediately.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applications/jobs/{{jobId}}/apply",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applications",
+                "jobs",
+                "{{jobId}}",
+                "apply"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Finalizing the Loop (Job Provider)",
+      "item": [
+        {
+          "name": "View Applicants for the Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "const response = pm.response.json();",
+                  "pm.test(\"Application from seeker is present\", () => {",
+                  "    const application = response.data.applications[0];",
+                  "    pm.expect(application.jobSeeker.user.email).to.eql(pm.collectionVariables.get('jobSeekerEmail'));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jobProviderAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/applicants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "{{jobId}}",
+                "applicants"
+              ]
+            },
+            "description": "As the job provider, we can now see that John Worker has applied to our job."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
+</file>
+
+<file path="prisma/schema.prisma">
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  firstName          String
+  lastName           String
+  email              String   @unique
+  passwordHash       String
+  role               Role
+  emailVerified      Boolean  @default(false)
+  phone              String?  
+  phoneVerified      Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  jobSeekerProfile   JobSeekerProfile?
+  employerProfile    Employer?
+  refreshTokens      RefreshToken[]
+  notifications      Notification[]
+  consents           Consent[]
+  employerAdmins     EmployerAdmin[]
+  emailVerifications EmailVerification[]
+  passwordResetTokens PasswordResetToken[]
+  
+  @@map("users")
+}
+
+model EmailVerification {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  otp   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@map("email_verifications")
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  tokenHash  String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  revoked    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  
+  @@map("refresh_tokens")
+}
+
+enum Role {
+  JOBSEEKER
+  JOBPROVIDER
+  ADMIN
+}
+
+model JobSeekerProfile {
+  id            String    @id @default(uuid())
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String    @unique
+  desiredTitle  String?
+  about         String?
+  skills        Json?
+  privacy       Json?
+  resumes       Resume[]
+  applications  Application[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@map("job_seeker_profiles")
+}
+
+model Resume {
+  id          String   @id @default(uuid())
+  jobSeeker   JobSeekerProfile @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+  jobSeekerId String
+  fileKey     String
+  fileName    String
+  mimeType    String
+  size        Int
+  fingerprint String   @unique
+  parsedJson  Json?
+  parseStatus ParseStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  parsedAt    DateTime?
+  deleted     Boolean  @default(false)
+  applications Application[]
+  
+  @@map("resumes")
+}
+
+enum ParseStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+}
+
+model Employer {
+  id           String   @id @default(uuid())
+  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId      String   @unique
+  name         String
+  website      String?
+  industry     String?
+  location     String?
+  jobTypes     String[] @default([]) 
+  logoKey      String?
+  jobs         Job[]
+  admins       EmployerAdmin[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@map("employers")
+}
+
+model EmployerAdmin {
+  id         String   @id @default(uuid())
+  employer   Employer @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  employerId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  role       String
+  createdAt  DateTime @default(now())
+  
+  @@unique([employerId, userId])
+  @@map("employer_admins")
+}
+
+model Job {
+  id             String    @id @default(uuid())
+  employer       Employer  @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  employerId     String
+  title          String
+  slug           String    @unique
+  description    String
+  responsibilities String[]
+  requirements   String[]
+  location       String?
+  remote         Boolean   @default(false)
+  jobType        String
+  experienceLevel String
+  salaryRange    Json?
+  status         JobStatus @default(DRAFT)
+  applications   Application[]
+  postedAt       DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  @@index([status, postedAt])
+  @@index([employerId])
+  @@map("jobs")
+}
+
+enum JobStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+model Application {
+  id             String    @id @default(uuid())
+  job            Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId          String
+  jobSeeker      JobSeekerProfile @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+  jobSeekerId    String
+  resume         Resume?   @relation(fields: [resumeId], references: [id])
+  resumeId       String?
+  coverLetter    String?
+  status         ApplicationStatus @default(APPLIED)
+  statusHistory  Json?
+  metadata       Json?
+  appliedAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  @@unique([jobId, jobSeekerId])
+  @@index([jobId, status])
+  @@index([jobSeekerId])
+  @@map("applications")
+}
+
+enum ApplicationStatus {
+  APPLIED
+  VIEWED
+  SHORTLISTED
+  INTERVIEW_SCHEDULED
+  OFFERED
+  HIRED
+  REJECTED
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  type      String
+  payload   Json
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model Consent {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  type      String
+  details   Json?
+  acceptedAt DateTime @default(now())
+  
+  @@map("consents")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@map("password_reset_tokens")
+}
+</file>
+
+<file path="src/app.ts">
+import express, {Express} from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import { generalLimiter } from '@/middleware/rateLimiterMiddleware';
+import { errorHandler, notFoundHandler } from '@/middleware/errorHandlerMiddleware';
+import { logger } from '@/config/logger';
+import routes from '@/routes';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from '@/config/swagger';
+
+const app:Express = express();
+
+// Security middleware
+app.use(helmet());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true,
+}));
+
+// Rate limiting
+app.use(generalLimiter);
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
+
+// Request logging
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.path}`, {
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+  });
+  next();
+});
+
+// Swagger UI setup
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }', 
+  customSiteTitle: "RNRS Job Portal API Docs"
+}));
+
+
+// API routes
+app.use('/api/v1', routes);
+
+// Error handling
+app.use(notFoundHandler);
+app.use(errorHandler);
+
+export default app;
+</file>
+
+<file path="src/config/cloudinary.ts">
+import { v2 as cloudinary } from 'cloudinary';
+import { logger } from './logger';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export const uploadToCloudinary = async (
+  buffer: Buffer,
+  options: {
+    folder?: string;
+    resource_type?: 'image' | 'video' | 'raw' | 'auto';
+    public_id?: string;
+    format?: string;
+  } = {}
+): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const uploadOptions = {
+      resource_type: 'auto' as const,
+      folder: 'job-portal',
+      ...options,
+    };
+
+    cloudinary.uploader.upload_stream(
+      uploadOptions,
+      (error, result) => {
+        if (error) {
+          logger.error('Cloudinary upload error:', error);
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    ).end(buffer);
+  });
+};
+
+export const deleteFromCloudinary = async (publicId: string): Promise<any> => {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    logger.info(`Deleted file from Cloudinary: ${publicId}`);
+    return result;
+  } catch (error) {
+    logger.error('Cloudinary delete error:', error);
+    throw error;
+  }
+};
+
+export const generateUploadSignature = (params: Record<string, any>): string => {
+  return cloudinary.utils.api_sign_request(params, process.env.CLOUDINARY_API_SECRET!);
+};
+
+export { cloudinary };
+</file>
+
+<file path="src/config/database.ts">
+import { PrismaClient } from '@prisma/client';
+import { logger } from './logger';
+
+const prisma = new PrismaClient({
+  log: [
+    {
+      emit: 'event',
+      level: 'query',
+    },
+    {
+      emit: 'event',
+      level: 'error',
+    },
+    {
+      emit: 'event',
+      level: 'info',
+    },
+    {
+      emit: 'event',
+      level: 'warn',
+    },
+  ],
+});
+
+prisma.$on('error', (e) => {
+  logger.error('Prisma error:', e);
+});
+
+prisma.$on('warn', (e) => {
+  logger.warn('Prisma warning:', e);
+});
+
+prisma.$on('info', (e) => {
+  logger.info('Prisma info:', e);
+});
+
+if (process.env.NODE_ENV === 'development') {
+  prisma.$on('query', (e) => {
+    logger.debug(`Query: ${e.query}`);
+    logger.debug(`Params: ${e.params}`);
+    logger.debug(`Duration: ${e.duration}ms`);
+  });
+}
+
+export { prisma };
+</file>
+
+<file path="src/config/email.ts">
+import nodemailer from 'nodemailer';
+import { logger } from './logger';
+
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: parseInt(process.env.EMAIL_PORT || '587'),
+  secure: process.env.EMAIL_SECURE === 'true',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    logger.error('Email transporter verification failed:', error);
+  } else {
+    logger.info('Email transporter is ready');
+  }
+});
+
+export const sendEmail = async (options: {
+  to: string | string[];
+  subject: string;
+  html: string;
+  text?: string;
+}): Promise<void> => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      ...options,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Email sent: ${info.messageId}`);
+  } catch (error) {
+    logger.error('Failed to send email:', error);
+    throw error;
+  }
+};
+
+export { transporter };
+</file>
+
+<file path="src/config/logger.ts">
+import winston from 'winston';
+
+const logger = winston.createLogger({
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
+    winston.format.json()
+  ),
+  defaultMeta: { service: 'rnrs-backend-api' },
+  transports: [
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'logs/combined.log' }),
+  ],
+});
+
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple()
+    )
+  }));
+}
+
+export { logger };
+</file>
+
+<file path="src/config/swagger.ts">
+// src/config/swagger.ts
+
+import swaggerJSDoc from 'swagger-jsdoc';
+import { version } from '../../package.json'; // Import version from package.json
+
+const options: swaggerJSDoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Job Portal Backend API (RNRS)',
+      version, // Use the version from your package.json
+      description:
+        'This is the comprehensive API documentation for the RNRS Job Portal backend. ' +
+        'It is built with Express.js, TypeScript, and Prisma, providing a complete solution for job searching and recruitment.',
+      contact: {
+        name: 'Alex',
+        // url: 'https://your-portfolio.com', // Optional: Add your website
+        // email: 'your-email@example.com', // Optional: Add your email
+      },
+      license: {
+        name: 'MIT',
+        url: 'https://opensource.org/licenses/MIT',
+      },
+    },
+    servers: [
+      {
+        url: `http://localhost:${process.env.PORT || 4000}/api/v1`,
+        description: 'Local Development Server',
+      },
+      // You can add more server URLs here (e.g., for staging or production)
+    ],
+    // This components section is crucial for defining security and schemas
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Enter your JWT token in the format: Bearer {token}',
+        },
+      },
+      // Schemas will be defined in a separate file for organization
+    },
+    // This security block makes the bearerAuth scheme global
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+  },
+  // Path to the API docs. The JSDoc comments will be scanned from these files.
+  apis: ['./src/routes/*.ts', './src/utils/swaggerSchemas.ts'],
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
+export default swaggerSpec;
+</file>
+
+<file path="src/config/workCategories.ts">
+export const workCategories = [
+  {
+    category: 'Farming',
+    works: [
+      'Farming in the swamp', 'Rice planting', 'Rice paddy field', 'Rice harvesting', 'planting the trees',
+      'Coffee planting', 'Planting Potato', 'Planting wheat', 'Planting Tea', 'Planting grandnuts',
+      'planting Maize', 'Planting beans', 'Planting soybeans', 'Sowing sorghum', 'To reap Coffee',
+      'To reap Potato', 'To reap wheat', 'To reap Tea', 'To reap grandnuts', 'To reap Maize',
+      'To reap beans', 'To reap soybeans', 'To reap sorghum', 'Coffee harvesting', 'Potato harvesting',
+      'Harvesting wheat', 'Tea harvesting', 'Grandnuts harvesting', 'Maize harvesting', 'Beans harvesting',
+      'Soybeans harvesting', 'Sorghum harvesting', 'Banana cultivation', 'Cultivating the sorghum',
+    ],
+  },
+  {
+    category: 'Building',
+    works: [
+      'Contractor', 'Construction', 'A Bricklayer', 'An architect', 'Painting', 'House Renovation',
+      'Fixing & Interior Design', 'A shuttering', 'Laborers', 'Steel Fixer', 'Masons', 'Carpenters',
+      'Welding', 'Concreters', 'Electricians', 'Plumbers', 'Landscapers', 'Plasterers',
+      'Tilers or Carpet layers',
+    ],
+  },
+  {
+    category: 'Cleaning',
+    works: [
+      'Hairdressing', 'Shaving', 'Washing for the clothes', 'Dry cleaner', 'Car worsh',
+      'Street cleaning', 'Market cleaning', 'Taking off faece in the toilet',
+      'Home cleaning', 'Market cleaning',
+    ],
+  },
+  {
+    category: 'Burdening',
+    works: [
+      "Carrying people's luggage", 'Food delivery', 'To carrying sorghum', 'To carrying beans',
+      'To carrying Maize', 'To carrying grandnuts', 'To carrying soybeans', 'To carrying wheat',
+      'To carrying Tea', 'To carrying Potato', 'To carrying Coffee', 'To carrying clothes',
+      'To carrying mixed farming', 'To carrying Construction materials', 'To carrying Carpentry materials',
+      'To carrying Electrics materials',
+    ],
+  },
+  {
+    category: 'Wedding',
+    works: [
+      'Musician', 'Master of Ceremonies', 'Photographer', 'Invitation maker', 'Cameraman', 'Pastor',
+      'Priest', 'Shehe', 'Old man next to young man', 'Old man next to young woman',
+      'Cow herder(Umutahira)', 'Wedding car rental', 'Wedding house rental', 'Wedding hall rental',
+      'Wedding dress rental', 'Wedding chair rental', 'Wedding tent rental', 'Wedding chef rental',
+      'Wedding venue decoration rental', 'Wedding cake making service', 'Wedding chair making service',
+      'Wedding bed making service', 'Wedding cabinet making service', 'Wedding table making service',
+      'Wedding vase making service', 'Photo shoot rental',
+    ],
+  },
+];
+</file>
+
+<file path="src/controllers/applicationController.ts">
+import { Response } from 'express';
+import { ApplicationService } from '@/services/applicationService';
+import { AuthenticatedRequest } from '@/types';
+import { sendSuccess, sendError } from '@/utils/response';
+import { logger } from '@/config/logger';
+
+const applicationService = new ApplicationService();
+
+export class ApplicationController {
+  async applyToJob(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { jobId } = req.params;
+      const idempotencyKey = req.headers['idempotency-key'] as string;
+      
+      const result = await applicationService.applyToJob(
+        req.user!.id,
+        jobId,
+        req.body,
+        idempotencyKey
+      );
+      
+      sendSuccess(res, result, 'Application submitted successfully', 201);
+    } catch (error: any) {
+      logger.error('Apply to job error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getMyApplications(req: AuthenticatedRequest, res: Response) {
+    try {
+      const filters = {
+        status: req.query.status as string,
+        dateFrom: req.query.dateFrom as string,
+        dateTo: req.query.dateTo as string,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 20,
+        sortBy: req.query.sortBy as string,
+        sortOrder: req.query.sortOrder as 'asc' | 'desc',
+      };
+      
+      const result = await applicationService.getMyApplications(req.user!.id, filters);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('Get my applications error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getApplication(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const application = await applicationService.getApplication(req.user!.id, id);
+      sendSuccess(res, application);
+    } catch (error: any) {
+      logger.error('Get application error:', error);
+      sendError(res, error.message, 404);
+    }
+  }
+
+  async updateApplicationStatus(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const application = await applicationService.updateApplicationStatus(
+        req.user!.id,
+        id,
+        req.body
+      );
+      sendSuccess(res, application, 'Application status updated successfully');
+    } catch (error: any) {
+      logger.error('Update application status error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+}
+</file>
+
+<file path="src/controllers/authController.ts">
+import { Request, Response } from 'express';
+import { AuthService } from '@/services/authService';
+import { sendSuccess, sendError } from '@/utils/response';
+import { logger } from '@/config/logger';
+
+const authService = new AuthService();
+
+export class AuthController {
+  async signup(req: Request, res: Response) {
+    try {
+      const result = await authService.signup(req.body);
+      sendSuccess(res, result, 'User created successfully. Please verify your email.', 201);
+    } catch (error: any) {
+      logger.error('Signup error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async verifyEmail(req: Request, res: Response) {
+    try {
+      const { userId, otp } = req.body;
+      const result = await authService.verifyEmail(userId, otp);
+      
+      res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      sendSuccess(res, {
+        verified: result.verified,
+        accessToken: result.accessToken,
+      }, 'Email verified successfully');
+    } catch (error: any) {
+      logger.error('Email verification error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async resendOTP(req: Request, res: Response) {
+    try {
+      const { userId } = req.body;
+      const result = await authService.resendOTP(userId);
+      sendSuccess(res, result, 'OTP sent successfully');
+    } catch (error: any) {
+      logger.error('Resend OTP error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async login(req: Request, res: Response) {
+    try {
+      const { email, password } = req.body;
+      const result = await authService.login(email, password);
+      
+      res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      sendSuccess(res, {
+        accessToken: result.accessToken,
+      }, 'Login successful');
+    } catch (error: any) {
+      logger.error('Login error:', error);
+      sendError(res, error.message, 401);
+    }
+  }
+
+  async refresh(req: Request, res: Response) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      
+      if (!refreshToken) {
+        sendError(res, 'Refresh token not provided', 401);
+        return;
+      }
+
+      const result = await authService.refreshToken(refreshToken);
+      sendSuccess(res, result, 'Token refreshed successfully');
+    } catch (error: any) {
+      logger.error('Token refresh error:', error);
+      res.clearCookie('refreshToken');
+      sendError(res, error.message, 401);
+    }
+  }
+
+  async logout(req: Request, res: Response) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      
+      if (refreshToken) {
+        await authService.logout(refreshToken);
+      }
+
+      res.clearCookie('refreshToken');
+      res.status(204).send();
+    } catch (error: any) {
+      logger.error('Logout error:', error);
+      res.clearCookie('refreshToken');
+      res.status(204).send();
+    }
+  }
+}
+</file>
+
+<file path="src/controllers/employerController.ts">
+import { Response } from 'express';
+import { EmployerService } from '@/services/employerService';
+import { AuthenticatedRequest } from '@/types';
+import { sendSuccess, sendError } from '@/utils/response';
+import { logger } from '@/config/logger';
+
+const employerService = new EmployerService();
+
+export class EmployerController {
+  async createEmployer(req: AuthenticatedRequest, res: Response) {
+    try {
+      const employer = await employerService.createEmployer(req.user!.id, req.body);
+      sendSuccess(res, employer, 'Employer created successfully', 201);
+    } catch (error: any) {
+      logger.error('Create employer error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getEmployer(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const employer = await employerService.getEmployer(id);
+      sendSuccess(res, employer);
+    } catch (error: any) {
+      logger.error('Get employer error:', error);
+      sendError(res, error.message, 404);
+    }
+  }
+
+  async updateEmployer(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const employer = await employerService.updateEmployer(req.user!.id, id, req.body);
+      sendSuccess(res, employer, 'Employer updated successfully');
+    } catch (error: any) {
+      logger.error('Update employer error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getUserEmployer(req: AuthenticatedRequest, res: Response) {
+    try {
+      const employer = await employerService.getUserEmployer(req.user!.id);
+      sendSuccess(res, employer);
+    } catch (error: any) {
+      logger.error('Get user employer error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async createJob(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const job = await employerService.createJob(req.user!.id, id, req.body);
+      sendSuccess(res, job, 'Job created successfully', 201);
+    } catch (error: any) {
+      logger.error('Create job error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getEmployerJobs(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const filters = {
+        status: req.query.status as string,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 20,
+      };
+      
+      const result = await employerService.getEmployerJobs(req.user!.id, id, filters);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('Get employer jobs error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+}
+</file>
+
+<file path="src/controllers/jobController.ts">
+import { Request, Response } from 'express';
+import { JobService } from '@/services/jobService';
+import { AuthenticatedRequest } from '@/types';
+import { sendSuccess, sendError } from '@/utils/response';
+import { logger } from '@/config/logger';
+
+const jobService = new JobService();
+
+export class JobController {
+  async getJob(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const job = await jobService.getPublicJob(id);
+      sendSuccess(res, job);
+    } catch (error: any) {
+      logger.error('Get job error:', error);
+      sendError(res, error.message, 404);
+    }
+  }
+
+  async searchJobs(req: Request, res: Response) {
+    try {
+      const query = req.query as any;
+      const result = await jobService.searchJobs(query);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('Search jobs error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async updateJob(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const job = await jobService.updateJob(req.user!.id, id, req.body);
+      sendSuccess(res, job, 'Job updated successfully');
+    } catch (error: any) {
+      logger.error('Update job error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async deleteJob(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await jobService.deleteJob(req.user!.id, id);
+      sendSuccess(res, result, 'Job deleted successfully');
+    } catch (error: any) {
+      logger.error('Delete job error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async publishJob(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const job = await jobService.publishJob(req.user!.id, id);
+      sendSuccess(res, job, 'Job published successfully');
+    } catch (error: any) {
+      logger.error('Publish job error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getJobApplicants(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const filters = {
+        status: req.query.status as string,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 20,
+      };
+      
+      const result = await jobService.getJobApplicants(req.user!.id, id, filters);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('Get job applicants error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+}
+</file>
+
+<file path="src/controllers/metaController.ts">
+import { Request, Response } from 'express';
+import { sendSuccess } from '@/utils/response';
+import { workCategories } from '@/config/workCategories';
+
+export class MetaController {
+  getWorkCategories(req: Request, res: Response) {
+    sendSuccess(res, workCategories, 'Work categories retrieved successfully');
+  }
+}
+</file>
+
+<file path="src/controllers/notificationController.ts">
+import { Response } from 'express';
+import { NotificationService } from '@/services/notificationService';
+import { AuthenticatedRequest } from '@/types';
+import { sendSuccess, sendError } from '@/utils/response';
+import { logger } from '@/config/logger';
+
+const notificationService = new NotificationService();
+
+export class NotificationController {
+  async getNotifications(req: AuthenticatedRequest, res: Response) {
+    try {
+      const filters = {
+        read: req.query.read === 'true' ? true : req.query.read === 'false' ? false : undefined,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 20,
+      };
+      
+      const result = await notificationService.getUserNotifications(req.user!.id, filters);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('Get notifications error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async markAsRead(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await notificationService.markAsRead(req.user!.id, id);
+      sendSuccess(res, result, 'Notification marked as read');
+    } catch (error: any) {
+      logger.error('Mark notification as read error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async markAllAsRead(req: AuthenticatedRequest, res: Response) {
+    try {
+      const result = await notificationService.markAllAsRead(req.user!.id);
+      sendSuccess(res, result, 'All notifications marked as read');
+    } catch (error: any) {
+      logger.error('Mark all notifications as read error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+}
+</file>
+
+<file path="src/controllers/passwordResetController.ts">
+import { Request, Response } from 'express';
+import { PasswordResetService } from '@/services/passwordResetService';
+import { sendSuccess, sendError } from '@/utils/response';
+import { logger } from '@/config/logger';
+
+const passwordResetService = new PasswordResetService();
+
+export class PasswordResetController {
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+      await passwordResetService.forgotPassword(email);
+      sendSuccess(res, null, 'Password reset email sent successfully');
+    } catch (error: any) {
+      logger.error('Forgot password error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    try {
+      const { token, newPassword } = req.body;
+      await passwordResetService.resetPassword(token, newPassword);
+      sendSuccess(res, null, 'Password has been reset successfully');
+    } catch (error: any) {
+      logger.error('Reset password error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+}
+</file>
+
+<file path="src/controllers/resumeController.ts">
+import { Response } from 'express';
+import { ResumeService } from '@/services/resumeService';
+import { AuthenticatedRequest } from '@/types';
+import { sendSuccess, sendError } from '@/utils/response';
+import { logger } from '@/config/logger';
+
+const resumeService = new ResumeService();
+
+export class ResumeController {
+  async requestUpload(req: AuthenticatedRequest, res: Response) {
+    try {
+      const result = await resumeService.requestUpload(req.user!.id, req.body);
+      sendSuccess(res, result, 'Upload URL generated successfully');
+    } catch (error: any) {
+      logger.error('Request upload error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async completeUpload(req: AuthenticatedRequest, res: Response) {
+    try {
+      const result = await resumeService.completeUpload(req.user!.id, req.body);
+      sendSuccess(res, result, 'Upload completed successfully', 201);
+    } catch (error: any) {
+      logger.error('Complete upload error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getResumes(req: AuthenticatedRequest, res: Response) {
+    try {
+      const resumes = await resumeService.getResumes(req.user!.id);
+      sendSuccess(res, resumes);
+    } catch (error: any) {
+      logger.error('Get resumes error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async deleteResume(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await resumeService.deleteResume(req.user!.id, id);
+      sendSuccess(res, result, 'Resume deleted successfully');
+    } catch (error: any) {
+      logger.error('Delete resume error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getResume(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const resume = await resumeService.getResumeById(req.user!.id, id);
+      sendSuccess(res, resume);
+    } catch (error: any) {
+      logger.error('Get resume error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+}
+</file>
+
+<file path="src/controllers/userController.ts">
+import { Response } from 'express';
+import { UserService } from '@/services/userService';
+import { AuthenticatedRequest } from '@/types';
+import { sendSuccess, sendError } from '@/utils/response';
+import { logger } from '@/config/logger';
+
+const userService = new UserService();
+
+export class UserController {
+  async getCurrentUser(req: AuthenticatedRequest, res: Response) {
+    try {
+      const user = await userService.getCurrentUser(req.user!.id);
+      sendSuccess(res, user);
+    } catch (error: any) {
+      logger.error('Get current user error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async updateProfile(req: AuthenticatedRequest, res: Response) {
+    try {
+      const user = await userService.updateProfile(req.user!.id, req.body);
+      sendSuccess(res, user, 'Profile updated successfully');
+    } catch (error: any) {
+      logger.error('Update profile error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async deleteAccount(req: AuthenticatedRequest, res: Response) {
+    try {
+      await userService.deleteAccount(req.user!.id);
+      res.clearCookie('refreshToken');
+      sendSuccess(res, { deleted: true }, 'Account deleted successfully');
+    } catch (error: any) {
+      logger.error('Delete account error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+}
+</file>
+
+<file path="src/middleware/authMiddleware.ts">
+import { Response, NextFunction } from 'express';
+import { verifyAccessToken } from '@/utils/auth';
+import { prisma } from '@/config/database';
+import { sendUnauthorized, sendForbidden } from '@/utils/response';
+import { AuthenticatedRequest } from '@/types';
+import { Role } from '@prisma/client';
+
+export const authenticate = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      sendUnauthorized(res, 'Access token required');
+      return;
+    }
+
+    const token = authHeader.substring(7);
+    const payload = verifyAccessToken(token);
+
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      include: {
+        jobSeekerProfile: true,
+        employerProfile: true,
+      },
+    });
+
+    if (!user) {
+      sendUnauthorized(res, 'User not found');
+      return;
+    }
+
+    if (!user.emailVerified) {
+      sendUnauthorized(res, 'Email not verified');
+      return;
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    sendUnauthorized(res, 'Invalid or expired token');
+  }
+};
+
+export const requireRole = (roles: Role[]) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      sendUnauthorized(res);
+      return;
+    }
+
+    if (!roles.includes(req.user.role)) {
+      sendForbidden(res, 'Insufficient permissions');
+      return;
+    }
+
+    next();
+  };
+};
+
+export const requireEmailVerification = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  if (!req.user?.emailVerified) {
+    sendUnauthorized(res, 'Email verification required');
+    return;
+  }
+  next();
+};
+</file>
+
+<file path="src/middleware/errorHandlerMiddleware.ts">
+import { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
+import { logger } from '@/config/logger';
+import { sendError, sendInternalError } from '@/utils/response';
+
+export const errorHandler = (
+  error: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  logger.error('Error occurred:', {
+    error: error.message,
+    stack: error.stack,
+    url: req.url,
+    method: req.method,
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+  });
+
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    switch (error.code) {
+      case 'P2002':
+        sendError(res, 'Resource already exists', 409, 'DUPLICATE_ENTRY');
+        return;
+      case 'P2025':
+        sendError(res, 'Resource not found', 404, 'NOT_FOUND');
+        return;
+      case 'P2003':
+        sendError(res, 'Invalid reference', 400, 'INVALID_REFERENCE');
+        return;
+      default:
+        sendError(res, 'Database error', 400, 'DATABASE_ERROR');
+        return;
+    }
+  }
+
+  if (error instanceof Prisma.PrismaClientValidationError) {
+    sendError(res, 'Invalid data provided', 400, 'VALIDATION_ERROR');
+    return;
+  }
+
+  if (error.name === 'JsonWebTokenError') {
+    sendError(res, 'Invalid token', 401, 'INVALID_TOKEN');
+    return;
+  }
+
+  if (error.name === 'TokenExpiredError') {
+    sendError(res, 'Token expired', 401, 'TOKEN_EXPIRED');
+    return;
+  }
+
+  if (error.name === 'MulterError') {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      sendError(res, 'File too large', 413, 'FILE_TOO_LARGE');
+      return;
+    }
+    sendError(res, 'File upload error', 400, 'UPLOAD_ERROR');
+    return;
+  }
+
+  sendInternalError(res);
+};
+
+export const notFoundHandler = (req: Request, res: Response): void => {
+  sendError(res, `Route ${req.originalUrl} not found`, 404, 'ROUTE_NOT_FOUND');
+};
+</file>
+
+<file path="src/middleware/rateLimiterMiddleware.ts">
+import rateLimit from 'express-rate-limit';
+import { Request } from 'express';
+
+
+const createRateLimiter = (options: {
+  windowMs: number;
+  max: number;
+  message?: string;
+  keyGenerator?: (req: Request) => string;
+}) => {
+  return rateLimit({
+    windowMs: options.windowMs,
+    max: options.max,
+    message: {
+      status: 'error',
+      message: options.message || 'Too many requests, please try again later',
+      code: 'RATE_LIMIT_EXCEEDED',
+    },
+    keyGenerator: options.keyGenerator || ((req) => req.ip || 'fallback-ip'),
+  });
+};
+
+// The rest of the file remains the same.
+export const authLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per window
+  message: 'Too many authentication attempts, please try again later',
+});
+
+export const otpLimiter = createRateLimiter({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: process.env.NODE_ENV === 'development' ? 50 : 5, // Much higher limit in development
+  message: 'Too many OTP requests, please try again later',
+  keyGenerator: (req) => `otp:${req.ip || 'unknown-ip'}:${req.body.userId || req.body.email || 'unknown-user'}`,
+});
+
+export const otpVerificationLimiter = createRateLimiter({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: process.env.NODE_ENV === 'development' ? 100 : 10, // Much higher limit in development
+  message: 'Too many verification attempts, please try again later',
+  keyGenerator: (req) => `otp-verify:${req.ip || 'unknown-ip'}:${req.body.userId || 'unknown-user'}`,
+});
+
+export const generalLimiter = createRateLimiter({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
+  message: 'Too many requests, please try again later',
+});
+
+export const uploadLimiter = createRateLimiter({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // 10 uploads per hour
+  message: 'Too many upload requests, please try again later',
+});
+</file>
+
+<file path="src/middleware/validationMiddleware.ts">
+import { Request, Response, NextFunction } from 'express';
+import { ZodSchema, ZodError } from 'zod';
+import { sendValidationError } from '@/utils/response';
+
+export const validateBody = (schema: ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    try {
+      req.body = schema.parse(req.body);
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errors = error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message,
+        }));
+        sendValidationError(res, errors);
+      } else {
+        sendValidationError(res, 'Invalid request body');
+      }
+    }
+  };
+};
+
+export const validateQuery = (schema: ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    try {
+      req.query = schema.parse(req.query);
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errors = error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message,
+        }));
+        sendValidationError(res, errors);
+      } else {
+        sendValidationError(res, 'Invalid query parameters');
+      }
+    }
+  };
+};
+
+export const validateParams = (schema: ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    try {
+      req.params = schema.parse(req.params);
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errors = error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message,
+        }));
+        sendValidationError(res, errors);
+      } else {
+        sendValidationError(res, 'Invalid path parameters');
+      }
+    }
+  };
+};
+</file>
+
+<file path="src/routes/applicationRoutes.ts">
+// src/routes/applicationRoutes.ts
+
+import { Router } from 'express';
+import { ApplicationController } from '@/controllers/applicationController';
+import { authenticate, requireRole } from '@/middleware/authMiddleware';
+import { validateBody } from '@/middleware/validationMiddleware';
+import { applyJobSchema, updateApplicationStatusSchema } from '@/utils/validation';
+
+const router: ReturnType<typeof Router> = Router();
+const applicationController = new ApplicationController();
+
+router.use(authenticate);
+
+/**
+ * @swagger
+ * tags:
+ *   name: Applications
+ *   description: Endpoints for managing job applications.
+ */
+
+/**
+ * @swagger
+ * /applications/jobs/{jobId}/apply:
+ *   post:
+ *     summary: Apply to a job
+ *     tags: [Applications]
+ *     description: Allows a JOBSEEKER to submit an application for a specific job.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: jobId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ApplyToJob'
+ *     responses:
+ *       '201':
+ *         description: Application submitted successfully.
+ *       '400':
+ *         description: Bad request (e.g., already applied, job not available).
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ */
+router.post('/jobs/:jobId/apply', requireRole(['JOBSEEKER']), validateBody(applyJobSchema), applicationController.applyToJob);
+
+/**
+ * @swagger
+ * /applications:
+ *   get:
+ *     summary: Get my applications
+ *     tags: [Applications]
+ *     description: Retrieves a paginated list of all applications submitted by the authenticated JOBSEEKER.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema: { type: string }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *     responses:
+ *       '200':
+ *         description: A list of applications.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ */
+router.get('/', requireRole(['JOBSEEKER']), applicationController.getMyApplications);
+
+/**
+ * @swagger
+ * /applications/{id}:
+ *   get:
+ *     summary: Get a single application by ID
+ *     tags: [Applications]
+ *     description: Retrieves details of a single application. Accessible by the applicant (JOBSEEKER) or the job owner (JOBPROVIDER).
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: Application details.
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.get('/:id', applicationController.getApplication);
+
+/**
+ * @swagger
+ * /applications/{id}/status:
+ *   patch:
+ *     summary: Update application status
+ *     tags: [Applications]
+ *     description: Allows a JOBPROVIDER to update the status of an application for one of their jobs.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateApplicationStatus'
+ *     responses:
+ *       '200':
+ *         description: Application status updated successfully.
+ *       '400':
+ *         description: Bad request (e.g., invalid status transition).
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ */
+router.patch('/:id/status', requireRole(['JOBPROVIDER']), validateBody(updateApplicationStatusSchema), applicationController.updateApplicationStatus);
+
+export default router;
+</file>
+
+<file path="src/routes/authRoutes.ts">
+// src/routes/authRoutes.ts
+
+import { Router } from 'express';
+import { AuthController } from '@/controllers/authController';
+import { validateBody } from '@/middleware/validationMiddleware';
+import { authLimiter, otpLimiter, otpVerificationLimiter } from '@/middleware/rateLimiterMiddleware';
+import { signupSchema, loginSchema, verifyEmailSchema, resendOTPSchema } from '@/utils/validation';
+
+const router: ReturnType<typeof Router> = Router();
+const authController = new AuthController();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: Endpoints for user signup, login, and email verification.
+ */
+
+/**
+ * @swagger
+ * /auth/signup:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Authentication]
+ *     description: Creates a new user account (JOBSEEKER or JOBPROVIDER). An email with a verification OTP is sent upon successful registration.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Signup'
+ *     responses:
+ *       '201':
+ *         description: User created successfully. Awaiting email verification.
+ *       '400': { $ref: '#/components/schemas/Error400' }
+ *       '422': { $ref: '#/components/schemas/Error422' }
+ */
+router.post('/signup', authLimiter, validateBody(signupSchema), authController.signup);
+
+/**
+ * @swagger
+ * /auth/verify-email-otp:
+ *   post:
+ *     summary: Verify user's email with OTP
+ *     tags: [Authentication]
+ *     description: Verifies the OTP sent to the user's email. On success, it returns an access token and sets a refresh token cookie.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/VerifyEmail'
+ *     responses:
+ *       '200':
+ *         description: Email verified successfully.
+ *       '400':
+ *         description: Invalid or expired OTP.
+ */
+// Temporarily disable rate limiting for development
+if (process.env.NODE_ENV === 'development') {
+  router.post('/verify-email-otp', validateBody(verifyEmailSchema), authController.verifyEmail);
+} else {
+  router.post('/verify-email-otp', otpVerificationLimiter, validateBody(verifyEmailSchema), authController.verifyEmail);
+}
+
+/**
+ * @swagger
+ * /auth/resend-email-otp:
+ *   post:
+ *     summary: Resend email verification OTP
+ *     tags: [Authentication]
+ *     description: Resends the verification OTP to a user whose email is not yet verified.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: OTP sent successfully.
+ *       '400':
+ *         description: User not found or email already verified.
+ */
+router.post('/resend-email-otp', otpLimiter, validateBody(resendOTPSchema), authController.resendOTP);
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Authentication]
+ *     description: Authenticates a user with email and password. On success, it returns an access token and sets a refresh token in an HTTP-only cookie.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Login'
+ *     responses:
+ *       '200':
+ *         description: Login successful.
+ *       '401':
+ *         description: Unauthorized (Invalid credentials or email not verified).
+ */
+router.post('/login', authLimiter, validateBody(loginSchema), authController.login);
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Authentication]
+ *     description: Uses the refresh token (sent as an httpOnly cookie) to generate a new access token.
+ *     security: [] # This endpoint does not require a bearer token
+ *     responses:
+ *       '200':
+ *         description: Token refreshed successfully.
+ *       '401':
+ *         description: Invalid or expired refresh token.
+ */
+router.post('/refresh', authController.refresh);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Log out a user
+ *     tags: [Authentication]
+ *     description: Revokes the user's refresh token and clears the cookie.
+ *     responses:
+ *       '204':
+ *         description: Logout successful. No content returned.
+ */
+router.post('/logout', authController.logout);
+
+export default router;
+</file>
+
+<file path="src/routes/employerRoutes.ts">
+// src/routes/employerRoutes.ts
+
+import { Router } from 'express';
+import { EmployerController } from '@/controllers/employerController';
+import { authenticate, requireRole } from '@/middleware/authMiddleware';
+import { validateBody } from '@/middleware/validationMiddleware';
+import { createEmployerSchema, createJobSchema } from '@/utils/validation';
+
+const router: ReturnType<typeof Router> = Router();
+const employerController = new EmployerController();
+
+router.use(authenticate);
+
+/**
+ * @swagger
+ * tags:
+ *   name: Employers
+ *   description: Endpoints for managing employer profiles and their associated jobs. Requires JOBPROVIDER role for modifications.
+ */
+
+/**
+ * @swagger
+ * /employers:
+ *   post:
+ *     summary: Create an employer profile
+ *     tags: [Employers]
+ *     description: Creates an employer profile for the currently authenticated JOBPROVIDER. Each provider can only have one employer profile.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateEmployer'
+ *     responses:
+ *       '201':
+ *         description: Employer created successfully.
+ *       '400':
+ *         description: Bad request (e.g., profile already exists).
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ */
+router.post('/', requireRole(['JOBPROVIDER']), validateBody(createEmployerSchema), employerController.createEmployer);
+
+/**
+ * @swagger
+ * /employers/me:
+ *   get:
+ *     summary: Get the employer profile for the current user
+ *     tags: [Employers]
+ *     description: Retrieves the employer profile associated with the authenticated JOBPROVIDER.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Employer profile data.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.get('/me', requireRole(['JOBPROVIDER']), employerController.getUserEmployer);
+
+/**
+ * @swagger
+ * /employers/{id}:
+ *   get:
+ *     summary: Get an employer profile by ID
+ *     tags: [Employers]
+ *     description: Retrieves public information about an employer.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: Employer details.
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.get('/:id', employerController.getEmployer);
+
+/**
+ * @swagger
+ * /employers/{id}:
+ *   patch:
+ *     summary: Update an employer profile
+ *     tags: [Employers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateEmployer' # Can reuse the create schema for updates
+ *     responses:
+ *       '200':
+ *         description: Employer updated successfully.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.patch('/:id', requireRole(['JOBPROVIDER']), employerController.updateEmployer);
+
+/**
+ * @swagger
+ * /employers/{id}/jobs:
+ *   post:
+ *     summary: Create a new job for an employer
+ *     tags: [Employers]
+ *     description: Allows a JOBPROVIDER to post a new job listing under their employer profile.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *         description: The employer ID.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateJob'
+ *     responses:
+ *       '201':
+ *         description: Job created successfully.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ */
+router.post('/:id/jobs', requireRole(['JOBPROVIDER']), validateBody(createJobSchema), employerController.createJob);
+
+/**
+ * @swagger
+ * /employers/{id}/jobs:
+ *   get:
+ *     summary: Get all jobs for a specific employer
+ *     tags: [Employers]
+ *     description: Retrieves a paginated list of jobs posted by an employer. For JOBPROVIDER's own profile.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [DRAFT, PUBLISHED, CLOSED, ARCHIVED] }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *     responses:
+ *       '200':
+ *         description: A list of jobs.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ */
+router.get('/:id/jobs', requireRole(['JOBPROVIDER']), employerController.getEmployerJobs);
+
+export default router;
+</file>
+
+<file path="src/routes/index.ts">
+import { Router } from 'express';
+import authRoutes from './authRoutes';
+import userRoutes from './userRoutes';
+import resumeRoutes from './resumeRoutes';
+import employerRoutes from './employerRoutes';
+import jobRoutes from './jobRoutes';
+import applicationRoutes from './applicationRoutes';
+import notificationRoutes from './notificationRoutes';
+import passwordResetRoutes from './passwordResetRoutes';
+import metaRoutes from './metaRoutes'; 
+
+const router: ReturnType<typeof Router> = Router();
+
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
+router.use('/resumes', resumeRoutes);
+router.use('/employers', employerRoutes);
+router.use('/jobs', jobRoutes);
+router.use('/applications', applicationRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/password', passwordResetRoutes);
+router.use('/meta', metaRoutes);
+
+// Health check endpoint
+router.get('/health', (req, res) => {
+  res.json({
+    status: 'success',
+    message: 'Job Portal API is running',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+export default router;
+</file>
+
+<file path="src/routes/jobRoutes.ts">
+// src/routes/jobRoutes.ts
+
+import { Router } from 'express';
+import { JobController } from '@/controllers/jobController';
+import { authenticate, requireRole } from '@/middleware/authMiddleware';
+import { validateBody, validateQuery } from '@/middleware/validationMiddleware';
+import { updateJobSchema, jobSearchSchema } from '@/utils/validation';
+
+const router: ReturnType<typeof Router> = Router();
+const jobController = new JobController();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Jobs
+ *   description: Endpoints for searching, viewing, and managing job listings.
+ */
+
+/**
+ * @swagger
+ * /jobs/search:
+ *   get:
+ *     summary: Search for public job listings
+ *     tags: [Jobs]
+ *     description: Publicly accessible endpoint to search and filter through all PUBLISHED jobs.
+ *     security: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema: { type: string }
+ *         description: Search query for job title, description, etc.
+ *       - in: query
+ *         name: location
+ *         schema: { type: string }
+ *       - in: query
+ *         name: remote
+ *         schema: { type: boolean }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *     responses:
+ *       '200':
+ *         description: A paginated list of jobs.
+ */
+router.get('/search', validateQuery(jobSearchSchema), jobController.searchJobs);
+
+/**
+ * @swagger
+ * /jobs/{id}:
+ *   get:
+ *     summary: Get a single job by ID
+ *     tags: [Jobs]
+ *     description: Publicly accessible endpoint to retrieve details for a single PUBLISHED job.
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: Job details.
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.get('/:id', jobController.getJob);
+
+// --- Authenticated Routes for Job Providers ---
+router.use(authenticate);
+router.use(requireRole(['JOBPROVIDER']));
+
+/**
+ * @swagger
+ * /jobs/{id}:
+ *   patch:
+ *     summary: Update a job
+ *     tags: [Jobs]
+ *     description: Allows a JOBPROVIDER to update their own job listing.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateJob'
+ *     responses:
+ *       '200':
+ *         description: Job updated successfully.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.patch('/:id', validateBody(updateJobSchema), jobController.updateJob);
+
+/**
+ * @swagger
+ * /jobs/{id}:
+ *   delete:
+ *     summary: Delete a job
+ *     tags: [Jobs]
+ *     description: Allows a JOBPROVIDER to delete their own job listing (sets status to ARCHIVED).
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: Job deleted successfully.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.delete('/:id', jobController.deleteJob);
+
+/**
+ * @swagger
+ * /jobs/{id}/publish:
+ *   post:
+ *     summary: Publish a draft job
+ *     tags: [Jobs]
+ *     description: Changes a job's status from DRAFT to PUBLISHED, making it publicly visible.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: Job published successfully.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.post('/:id/publish', jobController.publishJob);
+
+/**
+ * @swagger
+ * /jobs/{id}/applicants:
+ *   get:
+ *     summary: Get applicants for a job
+ *     tags: [Jobs]
+ *     description: Retrieves a paginated list of job seekers who have applied to a specific job.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *       - in: query
+ *         name: status
+ *         schema: { type: string }
+ *         description: Filter applicants by application status.
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *     responses:
+ *       '200':
+ *         description: A list of applicants.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.get('/:id/applicants', jobController.getJobApplicants);
+
+export default router;
+</file>
+
+<file path="src/routes/metaRoutes.ts">
+// src/routes/metaRoutes.ts
+
+import { Router } from 'express';
+import { MetaController } from '@/controllers/metaController';
+
+const router: Router = Router();
+const metaController = new MetaController();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Meta
+ *   description: Endpoints for retrieving metadata and configuration values.
+ */
+
+/**
+ * @swagger
+ * /meta/work-categories:
+ *   get:
+ *     summary: Get available work categories and skills
+ *     tags: [Meta]
+ *     description: Retrieves a list of predefined work categories and associated work types for populating forms (e.g., on the user profile).
+ *     security: []
+ *     responses:
+ *       '200':
+ *         description: A list of work categories.
+ */
+router.get('/work-categories', metaController.getWorkCategories);
+
+export default router;
+</file>
+
+<file path="src/routes/notificationRoutes.ts">
+// src/routes/notificationRoutes.ts
+
+import { Router } from 'express';
+import { NotificationController } from '@/controllers/notificationController';
+import { authenticate, requireEmailVerification } from '@/middleware/authMiddleware';
+
+const router: ReturnType<typeof Router> = Router();
+const notificationController = new NotificationController();
+
+router.use(authenticate);
+router.use(requireEmailVerification);
+
+/**
+ * @swagger
+ * tags:
+ *   name: Notifications
+ *   description: Endpoints for managing user notifications.
+ */
+
+/**
+ * @swagger
+ * /notifications:
+ *   get:
+ *     summary: Get user notifications
+ *     tags: [Notifications]
+ *     description: Retrieves a paginated list of notifications for the authenticated user.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: read
+ *         schema: { type: boolean }
+ *         description: Filter by read status (true or false).
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *     responses:
+ *       '200':
+ *         description: A list of notifications.
+ */
+router.get('/', notificationController.getNotifications);
+
+/**
+ * @swagger
+ * /notifications/{id}/read:
+ *   patch:
+ *     summary: Mark a notification as read
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: Notification marked as read.
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.patch('/:id/read', notificationController.markAsRead);
+
+/**
+ * @swagger
+ * /notifications/mark-all-read:
+ *   patch:
+ *     summary: Mark all unread notifications as read
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: All notifications marked as read.
+ */
+router.patch('/mark-all-read', notificationController.markAllAsRead);
+
+export default router;
+</file>
+
+<file path="src/routes/passwordResetRoutes.ts">
+// src/routes/passwordResetRoutes.ts
+
+import { Router } from 'express';
+import { PasswordResetController } from '@/controllers/passwordResetController';
+import { validateBody } from '@/middleware/validationMiddleware';
+import { forgotPasswordSchema, resetPasswordSchema } from '@/utils/validation';
+
+const router: Router = Router();
+const passwordResetController = new PasswordResetController();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Password Reset
+ *   description: Endpoints for handling forgotten passwords.
+ */
+
+/**
+ * @swagger
+ * /password/forgot-password:
+ *   post:
+ *     summary: Request a password reset
+ *     tags: [Password Reset]
+ *     description: Sends a password reset link to the user's email address if it exists in the system.
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ForgotPassword'
+ *     responses:
+ *       '200':
+ *         description: Password reset email sent successfully.
+ *       '400': { $ref: '#/components/schemas/Error400' }
+ */
+router.post('/forgot-password', validateBody(forgotPasswordSchema), passwordResetController.forgotPassword);
+
+/**
+ * @swagger
+ * /password/reset-password:
+ *   post:
+ *     summary: Reset password with a token
+ *     tags: [Password Reset]
+ *     description: Sets a new password for the user using the token received in the reset email.
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ResetPassword'
+ *     responses:
+ *       '200':
+ *         description: Password has been reset successfully.
+ *       '400':
+ *         description: Invalid or expired token.
+ */
+router.post('/reset-password', validateBody(resetPasswordSchema), passwordResetController.resetPassword);
+
+export default router;
+</file>
+
+<file path="src/routes/resumeRoutes.ts">
+// src/routes/resumeRoutes.ts
+
+import { Router } from 'express';
+import { ResumeController } from '@/controllers/resumeController';
+import { authenticate, requireRole } from '@/middleware/authMiddleware';
+import { validateBody } from '@/middleware/validationMiddleware';
+import { uploadLimiter } from '@/middleware/rateLimiterMiddleware';
+import { requestUploadSchema, completeUploadSchema } from '@/utils/validation';
+
+const router: ReturnType<typeof Router> = Router();
+const resumeController = new ResumeController();
+
+router.use(authenticate);
+router.use(requireRole(['JOBSEEKER']));
+
+/**
+ * @swagger
+ * tags:
+ *   name: Resumes
+ *   description: Endpoints for job seekers to manage their resumes. Requires JOBSEEKER role.
+ */
+
+/**
+ * @swagger
+ * /resumes/request-upload:
+ *   post:
+ *     summary: Request a secure URL to upload a resume
+ *     tags: [Resumes]
+ *     description: Generates a pre-signed URL for uploading a resume file directly to cloud storage.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RequestUpload'
+ *     responses:
+ *       '200':
+ *         description: Upload URL generated successfully.
+ *       '400':
+ *         description: Bad request (e.g., file type not allowed, file size too large).
+ */
+router.post('/request-upload', uploadLimiter, validateBody(requestUploadSchema), resumeController.requestUpload);
+
+/**
+ * @swagger
+ * /resumes/complete-upload:
+ *   post:
+ *     summary: Confirm a resume upload is complete
+ *     tags: [Resumes]
+ *     description: Confirms that the file has been successfully uploaded to the provided URL.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CompleteUpload'
+ *     responses:
+ *       '201':
+ *         description: Upload completed successfully.
+ *       '400':
+ *         description: Bad request (e.g., resume record not found).
+ */
+router.post('/complete-upload', validateBody(completeUploadSchema), resumeController.completeUpload);
+
+/**
+ * @swagger
+ * /resumes:
+ *   get:
+ *     summary: Get all resumes for the current user
+ *     tags: [Resumes]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: A list of resumes.
+ */
+router.get('/', resumeController.getResumes);
+
+/**
+ * @swagger
+ * /resumes/{id}:
+ *   get:
+ *     summary: Get a single resume by ID
+ *     tags: [Resumes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: The resume ID.
+ *     responses:
+ *       '200':
+ *         description: Resume details.
+ *       '404':
+ *         description: Resume not found.
+ */
+router.get('/:id', resumeController.getResume);
+
+/**
+ * @swagger
+ * /resumes/{id}:
+ *   delete:
+ *     summary: Delete a resume by ID
+ *     tags: [Resumes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: The resume ID to delete.
+ *     responses:
+ *       '200':
+ *         description: Resume deleted successfully.
+ *       '404':
+ *         description: Resume not found.
+ */
+router.delete('/:id', resumeController.deleteResume);
+
+export default router;
+</file>
+
+<file path="src/routes/userRoutes.ts">
+// src/routes/userRoutes.ts
+
+import { Router } from 'express';
+import { UserController } from '@/controllers/userController';
+import { authenticate } from '@/middleware/authMiddleware';
+import { validateBody } from '@/middleware/validationMiddleware';
+import { updateProfileSchema } from '@/utils/validation';
+
+const router: ReturnType<typeof Router> = Router();
+const userController = new UserController();
+
+router.use(authenticate);
+
+/**
+ * @swagger
+ * tags:
+ *   name: User Profile
+ *   description: Endpoints for managing the authenticated user's profile.
+ */
+
+/**
+ * @swagger
+ * /users/me:
+ *   get:
+ *     summary: Get current user's profile
+ *     tags: [User Profile]
+ *     description: Retrieves the complete profile of the currently authenticated user.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved user profile.
+ *       '401': { $ref: '#/components/schemas/Error401' }
+ *       '404': { $ref: '#/components/schemas/Error404' }
+ */
+router.get('/me', userController.getCurrentUser);
+
+/**
+ * @swagger
+ * /users/me:
+ *   patch:
+ *     summary: Update current user's profile
+ *     tags: [User Profile]
+ *     description: Updates the profile information for the authenticated user. JOBSEEKERs and JOBPROVIDERs can update different fields.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateProfile'
+ *     responses:
+ *       '200':
+ *         description: Profile updated successfully.
+ *       '401': { $ref: '#/components/schemas/Error401' }
+ *       '422': { $ref: '#/components/schemas/Error422' }
+ */
+router.patch('/me', validateBody(updateProfileSchema), userController.updateProfile);
+
+/**
+ * @swagger
+ * /users/me:
+ *   delete:
+ *     summary: Delete current user's account
+ *     tags: [User Profile]
+ *     description: Permanently deletes the authenticated user's account and all associated data. This action is irreversible.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Account deleted successfully.
+ *       '401': { $ref: '#/components/schemas/Error401' }
+ */
+router.delete('/me', userController.deleteAccount);
+
+export default router;
+</file>
+
+<file path="src/scripts/seed.ts">
+import { PrismaClient, JobStatus } from '@prisma/client';
+import { hashPassword } from '@/utils/auth';
+
+const prisma = new PrismaClient();
+
+async function seed() {
+  console.log('🌱 Seeding database...');
+
+  try {
+    // Create admin user
+    const adminPassword = await hashPassword('Admin123!');
+    const admin = await prisma.user.upsert({
+      where: { email: 'admin@rnrs.com' },
+      update: {},
+      create: {
+        firstName: 'Admin',
+        lastName: 'User',
+        email: 'admin@rnrs.com',
+        passwordHash: adminPassword,
+        role: 'ADMIN',
+        emailVerified: true,
+      },
+    });
+
+    console.log('✅ Admin user created');
+
+    // Create job seeker
+    const jobSeekerPassword = await hashPassword('JobSeeker123!');
+    const jobSeeker = await prisma.user.upsert({
+      where: { email: 'jobseeker@example.com' },
+      update: {},
+      create: {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'jobseeker@example.com',
+        passwordHash: jobSeekerPassword,
+        role: 'JOBSEEKER',
+        emailVerified: true,
+        phone: '+250791234567',
+        jobSeekerProfile: {
+          create: {
+            desiredTitle: 'Software Engineer',
+            about: 'Passionate software engineer with 3+ years of experience in full-stack development.',
+            skills: [
+              { id: '1', name: 'JavaScript', confidence: 5 },
+              { id: '2', name: 'React', confidence: 4 },
+              { id: '3', name: 'Node.js', confidence: 4 },
+              { id: '4', name: 'TypeScript', confidence: 4 },
+            ],
+            privacy: { hideContact: false },
+          },
+        },
+      },
+    });
+
+    console.log('✅ Job seeker created');
+
+    // Create job provider
+    const jobProviderPassword = await hashPassword('JobProvider123!');
+    const jobProvider = await prisma.user.upsert({
+      where: { email: 'jobprovider@example.com' },
+      update: {},
+      create: {
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jobprovider@example.com',
+        passwordHash: jobProviderPassword,
+        role: 'JOBPROVIDER',
+        emailVerified: true,
+        phone: '+250791234568',
+        employerProfile: {
+          create: {
+            name: 'TechCorp Inc.',
+            website: 'https://techcorp.com',
+            industry: 'Technology',
+            location: 'Kigali, Rwanda',
+          },
+        },
+      },
+    });
+
+    console.log('✅ Job provider created');
+
+    // Create sample jobs
+    const employer = await prisma.employer.findUnique({
+      where: { ownerId: jobProvider.id },
+    });
+
+    if (employer) {
+      const jobs = [
+        {
+          title: 'Senior Full Stack Developer',
+          slug: 'senior-full-stack-developer-' + Date.now(),
+          description: 'We are looking for a senior full stack developer to join our growing team.',
+          responsibilities: [
+            'Develop and maintain web applications',
+            'Collaborate with cross-functional teams',
+            'Write clean, maintainable code',
+            'Mentor junior developers',
+          ],
+          requirements: [
+            '5+ years of experience in full stack development',
+            'Proficiency in JavaScript, React, and Node.js',
+            'Experience with databases (PostgreSQL, MongoDB)',
+            'Strong problem-solving skills',
+          ],
+          location: 'San Francisco, CA',
+          remote: true,
+          jobType: 'FULL_TIME',
+          experienceLevel: 'SENIOR',
+          salaryRange: {
+            min: 120000,
+            max: 180000,
+            currency: 'USD',
+          },
+          status: JobStatus.PUBLISHED,
+          postedAt: new Date(),
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        },
+        {
+          title: 'Frontend Developer',
+          slug: 'frontend-developer-' + Date.now(),
+          description: 'Join our team as a frontend developer and help build amazing user experiences.',
+          responsibilities: [
+            'Build responsive web applications',
+            'Implement UI/UX designs',
+            'Optimize application performance',
+            'Write unit and integration tests',
+          ],
+          requirements: [
+            '3+ years of experience in frontend development',
+            'Proficiency in React, TypeScript, and CSS',
+            'Experience with modern build tools',
+            'Knowledge of web accessibility standards',
+          ],
+          location: 'Remote',
+          remote: true,
+          jobType: 'FULL_TIME',
+          experienceLevel: 'MID',
+          salaryRange: {
+            min: 80000,
+            max: 120000,
+            currency: 'USD',
+          },
+          status: JobStatus.PUBLISHED,
+          postedAt: new Date(),
+          expiresAt: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000), // 45 days
+        },
+      ];
+
+      for (const jobData of jobs) {
+        await prisma.job.create({
+          data: {
+            ...jobData,
+            employerId: employer.id,
+          },
+        });
+      }
+
+      console.log('✅ Sample jobs created');
+    }
+
+    console.log('🎉 Database seeded successfully!');
+    console.log('\n📋 Test Accounts:');
+    console.log('Admin: admin@rnrs.com / Admin123!');
+    console.log('Job Seeker: jobseeker@example.com / JobSeeker123!');
+    console.log('Job Provider: jobprovider@example.com / JobProvider123!');
+
+  } catch (error) {
+    console.error('❌ Error seeding database:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+seed().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
+</file>
+
+<file path="src/server.ts">
+import dotenv from 'dotenv';
+dotenv.config();
+
+import app from './app';
+import { logger } from '@/config/logger';
+import { prisma } from '@/config/database';
+
+const PORT = process.env.PORT || 4000;
+
+async function startServer() {
+  try {
+    await prisma.$connect();
+    logger.info('Connected to PostgreSQL database');
+    app.listen(PORT, () => {
+      logger.info(`Server is running on port ${PORT}`);
+      logger.info(`Environment: ${process.env.NODE_ENV}`);
+    });
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  logger.info('SIGINT received, shutting down gracefully');
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+startServer();
+</file>
+
+<file path="src/services/applicationService.ts">
+import { prisma } from '@/config/database';
+import { ApplicationFilters } from '@/types';
+
+export class ApplicationService {
+  async applyToJob(userId: string, jobId: string, data: {
+    resumeId: string;
+    coverLetter?: string;
+  }, idempotencyKey?: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { jobSeekerProfile: true },
+    });
+
+    if (!user?.jobSeekerProfile) {
+      throw new Error('Job seeker profile not found');
+    }
+
+    const job = await prisma.job.findFirst({
+      where: {
+        id: jobId,
+        status: 'PUBLISHED',
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } },
+        ],
+      },
+    });
+
+    if (!job) {
+      throw new Error('Job not found or not available');
+    }
+
+    const existingApplication = await prisma.application.findUnique({
+      where: {
+        jobId_jobSeekerId: {
+          jobId,
+          jobSeekerId: user.jobSeekerProfile.id,
+        },
+      },
+    });
+
+    if (existingApplication) {
+      throw new Error('Already applied to this job');
+    }
+
+    const resume = await prisma.resume.findFirst({
+      where: {
+        id: data.resumeId,
+        jobSeekerId: user.jobSeekerProfile.id,
+        deleted: false,
+      },
+    });
+
+    if (!resume) {
+      throw new Error('Resume not found');
+    }
+
+    const application = await prisma.application.create({
+      data: {
+        jobId,
+        jobSeekerId: user.jobSeekerProfile.id,
+        resumeId: data.resumeId,
+        coverLetter: data.coverLetter,
+        statusHistory: [
+          {
+            status: 'APPLIED',
+            byUserId: userId,
+            at: new Date().toISOString(),
+            note: 'Application submitted',
+          },
+        ],
+        metadata: {
+          idempotencyKey,
+          userAgent: 'API',
+        },
+      },
+      include: {
+        job: {
+          select: {
+            id: true,
+            title: true,
+            employer: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // TODO: Send notification to employer
+    // TODO: Send confirmation email to job seeker
+
+    return { applicationId: application.id };
+  }
+
+  async getMyApplications(userId: string, filters: ApplicationFilters) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { jobSeekerProfile: true },
+    });
+
+    if (!user?.jobSeekerProfile) {
+      throw new Error('Job seeker profile not found');
+    }
+
+    const where: any = { jobSeekerId: user.jobSeekerProfile.id };
+
+    if (filters.status) {
+      where.status = filters.status;
+    }
+
+    if (filters.dateFrom || filters.dateTo) {
+      where.appliedAt = {};
+      if (filters.dateFrom) {
+        where.appliedAt.gte = new Date(filters.dateFrom);
+      }
+      if (filters.dateTo) {
+        where.appliedAt.lte = new Date(filters.dateTo);
+      }
+    }
+
+    const orderBy: any = {};
+    if (filters.sortBy) {
+      orderBy[filters.sortBy] = filters.sortOrder || 'desc';
+    } else {
+      orderBy.appliedAt = 'desc';
+    }
+
+    const [applications, total] = await Promise.all([
+      prisma.application.findMany({
+        where,
+        include: {
+          job: {
+            select: {
+              id: true,
+              title: true,
+              location: true,
+              remote: true,
+              jobType: true,
+              status: true,
+              employer: {
+                select: {
+                  id: true,
+                  name: true,
+                  logoKey: true,
+                },
+              },
+            },
+          },
+          resume: {
+            select: {
+              id: true,
+              fileName: true,
+            },
+          },
+        },
+        orderBy,
+        skip: ((filters.page || 1) - 1) * (filters.limit || 20),
+        take: filters.limit || 20,
+      }),
+      prisma.application.count({ where }),
+    ]);
+
+    return {
+      applications,
+      pagination: {
+        page: filters.page || 1,
+        limit: filters.limit || 20,
+        total,
+        pages: Math.ceil(total / (filters.limit || 20)),
+      },
+    };
+  }
+
+  async getApplication(userId: string, applicationId: string) {
+    const application = await prisma.application.findFirst({
+      where: {
+        id: applicationId,
+        OR: [
+          { jobSeeker: { userId } },
+          { job: { employer: { ownerId: userId } } },
+          { job: { employer: { admins: { some: { userId } } } } },
+        ],
+      },
+      include: {
+        job: {
+          include: {
+            employer: {
+              select: {
+                id: true,
+                name: true,
+                website: true,
+                industry: true,
+                location: true,
+                logoKey: true,
+              },
+            },
+          },
+        },
+        jobSeeker: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                phone: true,
+              },
+            },
+          },
+        },
+        resume: {
+          select: {
+            id: true,
+            fileName: true,
+            fileKey: true,
+            parsedJson: true,
+          },
+        },
+      },
+    });
+
+    if (!application) {
+      throw new Error('Application not found');
+    }
+
+    return application;
+  }
+
+  async updateApplicationStatus(userId: string, applicationId: string, data: {
+    status: string;
+    note?: string;
+  }) {
+    const application = await prisma.application.findFirst({
+      where: {
+        id: applicationId,
+        job: {
+          employer: {
+            OR: [
+              { ownerId: userId },
+              { admins: { some: { userId } } },
+            ],
+          },
+        },
+      },
+      include: {
+        job: true,
+        jobSeeker: {
+          include: { user: true },
+        },
+      },
+    });
+
+    if (!application) {
+      throw new Error('Application not found or access denied');
+    }
+
+    const validTransitions: Record<string, string[]> = {
+      APPLIED: ['VIEWED', 'REJECTED'],
+      VIEWED: ['SHORTLISTED', 'REJECTED'],
+      SHORTLISTED: ['INTERVIEW_SCHEDULED', 'REJECTED'],
+      INTERVIEW_SCHEDULED: ['OFFERED', 'REJECTED'],
+      OFFERED: ['HIRED', 'REJECTED'],
+      HIRED: [],
+      REJECTED: [],
+    };
+
+    const allowedStatuses = validTransitions[application.status] || [];
+    if (!allowedStatuses.includes(data.status)) {
+      throw new Error(`Cannot transition from ${application.status} to ${data.status}`);
+    }
+
+    const statusHistory = Array.isArray(application.statusHistory) 
+      ? application.statusHistory 
+      : [];
+
+    statusHistory.push({
+      status: data.status,
+      byUserId: userId,
+      at: new Date().toISOString(),
+      note: data.note,
+    });
+
+    const updatedApplication = await prisma.application.update({
+      where: { id: applicationId },
+      data: {
+        status: data.status as any,
+        statusHistory,
+      },
+    });
+
+    // TODO: Send notification to job seeker
+    // TODO: Send email notification
+
+    return updatedApplication;
+  }
+}
+</file>
+
+<file path="src/services/authService.ts">
+import { prisma } from '@/config/database';
+import { 
+  hashPassword, 
+  comparePassword, 
+  generateAccessToken, 
+  generateOTP, 
+  hashOTP, 
+  generateTokenHash,
+  generateSecureToken 
+} from '@/utils/auth';
+import { sendEmail } from '@/config/email';
+import { logger } from '@/config/logger';
+import { Role } from '@prisma/client';
+
+export class AuthService {
+  async signup(data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    role: Role;
+  }) {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      throw new Error('User already exists');
+    }
+
+    const passwordHash = await hashPassword(data.password);
+    
+    const user = await prisma.user.create({
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        passwordHash,
+        role: data.role,
+      },
+    });
+
+    if (data.role === 'JOBSEEKER') {
+      await prisma.jobSeekerProfile.create({
+        data: {
+          userId: user.id,
+        },
+      });
+    }
+
+    const otp = generateOTP();
+
+    const expiresAt = new Date(Date.now() + parseInt(process.env.OTP_EXPIRES_IN || '600000'));
+
+    await prisma.emailVerification.create({
+      data: {
+        userId: user.id,
+        otp,
+        expiresAt,
+      },
+    });
+
+    await this.sendVerificationEmail(user.email, user.firstName, otp);
+
+    return { userId: user.id, emailVerificationSent: true };
+  }
+
+  async verifyEmail(userId: string, otp: string) {
+    const verification = await prisma.emailVerification.findFirst({
+      where: {
+        userId,
+        expiresAt: { gt: new Date() },
+      },
+      include: { user: true },
+    });
+
+    if (!verification) {
+      throw new Error('Invalid or expired OTP');
+    }
+
+    if (verification.otp !== otp) {
+      throw new Error('Invalid OTP');
+    }
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: { emailVerified: true },
+      }),
+      prisma.emailVerification.deleteMany({
+        where: { userId },
+      }),
+    ]);
+
+    const tokens = await this.generateTokens(verification.user);
+    return { verified: true, ...tokens };
+  }
+
+  async resendOTP(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (user.emailVerified) {
+      throw new Error('Email already verified');
+    }
+
+    await prisma.emailVerification.deleteMany({
+      where: { userId },
+    });
+
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + parseInt(process.env.OTP_EXPIRES_IN || '600000'));
+
+    await prisma.emailVerification.create({
+      data: {
+        userId,
+        otp,
+        expiresAt,
+      },
+    });
+
+    await this.sendVerificationEmail(user.email, user.firstName, otp);
+
+    return { resent: true };
+  }
+
+  async login(email: string, password: string) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const isValidPassword = await comparePassword(password, user.passwordHash);
+    if (!isValidPassword) {
+      throw new Error('Invalid credentials');
+    }
+
+    if (!user.emailVerified) {
+      throw new Error('Email not verified');
+    }
+
+    return this.generateTokens(user);
+  }
+
+  async refreshToken(refreshToken: string) {
+    const tokenHash = generateTokenHash(refreshToken);
+    
+    const storedToken = await prisma.refreshToken.findFirst({
+      where: {
+        tokenHash,
+        revoked: false,
+        expiresAt: { gt: new Date() },
+      },
+      include: { user: true },
+    });
+
+    if (!storedToken) {
+      throw new Error('Invalid refresh token');
+    }
+
+    const accessToken = generateAccessToken({
+      userId: storedToken.user.id,
+      email: storedToken.user.email,
+      role: storedToken.user.role,
+    });
+
+    return { accessToken };
+  }
+
+  async logout(refreshToken: string) {
+    const tokenHash = generateTokenHash(refreshToken);
+    
+    await prisma.refreshToken.updateMany({
+      where: { tokenHash },
+      data: { revoked: true },
+    });
+
+    return { success: true };
+  }
+
+  private async generateTokens(user: any) {
+    const accessToken = generateAccessToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    const refreshTokenString = generateSecureToken();
+    const refreshTokenHash = generateTokenHash(refreshTokenString);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    await prisma.refreshToken.create({
+      data: {
+        tokenHash: refreshTokenHash,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    return {
+      accessToken,
+      refreshToken: refreshTokenString,
+    };
+  }
+
+  private async sendVerificationEmail(email: string, firstName: string, otp: string) {
+    const subject = 'Verify Your Email - Job Portal';
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Welcome to Job Portal, ${firstName}!</h2>
+        <p>Thank you for signing up. Please verify your email address using the OTP below:</p>
+        <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
+          <h1 style="color: #333; font-size: 32px; margin: 0;">${otp}</h1>
+        </div>
+        <p>This OTP will expire in 10 minutes.</p>
+        <p>If you didn't create an account, please ignore this email.</p>
+        <hr>
+        <p style="color: #666; font-size: 12px;">Job Portal Team</p>
+      </div>
+    `;
+
+    try {
+      await sendEmail({ to: email, subject, html });
+      logger.info(`Verification email sent to ${email}`);
+    } catch (error) {
+      logger.error(`Failed to send verification email to ${email}:`, error);
+      throw new Error('Failed to send verification email');
+    }
+  }
+}
+</file>
+
+<file path="src/services/employerService.ts">
+import { prisma } from '@/config/database';
+import { generateUniqueSlug } from '@/utils/slugify';
+
+export class EmployerService {
+  async createEmployer(userId: string, data: {
+    name: string;
+    website?: string;
+    industry?: string;
+    location?: string;
+  }) {
+    const existingEmployer = await prisma.employer.findUnique({
+      where: { ownerId: userId },
+    });
+
+    if (existingEmployer) {
+      throw new Error('Employer profile already exists');
+    }
+
+    const employer = await prisma.employer.create({
+      data: {
+        ownerId: userId,
+        name: data.name,
+        website: data.website,
+        industry: data.industry,
+        location: data.location,
+      },
+    });
+
+    return employer;
+  }
+
+  async getEmployer(employerId: string) {
+    const employer = await prisma.employer.findUnique({
+      where: { id: employerId },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+        jobs: {
+          where: { status: 'PUBLISHED' },
+          orderBy: { postedAt: 'desc' },
+          take: 10,
+        },
+        _count: {
+          select: {
+            jobs: {
+              where: { status: 'PUBLISHED' },
+            },
+          },
+        },
+      },
+    });
+
+    if (!employer) {
+      throw new Error('Employer not found');
+    }
+
+    return employer;
+  }
+
+  async updateEmployer(userId: string, employerId: string, data: {
+    name?: string;
+    website?: string;
+    industry?: string;
+    location?: string;
+  }) {
+    const employer = await prisma.employer.findFirst({
+      where: {
+        id: employerId,
+        OR: [
+          { ownerId: userId },
+          { admins: { some: { userId } } },
+        ],
+      },
+    });
+
+    if (!employer) {
+      throw new Error('Employer not found or access denied');
+    }
+
+    const updatedEmployer = await prisma.employer.update({
+      where: { id: employerId },
+      data,
+    });
+
+    return updatedEmployer;
+  }
+
+  async getUserEmployer(userId: string) {
+    const employer = await prisma.employer.findUnique({
+      where: { ownerId: userId },
+      include: {
+        jobs: {
+          orderBy: { createdAt: 'desc' },
+        },
+        _count: {
+          select: {
+            jobs: true,
+          },
+        },
+      },
+    });
+
+    return employer;
+  }
+
+  async createJob(userId: string, employerId: string, data: {
+    title: string;
+    description: string;
+    responsibilities: string[];
+    requirements: string[];
+    location?: string;
+    remote: boolean;
+    jobType: string;
+    experienceLevel: string;
+    salaryRange?: any;
+  }) {
+    const employer = await prisma.employer.findFirst({
+      where: {
+        id: employerId,
+        OR: [
+          { ownerId: userId },
+          { admins: { some: { userId } } },
+        ],
+      },
+    });
+
+    if (!employer) {
+      throw new Error('Employer not found or access denied');
+    }
+
+    const slug = generateUniqueSlug(data.title);
+
+    const job = await prisma.job.create({
+      data: {
+        employerId,
+        title: data.title,
+        slug,
+        description: data.description,
+        responsibilities: data.responsibilities,
+        requirements: data.requirements,
+        location: data.location,
+        remote: data.remote,
+        jobType: data.jobType,
+        experienceLevel: data.experienceLevel,
+        salaryRange: data.salaryRange,
+      },
+    });
+
+    return job;
+  }
+
+  async getEmployerJobs(userId: string, employerId: string, filters: {
+    status?: string;
+    page: number;
+    limit: number;
+  }) {
+    const employer = await prisma.employer.findFirst({
+      where: {
+        id: employerId,
+        OR: [
+          { ownerId: userId },
+          { admins: { some: { userId } } },
+        ],
+      },
+    });
+
+    if (!employer) {
+      throw new Error('Employer not found or access denied');
+    }
+
+    const where: any = { employerId };
+    if (filters.status) {
+      where.status = filters.status;
+    }
+
+    const [jobs, total] = await Promise.all([
+      prisma.job.findMany({
+        where,
+        include: {
+          _count: {
+            select: { applications: true },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (filters.page - 1) * filters.limit,
+        take: filters.limit,
+      }),
+      prisma.job.count({ where }),
+    ]);
+
+    return {
+      jobs,
+      pagination: {
+        page: filters.page,
+        limit: filters.limit,
+        total,
+        pages: Math.ceil(total / filters.limit),
+      },
+    };
+  }
+}
+</file>
+
+<file path="src/services/jobService.ts">
+import { prisma } from '@/config/database';
+import { JobSearchQuery } from '@/types';
+
+export class JobService {
+  async getPublicJob(jobId: string) {
+    const job = await prisma.job.findFirst({
+      where: {
+        id: jobId,
+        status: 'PUBLISHED',
+      },
+      include: {
+        employer: {
+          select: {
+            id: true,
+            name: true,
+            website: true,
+            industry: true,
+            location: true,
+            logoKey: true,
+          },
+        },
+        _count: {
+          select: { applications: true },
+        },
+      },
+    });
+
+    if (!job) {
+      throw new Error('Job not found');
+    }
+
+    return job;
+  }
+
+  async searchJobs(query: JobSearchQuery) {
+    const where: any = {
+      status: 'PUBLISHED',
+      postedAt: { lte: new Date() },
+      OR: [
+        { expiresAt: null },
+        { expiresAt: { gt: new Date() } },
+      ],
+    };
+
+    if (query.q) {
+      where.OR = [
+        { title: { contains: query.q, mode: 'insensitive' } },
+        { description: { contains: query.q, mode: 'insensitive' } },
+        { requirements: { hasSome: [query.q] } },
+        { responsibilities: { hasSome: [query.q] } },
+      ];
+    }
+
+    if (query.location) {
+      where.location = { contains: query.location, mode: 'insensitive' };
+    }
+
+    if (query.remote !== undefined) {
+      where.remote = query.remote;
+    }
+
+    if (query.jobType) {
+      where.jobType = query.jobType;
+    }
+
+    if (query.experienceLevel) {
+      where.experienceLevel = query.experienceLevel;
+    }
+
+    if (query.salaryMin || query.salaryMax) {
+      where.salaryRange = {};
+      if (query.salaryMin) {
+        where.salaryRange.path = ['min'];
+        where.salaryRange.gte = query.salaryMin;
+      }
+      if (query.salaryMax) {
+        where.salaryRange.path = ['max'];
+        where.salaryRange.lte = query.salaryMax;
+      }
+    }
+
+    const orderBy: any = {};
+    if (query.sortBy) {
+      orderBy[query.sortBy] = query.sortOrder || 'desc';
+    } else {
+      orderBy.postedAt = 'desc';
+    }
+
+    const [jobs, total] = await Promise.all([
+      prisma.job.findMany({
+        where,
+        include: {
+          employer: {
+            select: {
+              id: true,
+              name: true,
+              website: true,
+              industry: true,
+              location: true,
+              logoKey: true,
+            },
+          },
+          _count: {
+            select: { applications: true },
+          },
+        },
+        orderBy,
+        skip: ((query.page || 1) - 1) * (query.limit || 20),
+        take: query.limit || 20,
+      }),
+      prisma.job.count({ where }),
+    ]);
+
+    return {
+      jobs,
+      pagination: {
+        page: query.page || 1,
+        limit: query.limit || 20,
+        total,
+        pages: Math.ceil(total / (query.limit || 20)),
+      },
+    };
+  }
+
+  async updateJob(userId: string, jobId: string, data: any) {
+    const job = await prisma.job.findFirst({
+      where: {
+        id: jobId,
+        employer: {
+          OR: [
+            { ownerId: userId },
+            { admins: { some: { userId } } },
+          ],
+        },
+      },
+    });
+
+    if (!job) {
+      throw new Error('Job not found or access denied');
+    }
+
+    const updatedJob = await prisma.job.update({
+      where: { id: jobId },
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
+    });
+
+    return updatedJob;
+  }
+
+  async deleteJob(userId: string, jobId: string) {
+    const job = await prisma.job.findFirst({
+      where: {
+        id: jobId,
+        employer: {
+          OR: [
+            { ownerId: userId },
+            { admins: { some: { userId } } },
+          ],
+        },
+      },
+    });
+
+    if (!job) {
+      throw new Error('Job not found or access denied');
+    }
+
+    await prisma.job.update({
+      where: { id: jobId },
+      data: { status: 'ARCHIVED' },
+    });
+
+    return { deleted: true };
+  }
+
+  async publishJob(userId: string, jobId: string) {
+    const job = await prisma.job.findFirst({
+      where: {
+        id: jobId,
+        employer: {
+          OR: [
+            { ownerId: userId },
+            { admins: { some: { userId } } },
+          ],
+        },
+      },
+    });
+
+    if (!job) {
+      throw new Error('Job not found or access denied');
+    }
+
+    const updatedJob = await prisma.job.update({
+      where: { id: jobId },
+      data: {
+        status: 'PUBLISHED',
+        postedAt: new Date(),
+      },
+    });
+
+    return updatedJob;
+  }
+
+  async getJobApplicants(userId: string, jobId: string, filters: {
+    status?: string;
+    page: number;
+    limit: number;
+  }) {
+    const job = await prisma.job.findFirst({
+      where: {
+        id: jobId,
+        employer: {
+          OR: [
+            { ownerId: userId },
+            { admins: { some: { userId } } },
+          ],
+        },
+      },
+    });
+
+    if (!job) {
+      throw new Error('Job not found or access denied');
+    }
+
+    const where: any = { jobId };
+    if (filters.status) {
+      where.status = filters.status;
+    }
+
+    const [applications, total] = await Promise.all([
+      prisma.application.findMany({
+        where,
+        include: {
+          jobSeeker: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                  phone: true,
+                },
+              },
+            },
+          },
+          resume: {
+            select: {
+              id: true,
+              fileName: true,
+              fileKey: true,
+              parsedJson: true,
+            },
+          },
+        },
+        orderBy: { appliedAt: 'desc' },
+        skip: (filters.page - 1) * filters.limit,
+        take: filters.limit,
+      }),
+      prisma.application.count({ where }),
+    ]);
+
+    return {
+      applications,
+      pagination: {
+        page: filters.page,
+        limit: filters.limit,
+        total,
+        pages: Math.ceil(total / filters.limit),
+      },
+    };
+  }
+}
+</file>
+
+<file path="src/services/notificationService.ts">
+import { prisma } from '@/config/database';
+import { NotificationType, NotificationPayload } from '@/types';
+import { sendEmail } from '@/config/email';
+import { logger } from '@/config/logger';
+
+export class NotificationService {
+  async createNotification(
+    userId: string,
+    type: NotificationType,
+    payload: NotificationPayload
+  ) {
+    const notification = await prisma.notification.create({
+      data: {
+        userId,
+        type,
+        payload,
+      },
+    });
+
+    // TODO: Send real-time notification via Socket.IO
+
+    return notification;
+  }
+
+  async getUserNotifications(userId: string, filters: {
+    read?: boolean;
+    page: number;
+    limit: number;
+  }) {
+    const where: any = { userId };
+    if (filters.read !== undefined) {
+      where.read = filters.read;
+    }
+
+    const [notifications, total] = await Promise.all([
+      prisma.notification.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (filters.page - 1) * filters.limit,
+        take: filters.limit,
+      }),
+      prisma.notification.count({ where }),
+    ]);
+
+    return {
+      notifications,
+      pagination: {
+        page: filters.page,
+        limit: filters.limit,
+        total,
+        pages: Math.ceil(total / filters.limit),
+      },
+    };
+  }
+
+  async markAsRead(userId: string, notificationId: string) {
+    const notification = await prisma.notification.findFirst({
+      where: {
+        id: notificationId,
+        userId,
+      },
+    });
+
+    if (!notification) {
+      throw new Error('Notification not found');
+    }
+
+    await prisma.notification.update({
+      where: { id: notificationId },
+      data: { read: true },
+    });
+
+    return { success: true };
+  }
+
+  async markAllAsRead(userId: string) {
+    await prisma.notification.updateMany({
+      where: {
+        userId,
+        read: false,
+      },
+      data: { read: true },
+    });
+
+    return { success: true };
+  }
+
+  async sendWelcomeNotification(userId: string, firstName: string) {
+    await this.createNotification(userId, 'WELCOME', {
+      title: 'Welcome to Job Portal!',
+      message: `Hi ${firstName}! Welcome to our job portal. Start exploring opportunities or post your first job.`,
+      actionUrl: '/dashboard',
+    });
+  }
+
+  async sendApplicationReceivedNotification(
+    employerUserId: string,
+    jobTitle: string,
+    applicantName: string,
+    applicationId: string
+  ) {
+    await this.createNotification(employerUserId, 'APPLICATION_RECEIVED', {
+      title: 'New Job Application',
+      message: `${applicantName} has applied for ${jobTitle}`,
+      actionUrl: `/applications/${applicationId}`,
+      metadata: { applicationId },
+    });
+  }
+
+  async sendApplicationStatusChangedNotification(
+    jobSeekerUserId: string,
+    jobTitle: string,
+    status: string,
+    applicationId: string
+  ) {
+    const statusMessages: Record<string, string> = {
+      VIEWED: 'Your application has been viewed',
+      SHORTLISTED: 'Congratulations! You have been shortlisted',
+      INTERVIEW_SCHEDULED: 'Interview has been scheduled',
+      OFFERED: 'Congratulations! You have received a job offer',
+      HIRED: 'Congratulations! You have been hired',
+      REJECTED: 'Your application status has been updated',
+    };
+
+    await this.createNotification(jobSeekerUserId, 'APPLICATION_STATUS_CHANGED', {
+      title: 'Application Status Update',
+      message: `${statusMessages[status]} for ${jobTitle}`,
+      actionUrl: `/applications/${applicationId}`,
+      metadata: { applicationId, status },
+    });
+  }
+
+  async sendEmailNotification(
+    email: string,
+    subject: string,
+    template: string,
+    data: Record<string, any>
+  ) {
+    try {
+      // Simple template replacement
+      let html = template;
+      Object.keys(data).forEach(key => {
+        html = html.replace(new RegExp(`{{${key}}}`, 'g'), data[key]);
+      });
+
+      await sendEmail({
+        to: email,
+        subject,
+        html,
+      });
+
+      logger.info(`Email notification sent to ${email}`);
+    } catch (error) {
+      logger.error(`Failed to send email notification to ${email}:`, error);
+      throw error;
+    }
+  }
+}
+</file>
+
+<file path="src/services/passwordResetService.ts">
+import { prisma } from '@/config/database';
+import { hashPassword, generateSecureToken, generateTokenHash } from '@/utils/auth';
+import { sendEmail } from '@/config/email';
+import { logger } from '@/config/logger';
+
+export class PasswordResetService {
+  async forgotPassword(email: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const token = generateSecureToken();
+    const tokenHash = generateTokenHash(token);
+    const expiresAt = new Date(Date.now() + 3600000); // 1 hour
+
+    await prisma.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      },
+    });
+
+    await this.sendPasswordResetEmail(user.email, user.firstName, token);
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const tokenHash = generateTokenHash(token);
+
+    const storedToken = await prisma.passwordResetToken.findFirst({
+      where: {
+        tokenHash,
+        revoked: false,
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    if (!storedToken) {
+      throw new Error('Invalid or expired password reset token');
+    }
+
+    const passwordHash = await hashPassword(newPassword);
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: storedToken.userId },
+        data: { passwordHash },
+      }),
+      prisma.passwordResetToken.update({
+        where: { id: storedToken.id },
+        data: { revoked: true },
+      }),
+    ]);
+  }
+
+  private async sendPasswordResetEmail(email: string, firstName: string, token: string) {
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const subject = 'Password Reset Request';
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Password Reset Request</h2>
+        <p>Hi ${firstName},</p>
+        <p>You are receiving this email because a password reset request was made for your account. Please click the link below to reset your password:</p>
+        <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Reset Password</a>
+        <p>This link will expire in 1 hour. If you did not request a password reset, please ignore this email.</p>
+        <hr>
+        <p style="color: #666; font-size: 12px;">Job Portal Team</p>
+      </div>
+    `;
+
+    try {
+      await sendEmail({ to: email, subject, html });
+      logger.info(`Password reset email sent to ${email}`);
+    } catch (error) {
+      logger.error(`Failed to send password reset email to ${email}:`, error);
+      throw new Error('Failed to send password reset email');
+    }
+  }
+}
+</file>
+
+<file path="src/services/resumeService.ts">
+import { prisma } from '@/config/database';
+import { cloudinary, generateUploadSignature } from '@/config/cloudinary';
+import { logger } from '@/config/logger';
+import crypto from 'crypto';
+
+export class ResumeService {
+  async requestUpload(userId: string, data: {
+    fileName: string;
+    fileType: string;
+    fileSize: number;
+  }) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { jobSeekerProfile: true },
+    });
+
+    if (!user?.jobSeekerProfile) {
+      throw new Error('Job seeker profile not found');
+    }
+
+    const allowedTypes = (process.env.ALLOWED_FILE_TYPES || '').split(',');
+    if (!allowedTypes.includes(data.fileType)) {
+      throw new Error('File type not allowed');
+    }
+
+    const maxSize = parseInt(process.env.MAX_FILE_SIZE || '10485760');
+    if (data.fileSize > maxSize) {
+      throw new Error('File size exceeds limit');
+    }
+
+    const fingerprint = crypto
+      .createHash('md5')
+      .update(`${data.fileName}-${data.fileSize}-${Date.now()}`)
+      .digest('hex');
+
+    const resume = await prisma.resume.create({
+      data: {
+        jobSeekerId: user.jobSeekerProfile.id,
+        fileName: data.fileName,
+        mimeType: data.fileType,
+        size: data.fileSize,
+        fingerprint,
+        fileKey: '', // Will be updated after upload
+      },
+    });
+
+    const timestamp = Math.round(Date.now() / 1000);
+    const publicId = `job-portal/resumes/${resume.id}`;
+    
+    // Parameters for signature generation (only params that Cloudinary validates)
+    const paramsToSign = {
+      public_id: publicId,
+      timestamp,
+    };
+
+    const signature = generateUploadSignature(paramsToSign);
+
+    const uploadUrl = `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/raw/upload`;
+
+    return {
+      uploadUrl,
+      resumeId: resume.id,
+      uploadParams: {
+        timestamp,
+        public_id: publicId,
+        signature,
+        api_key: process.env.CLOUDINARY_API_KEY,
+      },
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+    };
+  }
+
+  async completeUpload(userId: string, data: {
+    resumeId: string;
+    storageKey: string;
+  }) {
+    const resume = await prisma.resume.findFirst({
+      where: {
+        id: data.resumeId,
+        jobSeeker: { userId },
+      },
+    });
+
+    if (!resume) {
+      throw new Error('Resume not found');
+    }
+
+    const updatedResume = await prisma.resume.update({
+      where: { id: data.resumeId },
+      data: {
+        fileKey: data.storageKey,
+        parseStatus: 'PENDING',
+      },
+    });
+
+    // TODO: Enqueue resume parsing job
+    logger.info(`Resume upload completed: ${data.resumeId}`);
+
+    return updatedResume;
+  }
+
+  async getResumes(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { jobSeekerProfile: true },
+    });
+
+    if (!user?.jobSeekerProfile) {
+      throw new Error('Job seeker profile not found');
+    }
+
+    const resumes = await prisma.resume.findMany({
+      where: {
+        jobSeekerId: user.jobSeekerProfile.id,
+        deleted: false,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return resumes;
+  }
+
+  async deleteResume(userId: string, resumeId: string) {
+    const resume = await prisma.resume.findFirst({
+      where: {
+        id: resumeId,
+        jobSeeker: { userId },
+      },
+    });
+
+    if (!resume) {
+      throw new Error('Resume not found');
+    }
+
+    await prisma.resume.update({
+      where: { id: resumeId },
+      data: { deleted: true },
+    });
+
+    // TODO: Delete from Cloudinary
+    if (resume.fileKey) {
+      try {
+        await cloudinary.uploader.destroy(resume.fileKey, { resource_type: 'raw' });
+        logger.info(`Resume file deleted from Cloudinary: ${resume.fileKey}`);
+      } catch (error) {
+        logger.error(`Failed to delete resume file from Cloudinary: ${error}`);
+      }
+    }
+
+    return { deleted: true };
+  }
+
+  async getResumeById(userId: string, resumeId: string) {
+    const resume = await prisma.resume.findFirst({
+      where: {
+        id: resumeId,
+        jobSeeker: { userId },
+        deleted: false,
+      },
+    });
+
+    if (!resume) {
+      throw new Error('Resume not found');
+    }
+
+    return resume;
+  }
+}
+</file>
+
+<file path="src/services/userService.ts">
+import { prisma } from '@/config/database';
+import { AuthenticatedRequest } from '@/types';
+
+export class UserService {
+  async getCurrentUser(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        jobSeekerProfile: {
+          include: {
+            resumes: {
+              where: { deleted: false },
+              orderBy: { createdAt: 'desc' },
+            },
+          },
+        },
+        employerProfile: {
+          include: {
+            jobs: {
+              where: { status: { not: 'ARCHIVED' } },
+              orderBy: { createdAt: 'desc' },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const { passwordHash, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
+ async updateProfile(userId: string, data: {
+    phone?: string;
+    desiredTitle?: string;
+    about?: string;
+    skills?: any; 
+    jobTypes?: string[];
+    privacy?: any;
+  }) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { jobSeekerProfile: true, employerProfile: true },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const userUpdates: any = {};
+    if (data.phone !== undefined) {
+      userUpdates.phone = data.phone;
+    }
+    if (Object.keys(userUpdates).length > 0) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: userUpdates,
+      });
+    }
+
+    if (user.role === 'JOBSEEKER' && user.jobSeekerProfile) {
+      const profileUpdates: any = {};
+      if (data.desiredTitle !== undefined) profileUpdates.desiredTitle = data.desiredTitle;
+      if (data.about !== undefined) profileUpdates.about = data.about;
+      if (data.skills !== undefined) profileUpdates.skills = data.skills; // skills is a JSON field
+      if (data.privacy !== undefined) profileUpdates.privacy = data.privacy;
+
+      if (Object.keys(profileUpdates).length > 0) {
+        await prisma.jobSeekerProfile.update({
+          where: { userId },
+          data: profileUpdates,
+        });
+      }
+    }
+
+    if (user.role === 'JOBPROVIDER' && user.employerProfile) {
+      const employerUpdates: any = {};
+      if (data.jobTypes !== undefined) {
+        employerUpdates.jobTypes = data.jobTypes;
+      }
+      
+      if(Object.keys(employerUpdates).length > 0) {
+        await prisma.employer.update({
+          where: { ownerId: userId },
+          data: employerUpdates,
+        });
+      }
+    }
+
+    return this.getCurrentUser(userId);
+  }
+
+  async deleteAccount(userId: string) {
+    await prisma.$transaction([
+      prisma.application.deleteMany({ where: { jobSeeker: { userId } } }),
+      prisma.resume.deleteMany({ where: { jobSeeker: { userId } } }),
+      prisma.jobSeekerProfile.deleteMany({ where: { userId } }),
+      prisma.job.deleteMany({ where: { employer: { ownerId: userId } } }),
+      prisma.employer.deleteMany({ where: { ownerId: userId } }),
+      prisma.notification.deleteMany({ where: { userId } }),
+      prisma.refreshToken.deleteMany({ where: { userId } }),
+      prisma.user.delete({ where: { id: userId } }),
+    ]);
+
+    return { deleted: true };
+  }
+}
+</file>
+
+<file path="src/types/index.ts">
+import { Request } from 'express';
+import { User, Role } from '@prisma/client';
+
+export interface AuthenticatedRequest extends Request {
+  user?: User;
+}
+
+export interface JWTPayload {
+  userId: string;
+  email: string;
+  role: Role;
+}
+
+export interface RefreshTokenPayload {
+  userId: string;
+  tokenId: string;
+}
+
+export interface FileUploadResponse {
+  uploadUrl: string;
+  resumeId: string;
+  expiresAt: Date;
+}
+
+export interface ApiResponse<T = any> {
+  status: 'success' | 'error';
+  message?: string;
+  data?: T;
+  code?: string;
+  details?: any;
+}
+
+export interface PaginationQuery {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface JobSearchQuery extends PaginationQuery {
+  q?: string;
+  location?: string;
+  remote?: boolean;
+  jobType?: string;
+  experienceLevel?: string;
+  salaryMin?: number;
+  salaryMax?: number;
+}
+
+export interface ApplicationFilters extends PaginationQuery {
+  status?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export type NotificationType = 
+  | 'APPLICATION_RECEIVED'
+  | 'APPLICATION_STATUS_CHANGED'
+  | 'JOB_MATCH'
+  | 'RESUME_PARSED'
+  | 'WELCOME';
+
+export interface NotificationPayload {
+  [key: string]: any;
+  title: string;
+  message: string;
+  actionUrl?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface EmailTemplate {
+  subject: string;
+  html: string;
+  text?: string;
+}
+
+export interface JobQueueData {
+  type: string;
+  payload: any;
+  userId?: string;
+  priority?: number;
+}
+</file>
+
+<file path="src/utils/auth.ts">
+import jwt, { Secret, SignOptions } from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import { JWTPayload, RefreshTokenPayload } from '@/types';
+
+const JWT_SECRET: Secret = process.env.JWT_SECRET || 'default-secret';
+const REFRESH_SECRET: Secret = process.env.REFRESH_TOKEN_SECRET || 'default-refresh';
+
+const ACCESS_EXPIRES_IN: SignOptions['expiresIn'] = (process.env.JWT_EXPIRES_IN as SignOptions['expiresIn']) || '15m';
+const REFRESH_EXPIRES_IN: SignOptions['expiresIn'] = (process.env.REFRESH_TOKEN_EXPIRES_IN as SignOptions['expiresIn']) || '7d';
+
+export const hashPassword = async (password: string): Promise<string> => {
+  const rounds = parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
+  return bcrypt.hash(password, rounds);
+};
+
+export const comparePassword = async (password: string, hash: string): Promise<boolean> => {
+  return bcrypt.compare(password, hash);
+};
+
+// --- JWT Access & Refresh Tokens ---
+export const generateAccessToken = (payload: JWTPayload): string =>
+  jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_EXPIRES_IN });
+
+export const generateRefreshToken = (payload: RefreshTokenPayload): string =>
+  jwt.sign(payload, REFRESH_SECRET, { expiresIn: REFRESH_EXPIRES_IN });
+
+export const verifyAccessToken = (token: string): JWTPayload =>
+  jwt.verify(token, JWT_SECRET) as JWTPayload;
+
+export const verifyRefreshToken = (token: string): RefreshTokenPayload =>
+  jwt.verify(token, REFRESH_SECRET) as RefreshTokenPayload;
+
+
+export const generateOTP = (): string =>
+  Math.floor(100000 + Math.random() * 900000).toString();
+
+export const hashOTP = (otp: string): string =>
+  crypto.createHash('sha256').update(otp).digest('hex');
+
+
+export const generateTokenHash = (token: string): string =>
+  crypto.createHash('sha256').update(token).digest('hex');
+
+export const generateSecureToken = (): string =>
+  crypto.randomBytes(32).toString('hex');
+</file>
+
+<file path="src/utils/response.ts">
+import { Response } from 'express';
+import { ApiResponse } from '@/types';
+
+export const sendSuccess = <T>(
+  res: Response,
+  data?: T,
+  message?: string,
+  statusCode: number = 200
+): Response => {
+  const response: ApiResponse<T> = {
+    status: 'success',
+    message,
+    data,
+  };
+  return res.status(statusCode).json(response);
+};
+
+export const sendError = (
+  res: Response,
+  message: string,
+  statusCode: number = 400,
+  code?: string,
+  details?: any
+): Response => {
+  const response: ApiResponse = {
+    status: 'error',
+    message,
+    code,
+    details,
+  };
+  return res.status(statusCode).json(response);
+};
+
+export const sendValidationError = (
+  res: Response,
+  errors: any,
+  message: string = 'Validation failed'
+): Response => {
+  return sendError(res, message, 422, 'VALIDATION_ERROR', errors);
+};
+
+export const sendNotFound = (
+  res: Response,
+  message: string = 'Resource not found'
+): Response => {
+  return sendError(res, message, 404, 'NOT_FOUND');
+};
+
+export const sendUnauthorized = (
+  res: Response,
+  message: string = 'Unauthorized'
+): Response => {
+  return sendError(res, message, 401, 'UNAUTHORIZED');
+};
+
+export const sendForbidden = (
+  res: Response,
+  message: string = 'Forbidden'
+): Response => {
+  return sendError(res, message, 403, 'FORBIDDEN');
+};
+
+export const sendConflict = (
+  res: Response,
+  message: string = 'Resource already exists'
+): Response => {
+  return sendError(res, message, 409, 'CONFLICT');
+};
+
+export const sendInternalError = (
+  res: Response,
+  message: string = 'Internal server error'
+): Response => {
+  return sendError(res, message, 500, 'INTERNAL_ERROR');
+};
+</file>
+
+<file path="src/utils/slugify.ts">
+export const slugify = (text: string): string => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+};
+
+export const generateUniqueSlug = (title: string, id?: string): string => {
+  const baseSlug = slugify(title);
+  const uniqueId = id ? id.slice(-8) : Date.now().toString().slice(-8);
+  return `${baseSlug}-${uniqueId}`;
+};
+</file>
+
+<file path="src/utils/swaggerSchemas.ts">
+// src/utils/swaggerSchemas.ts
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     # --- AUTH & PASSWORD SCHEMAS ---
+ *     Signup:
+ *       type: object
+ *       required: [firstName, lastName, email, password, role]
+ *       properties:
+ *         firstName: { type: string, example: "John" }
+ *         lastName: { type: string, example: "Doe" }
+ *         email: { type: string, format: email, example: "john.doe@example.com" }
+ *         password: { type: string, format: password, description: "Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char.", example: "Password123!" }
+ *         role: { type: string, enum: [JOBSEEKER, JOBPROVIDER], example: "JOBSEEKER" }
+ *
+ *     Login:
+ *       type: object
+ *       required: [email, password]
+ *       properties:
+ *         email: { type: string, format: email, example: "jobseeker@example.com" }
+ *         password: { type: string, format: password, example: "JobSeeker123!" }
+ *
+ *     VerifyEmail:
+ *       type: object
+ *       required: [userId, otp]
+ *       properties:
+ *         userId: { type: string, format: uuid, example: "a1b2c3d4-e5f6-7777-i9j0-k1l2m3n4o5p6" }
+ *         otp: { type: string, description: "6-digit OTP from email.", example: "123456" }
+ *
+ *     ForgotPassword:
+ *       type: object
+ *       required: [email]
+ *       properties:
+ *         email: { type: string, format: email, example: "jobseeker@example.com" }
+ *
+ *     ResetPassword:
+ *       type: object
+ *       required: [token, newPassword]
+ *       properties:
+ *         token: { type: string, description: "The password reset token from the email link." }
+ *         newPassword: { type: string, format: password, example: "NewSecurePassword123!" }
+ *
+ *     # --- USER & EMPLOYER SCHEMAS ---
+ *     UpdateProfile:
+ *       type: object
+ *       properties:
+ *         phone: { type: string, example: "+250791234567" }
+ *         desiredTitle: { type: string, description: "Job seeker's desired title.", example: "Senior Software Engineer" }
+ *         about: { type: string, description: "A brief summary about the job seeker.", example: "Passionate developer..." }
+ *         skills:
+ *           type: array
+ *           items: { type: object, properties: { category: { type: string, example: "Building" }, work: { type: string, example: "An architect" } } }
+ *         jobTypes:
+ *           type: array
+ *           description: "For Job Providers: list of job types they offer."
+ *           items: { type: string, example: "FULL_TIME" }
+ *         privacy:
+ *           type: object
+ *           properties: { hideContact: { type: boolean, example: false } }
+ *
+ *     CreateEmployer:
+ *       type: object
+ *       required: [name]
+ *       properties:
+ *         name: { type: string, example: "TechCorp Inc." }
+ *         website: { type: string, format: url, example: "https://techcorp.com" }
+ *         industry: { type: string, example: "Technology" }
+ *         location: { type: string, example: "Kigali, Rwanda" }
+ *
+ *     # --- JOB & APPLICATION SCHEMAS ---
+ *     CreateJob:
+ *       type: object
+ *       required: [title, description, responsibilities, requirements, jobType, experienceLevel]
+ *       properties:
+ *         title: { type: string, example: "Senior Full Stack Developer" }
+ *         description: { type: string, example: "We are looking for an experienced full stack developer..." }
+ *         responsibilities: { type: array, items: { type: string }, example: ["Develop and maintain web apps", "Collaborate with teams"] }
+ *         requirements: { type: array, items: { type: string }, example: ["5+ years of experience", "Proficiency in Node.js"] }
+ *         location: { type: string, example: "Kigali, Rwanda" }
+ *         remote: { type: boolean, example: true }
+ *         jobType: { type: string, enum: [FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP] }
+ *         experienceLevel: { type: string, enum: [ENTRY, MID, SENIOR, LEAD, EXECUTIVE] }
+ *         salaryRange:
+ *           type: object
+ *           properties:
+ *             min: { type: number, example: 90000 }
+ *             max: { type: number, example: 150000 }
+ *             currency: { type: string, example: "USD" }
+ *
+ *     UpdateJob:
+ *       type: object
+ *       properties:
+ *         title: { type: string, example: "Lead Full Stack Developer" }
+ *         description: { type: string, example: "Updated description..." }
+ *         remote: { type: boolean, example: false }
+ *
+ *     ApplyToJob:
+ *       type: object
+ *       required: [resumeId]
+ *       properties:
+ *         resumeId: { type: string, format: uuid, description: "The ID of the resume to use for the application." }
+ *         coverLetter: { type: string, example: "I am very interested in this position..." }
+ *
+ *     UpdateApplicationStatus:
+ *       type: object
+ *       required: [status]
+ *       properties:
+ *         status: { type: string, enum: [VIEWED, SHORTLISTED, INTERVIEW_SCHEDULED, OFFERED, HIRED, REJECTED] }
+ *         note: { type: string, example: "Candidate looks promising, scheduling an interview." }
+ *
+ *     # --- RESUME SCHEMAS ---
+ *     RequestUpload:
+ *       type: object
+ *       required: [fileName, fileType, fileSize]
+ *       properties:
+ *         fileName: { type: string, example: "JohnDoe_Resume.pdf" }
+ *         fileType: { type: string, example: "application/pdf" }
+ *         fileSize: { type: number, description: "File size in bytes.", example: 102400 }
+ *
+ *     CompleteUpload:
+ *       type: object
+ *       required: [resumeId, storageKey]
+ *       properties:
+ *         resumeId: { type: string, format: uuid }
+ *         storageKey: { type: string, description: "The public_id returned by Cloudinary." }
+ *
+ *     # --- GENERIC ERROR RESPONSES ---
+ *     Error400:
+ *       type: object
+ *       properties:
+ *         status: { type: string, example: "error" }
+ *         message: { type: string, example: "Bad Request: Invalid input" }
+ *
+ *     Error401:
+ *       type: object
+ *       properties:
+ *         status: { type: string, example: "error" }
+ *         message: { type: string, example: "Unauthorized: Access token required" }
+ *
+ *     Error403:
+ *       type: object
+ *       properties:
+ *         status: { type: string, example: "error" }
+ *         message: { type: string, example: "Forbidden: Insufficient permissions" }
+ *
+ *     Error404:
+ *       type: object
+ *       properties:
+ *         status: { type: string, example: "error" }
+ *         message: { type: string, example: "Resource not found" }
+ *
+ *     Error422:
+ *       type: object
+ *       properties:
+ *         status: { type: string, example: "error" }
+ *         message: { type: string, example: "Validation failed" }
+ *         details:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               field: { type: string, example: "email" }
+ *               message: { type: string, example: "Invalid email" }
+ */
+</file>
+
+<file path="src/utils/validation.ts">
+import { z } from 'zod';
+
+export const signupSchema = z.object({
+  firstName: z.string().min(2).max(50),
+  lastName: z.string().min(2).max(50),
+  email: z.string().email(),
+  password: z.string().min(8).regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+  ),
+  role: z.enum(['JOBSEEKER', 'JOBPROVIDER']),
+});
+
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
+export const verifyEmailSchema = z.object({
+  userId: z.string().uuid(),
+  otp: z.string().length(6),
+});
+
+export const resendOTPSchema = z.object({
+  userId: z.string().uuid(),
+});
+
+export const updateProfileSchema = z.object({
+  phone: z.string().optional(),
+  desiredTitle: z.string().optional(),
+  about: z.string().optional(),
+  // For Job Seekers: an array of selected skills
+  skills: z.array(z.object({
+    category: z.string(),
+    work: z.string(),
+  })).optional(),
+  // For Job Providers: an array of job types they offer
+  jobTypes: z.array(z.string()).optional(),
+  privacy: z.object({
+    hideContact: z.boolean().optional(),
+  }).optional(),
+});
+
+export const createEmployerSchema = z.object({
+  name: z.string().min(2).max(100),
+  website: z.string().url().optional(),
+  industry: z.string().optional(),
+  location: z.string().optional(),
+});
+
+export const createJobSchema = z.object({
+  title: z.string().min(5).max(100),
+  description: z.string().min(50),
+  responsibilities: z.array(z.string()).min(1),
+  requirements: z.array(z.string()).min(1),
+  location: z.string().optional(),
+  remote: z.boolean().default(false),
+  jobType: z.enum(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP']),
+  experienceLevel: z.enum(['ENTRY', 'MID', 'SENIOR', 'LEAD', 'EXECUTIVE']),
+  salaryRange: z.object({
+    min: z.number().min(0),
+    max: z.number().min(0),
+    currency: z.string().default('USD'),
+  }).optional(),
+});
+
+export const updateJobSchema = createJobSchema.partial();
+
+export const applyJobSchema = z.object({
+  resumeId: z.string().uuid(),
+  coverLetter: z.string().optional(),
+});
+
+export const updateApplicationStatusSchema = z.object({
+  status: z.enum(['VIEWED', 'SHORTLISTED', 'INTERVIEW_SCHEDULED', 'OFFERED', 'HIRED', 'REJECTED']),
+  note: z.string().optional(),
+});
+
+export const requestUploadSchema = z.object({
+  fileName: z.string(),
+  fileType: z.string(),
+  fileSize: z.number().max(parseInt(process.env.MAX_FILE_SIZE || '10485760')),
+});
+
+export const completeUploadSchema = z.object({
+  resumeId: z.string().uuid(),
+  storageKey: z.string(),
+});
+
+export const paginationSchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  sortBy: z.string().optional(),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const jobSearchSchema = paginationSchema.extend({
+  q: z.string().optional(),
+  location: z.string().optional(),
+  remote: z.coerce.boolean().optional(),
+  jobType: z.string().optional(),
+  experienceLevel: z.string().optional(),
+  salaryMin: z.coerce.number().optional(),
+  salaryMax: z.coerce.number().optional(),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'A password reset token is required'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters long').regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+  ),
+});
+</file>
+
+<file path="test-cloudinary-signature.js">
+// Quick test to verify Cloudinary signature generation
+const cloudinary = require('cloudinary').v2;
+require('dotenv').config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const timestamp = Math.round(Date.now() / 1000);
+const publicId = `job-portal/resumes/test-${timestamp}`;
+
+// Only include parameters that are validated in the signature
+const paramsToSign = {
+  public_id: publicId,
+  timestamp: timestamp,
+};
+
+const signature = cloudinary.utils.api_sign_request(
+  paramsToSign,
+  process.env.CLOUDINARY_API_SECRET
+);
+
+console.log('=== Cloudinary Upload Test ===');
+console.log('Cloud Name:', process.env.CLOUDINARY_CLOUD_NAME);
+console.log('API Key:', process.env.CLOUDINARY_API_KEY ? '✓ Set' : '✗ Missing');
+console.log('API Secret:', process.env.CLOUDINARY_API_SECRET ? '✓ Set' : '✗ Missing');
+console.log('\n=== Upload Parameters ===');
+console.log('Timestamp:', timestamp);
+console.log('Public ID:', publicId);
+console.log('Signature:', signature);
+console.log('\n=== FormData to send ===');
+console.log('file: [your file]');
+console.log('timestamp:', timestamp);
+console.log('public_id:', publicId);
+console.log('signature:', signature);
+console.log('api_key:', process.env.CLOUDINARY_API_KEY);
+console.log('\n=== Upload URL ===');
+console.log(`https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/raw/upload`);
+console.log('\n✅ If you see all values above, your configuration is correct!');
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*"],
+      "@/types/*": ["./types/*"],
+      "@/utils/*": ["./utils/*"],
+      "@/middleware/*": ["./middleware/*"],
+      "@/services/*": ["./services/*"],
+      "@/controllers/*": ["./controllers/*"],
+      "@/routes/*": ["./routes/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts"
+  ]
+}
+</file>
+
+</files>

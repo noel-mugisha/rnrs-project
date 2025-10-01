@@ -1,0 +1,8 @@
+ignoredBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@scarf/scarf'
+  - core-js
+  - esbuild
+  - msgpackr-extract
+  - prisma
