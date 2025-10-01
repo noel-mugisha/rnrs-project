@@ -20,7 +20,6 @@ export interface User {
   phone?: string
   createdAt: string
   updatedAt: string
-  // Job seeker profile data (included when role is JOBSEEKER)
   jobSeekerProfile?: {
     id: string
     userId: string
@@ -33,7 +32,6 @@ export interface User {
     privacy?: any
     resumes?: Resume[]
   }
-  // Employer profile data (included when role is JOBPROVIDER)
   employerProfile?: {
     id: string
     ownerId: string
@@ -89,7 +87,11 @@ export interface Job {
   status: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'ARCHIVED'
   postedAt?: string
   expiresAt?: string
+  createdAt: string
   employer: Employer
+  _count?: {
+    applications: number
+  }
 }
 
 export interface Application {
@@ -159,7 +161,6 @@ class ApiClient {
       const data = await response.json()
 
       if (!response.ok) {
-        // Handle validation errors (422) specially
         if (response.status === 422 && data.errors) {
           const validationErrors = Array.isArray(data.errors) 
             ? data.errors.map((err: any) => err.message).join(', ')
@@ -185,6 +186,8 @@ class ApiClient {
       }
     }
   }
+
+  // ... (rest of the ApiClient methods remain unchanged)
 
   // Authentication API
   async signup(userData: {
@@ -250,7 +253,7 @@ class ApiClient {
     return this.request('/meta/work-categories')
   }
 
-  // Job Seeker Profile API (Note: This is handled through the main user profile endpoint)
+  // Job Seeker Profile API
   async updateJobSeekerProfile(profileData: {
     phone?: string
     desiredTitle?: string
@@ -338,7 +341,7 @@ class ApiClient {
     remote?: boolean
     page?: number
     limit?: number
-  }): Promise<ApiResponse<{ jobs: Job[]; total: number; page: number; pages: number }>> {
+  } = {}): Promise<ApiResponse<{ jobs: Job[]; pagination: any }>> {
     const searchParams = new URLSearchParams()
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -406,7 +409,7 @@ class ApiClient {
   async applyToJob(jobId: string, applicationData: {
     resumeId?: string
     coverLetter?: string
-  }, idempotencyKey?: string): Promise<ApiResponse<Application>> {
+  }, idempotencyKey?: string): Promise<ApiResponse<{ applicationId: string }>> {
     const headers: Record<string, string> = {}
     if (idempotencyKey) {
       headers['idempotency-key'] = idempotencyKey
@@ -423,7 +426,7 @@ class ApiClient {
     status?: string
     page?: number
     limit?: number
-  } = {}): Promise<ApiResponse<{ applications: Application[]; total: number }>> {
+  } = {}): Promise<ApiResponse<{ applications: Application[]; pagination: any }>> {
     const searchParams = new URLSearchParams()
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) {
