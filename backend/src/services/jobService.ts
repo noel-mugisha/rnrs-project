@@ -1,7 +1,105 @@
 import { prisma } from '@/config/database';
 import { JobSearchQuery } from '@/types';
+import slugify from 'slugify';
 
 export class JobService {
+  private generateSlug(title: string, id: string): string {
+    const baseSlug = slugify(title, { lower: true, strict: true });
+    return `${baseSlug}-${id.substring(0, 8)}`;
+  }
+
+  async createJob(userId: string, data: any) {
+    // Get employer profile
+    const employer = await prisma.employer.findUnique({
+      where: { ownerId: userId },
+    });
+
+    if (!employer) {
+      throw new Error('Employer profile not found');
+    }
+
+    // Generate a temporary ID for the slug
+    const tempId = Date.now().toString();
+    const slug = this.generateSlug(data.title, tempId);
+
+    // Create the job
+    const job = await prisma.job.create({
+      data: {
+        ...data,
+        slug,
+        employerId: employer.id,
+        postedAt: data.status === 'PUBLISHED' ? new Date() : null,
+      },
+      include: {
+        employer: {
+          select: {
+            id: true,
+            name: true,
+            website: true,
+            industry: true,
+            location: true,
+            logoKey: true,
+          },
+        },
+      },
+    });
+
+    // Update slug with actual job ID
+    const finalSlug = this.generateSlug(data.title, job.id);
+    if (finalSlug !== slug) {
+      await prisma.job.update({
+        where: { id: job.id },
+        data: { slug: finalSlug },
+      });
+      job.slug = finalSlug;
+    }
+
+    return job;
+  }
+
+  async getMyJobs(userId: string, filters: {
+    status?: string;
+    page: number;
+    limit: number;
+  }) {
+    const employer = await prisma.employer.findUnique({
+      where: { ownerId: userId },
+    });
+
+    if (!employer) {
+      throw new Error('Employer profile not found');
+    }
+
+    const where: any = { employerId: employer.id };
+    if (filters.status) {
+      where.status = filters.status;
+    }
+
+    const [jobs, total] = await Promise.all([
+      prisma.job.findMany({
+        where,
+        include: {
+          _count: {
+            select: { applications: true },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (filters.page - 1) * filters.limit,
+        take: filters.limit,
+      }),
+      prisma.job.count({ where }),
+    ]);
+
+    return {
+      jobs,
+      pagination: {
+        page: filters.page,
+        limit: filters.limit,
+        total,
+        pages: Math.ceil(total / filters.limit),
+      },
+    };
+  }
   async getPublicJob(jobId: string) {
     const job = await prisma.job.findFirst({
       where: {

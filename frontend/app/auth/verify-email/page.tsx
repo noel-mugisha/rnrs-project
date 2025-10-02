@@ -86,15 +86,23 @@ function VerifyEmailContent() {
                 router.push("/dashboard/profile/setup")
                 return
               }
+              // Redirect to job seeker dashboard
+              router.push("/dashboard")
             } else if (user.role === 'JOBPROVIDER') {
               // Check if employer profile exists
               if (!user.employerProfile) {
                 router.push("/dashboard/employer/setup")
                 return
               }
+              // Redirect to employer dashboard
+              router.push("/dashboard/employer")
+            } else {
+              // Default fallback
+              router.push("/dashboard")
             }
+          } else {
+            router.push("/dashboard")
           }
-          router.push("/dashboard")
         }, 2000)
       } else {
         setError("Invalid or expired verification code")

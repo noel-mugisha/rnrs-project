@@ -7,6 +7,31 @@ import { logger } from '@/config/logger';
 const jobService = new JobService();
 
 export class JobController {
+  async createJob(req: AuthenticatedRequest, res: Response) {
+    try {
+      const job = await jobService.createJob(req.user!.id, req.body);
+      sendSuccess(res, job, 'Job created successfully', 201);
+    } catch (error: any) {
+      logger.error('Create job error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getMyJobs(req: AuthenticatedRequest, res: Response) {
+    try {
+      const filters = {
+        status: req.query.status as string,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 20,
+      };
+      const result = await jobService.getMyJobs(req.user!.id, filters);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('Get my jobs error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
   async getJob(req: Request, res: Response) {
     try {
       const { id } = req.params;

@@ -138,16 +138,17 @@ model Job {
   id             String    @id @default(uuid())
   employer       Employer  @relation(fields: [employerId], references: [id], onDelete: Cascade)
   employerId     String
-  title          String
+  workCategory   String    // Work category from work-categories (e.g., "Construction")
+  workType       String    // Specific work from category (e.g., "Mason")
+  title          String    // Job title (auto-generated or custom)
   slug           String    @unique
-  description    String
-  responsibilities String[]
-  requirements   String[]
-  location       String?
+  description    String    @db.Text // Job description
+  requirements   String    @db.Text // Requirements as text or JSON string
+  location       String    // Job location (required)
+  salaryAmount   Int       // Salary amount in RWF
   remote         Boolean   @default(false)
-  jobType        String
-  experienceLevel String
-  salaryRange    Json?
+  jobType        String    @default("FULLTIME") // FULLTIME, PARTTIME, CONTRACT, etc.
+  experienceLevel String   @default("ENTRY") // ENTRY, MID, SENIOR, etc.
   status         JobStatus @default(DRAFT)
   applications   Application[]
   postedAt       DateTime?
@@ -157,6 +158,7 @@ model Job {
   
   @@index([status, postedAt])
   @@index([employerId])
+  @@index([workCategory])
   @@map("jobs")
 }
 

@@ -4,7 +4,7 @@ import { Router } from 'express';
 import { JobController } from '@/controllers/jobController';
 import { authenticate, requireRole } from '@/middleware/authMiddleware';
 import { validateBody, validateQuery } from '@/middleware/validationMiddleware';
-import { updateJobSchema, jobSearchSchema } from '@/utils/validation';
+import { createJobSchema, updateJobSchema, jobSearchSchema } from '@/utils/validation';
 
 const router: ReturnType<typeof Router> = Router();
 const jobController = new JobController();
@@ -89,6 +89,54 @@ router.get('/:id', jobController.getJob);
 // --- Authenticated Routes for Job Providers ---
 router.use(authenticate);
 router.use(requireRole(['JOBPROVIDER']));
+
+/**
+ * @swagger
+ * /jobs:
+ *   post:
+ *     summary: Create a new job
+ *     tags: [Jobs]
+ *     description: Allows a JOBPROVIDER to create a new job listing.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateJob'
+ *     responses:
+ *       '201':
+ *         description: Job created successfully.
+ *       '400': { $ref: '#/components/schemas/Error400' }
+ */
+router.post('/', validateBody(createJobSchema), jobController.createJob);
+
+/**
+ * @swagger
+ * /jobs/my-jobs:
+ *   get:
+ *     summary: Get all jobs for the authenticated employer
+ *     tags: [Jobs]
+ *     description: Returns all jobs created by the authenticated employer.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema: { type: string }
+ *         description: Filter by job status (DRAFT, PUBLISHED, CLOSED, ARCHIVED)
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *     responses:
+ *       '200':
+ *         description: A list of jobs.
+ */
+router.get('/my-jobs', jobController.getMyJobs);
 
 /**
  * @swagger

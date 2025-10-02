@@ -37,7 +37,19 @@ export default function LoginPage() {
       const success = await login(formData.email, formData.password)
       
       if (success) {
-        router.push("/dashboard")
+        // Get user data to determine redirect
+        const userData = localStorage.getItem('user_data')
+        if (userData) {
+          const user = JSON.parse(userData)
+          // Redirect based on role
+          if (user.role === 'JOBPROVIDER') {
+            router.push("/dashboard/employer")
+          } else {
+            router.push("/dashboard")
+          }
+        } else {
+          router.push("/dashboard")
+        }
       } else {
         setError("Invalid email or password")
       }

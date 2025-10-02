@@ -110,15 +110,16 @@ export class EmployerService {
   }
 
   async createJob(userId: string, employerId: string, data: {
+    workCategory: string;
+    workType: string;
     title: string;
     description: string;
-    responsibilities: string[];
-    requirements: string[];
-    location?: string;
+    requirements: string;
+    location: string;
+    salaryAmount: number;
     remote: boolean;
     jobType: string;
     experienceLevel: string;
-    salaryRange?: any;
   }) {
     const employer = await prisma.employer.findFirst({
       where: {
@@ -139,16 +140,17 @@ export class EmployerService {
     const job = await prisma.job.create({
       data: {
         employerId,
+        workCategory: data.workCategory,
+        workType: data.workType,
         title: data.title,
         slug,
         description: data.description,
-        responsibilities: data.responsibilities,
         requirements: data.requirements,
         location: data.location,
+        salaryAmount: data.salaryAmount,
         remote: data.remote,
         jobType: data.jobType,
         experienceLevel: data.experienceLevel,
-        salaryRange: data.salaryRange,
       },
     });
 

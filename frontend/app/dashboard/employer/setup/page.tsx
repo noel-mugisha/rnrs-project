@@ -97,7 +97,7 @@ export default function EmployerSetupPage() {
   // Check if user already has employer profile
   useEffect(() => {
     if (user?.employerProfile) {
-      router.push("/dashboard")
+      router.push("/dashboard/employer")
     }
   }, [user, router])
 
@@ -163,7 +163,7 @@ export default function EmployerSetupPage() {
       if (response.success) {
         await refreshUser()
         toast.success("🎉 Employer profile created successfully!")
-        router.push("/dashboard")
+        router.push("/dashboard/employer")
       } else {
         setError(response.error || "Failed to create employer profile")
       }

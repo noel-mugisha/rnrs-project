@@ -45,10 +45,9 @@ export function Sidebar({ userRole }: SidebarProps) {
 
   const jobProviderNavItems = [
     { href: "/dashboard/employer", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/dashboard/jobs", icon: Briefcase, label: "Manage Jobs" },
-    { href: "/dashboard/jobs/new", icon: FileText, label: "Post Job" },
-    { href: "/dashboard/candidates", icon: Users, label: "Candidates", badge: "12" },
-    { href: "/dashboard/analytics", icon: BarChart3, label: "Analytics" },
+    { href: "/dashboard/employer/jobs", icon: Briefcase, label: "Manage Jobs" },
+    { href: "/dashboard/employer/jobs/new", icon: FileText, label: "Post Job" },
+    { href: "/dashboard/applications", icon: Users, label: "Applications" },
     { href: "/dashboard/notifications", icon: Bell, label: "Notifications" },
   ]
 

@@ -48,23 +48,35 @@ export const createEmployerSchema = z.object({
   location: z.string().optional(),
 });
 
+// Create job schema - aligned with new Prisma schema
 export const createJobSchema = z.object({
-  title: z.string().min(5).max(100),
-  description: z.string().min(50),
-  responsibilities: z.array(z.string()).min(1),
-  requirements: z.array(z.string()).min(1),
-  location: z.string().optional(),
+  workCategory: z.string().min(1, 'Work category is required'),
+  workType: z.string().min(1, 'Work type is required'),
+  title: z.string().min(3).max(200),
+  description: z.string().min(50, 'Description must be at least 50 characters'),
+  requirements: z.string().min(10, 'Requirements must be at least 10 characters'),
+  location: z.string().min(1, 'Location is required'),
+  salaryAmount: z.number().int().min(0, 'Salary must be a positive number'),
   remote: z.boolean().default(false),
-  jobType: z.enum(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP']),
-  experienceLevel: z.enum(['ENTRY', 'MID', 'SENIOR', 'LEAD', 'EXECUTIVE']),
-  salaryRange: z.object({
-    min: z.number().min(0),
-    max: z.number().min(0),
-    currency: z.string().default('USD'),
-  }).optional(),
+  jobType: z.enum(['FULLTIME', 'PARTTIME', 'CONTRACT', 'INTERNSHIP']).default('FULLTIME'),
+  experienceLevel: z.enum(['ENTRY', 'MID', 'SENIOR', 'LEAD', 'EXECUTIVE']).default('ENTRY'),
+  status: z.enum(['DRAFT', 'PUBLISHED']).optional(),
 });
 
-export const updateJobSchema = createJobSchema.partial();
+// Update job schema - make all fields optional
+export const updateJobSchema = z.object({
+  workCategory: z.string().min(1).optional(),
+  workType: z.string().min(1).optional(),
+  title: z.string().min(3).max(200).optional(),
+  description: z.string().min(50).optional(),
+  requirements: z.string().min(10).optional(),
+  location: z.string().min(1).optional(),
+  salaryAmount: z.number().int().min(0).optional(),
+  remote: z.boolean().optional(),
+  jobType: z.enum(['FULLTIME', 'PARTTIME', 'CONTRACT', 'INTERNSHIP']).optional(),
+  experienceLevel: z.enum(['ENTRY', 'MID', 'SENIOR', 'LEAD', 'EXECUTIVE']).optional(),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'CLOSED']).optional(),
+});
 
 export const applyJobSchema = z.object({
   resumeId: z.string().uuid(),

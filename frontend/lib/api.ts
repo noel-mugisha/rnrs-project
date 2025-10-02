@@ -74,21 +74,23 @@ export interface Employer {
 export interface Job {
   id: string
   employerId: string
+  workCategory: string
+  workType: string
   title: string
   slug: string
   description: string
-  responsibilities: string[]
-  requirements: string[]
-  location?: string
+  requirements: string
+  location: string
+  salaryAmount: number
   remote: boolean
   jobType: string
   experienceLevel: string
-  salaryRange?: any
   status: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'ARCHIVED'
   postedAt?: string
   expiresAt?: string
   createdAt: string
-  employer: Employer
+  updatedAt: string
+  employer?: Employer
   _count?: {
     applications: number
   }
@@ -360,24 +362,52 @@ class ApiClient {
     return this.request(`/jobs/${jobId}`)
   }
 
-  async createJob(employerId: string, jobData: {
+  async createJob(jobData: {
+    workCategory: string
+    workType: string
     title: string
     description: string
-    responsibilities: string[]
-    requirements: string[]
-    location?: string
-    remote: boolean
-    jobType: string
-    experienceLevel: string
-    salaryRange?: any
+    requirements: string
+    location: string
+    salaryAmount: number
+    remote?: boolean
+    jobType?: string
+    experienceLevel?: string
+    status?: 'DRAFT' | 'PUBLISHED'
   }): Promise<ApiResponse<Job>> {
-    return this.request(`/employers/${employerId}/jobs`, {
+    return this.request('/jobs', {
       method: 'POST',
       body: JSON.stringify(jobData),
     })
   }
 
-  async updateJob(jobId: string, jobData: Partial<Job>): Promise<ApiResponse<Job>> {
+  async getMyJobs(params: {
+    status?: string
+    page?: number
+    limit?: number
+  } = {}): Promise<ApiResponse<{ jobs: Job[]; pagination: any }>> {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        searchParams.append(key, value.toString())
+      }
+    })
+    return this.request(`/jobs/my-jobs?${searchParams.toString()}`)
+  }
+
+  async updateJob(jobId: string, jobData: {
+    workCategory?: string
+    workType?: string
+    title?: string
+    description?: string
+    requirements?: string
+    location?: string
+    salaryAmount?: number
+    remote?: boolean
+    jobType?: string
+    experienceLevel?: string
+    status?: 'DRAFT' | 'PUBLISHED' | 'CLOSED'
+  }): Promise<ApiResponse<Job>> {
     return this.request(`/jobs/${jobId}`, {
       method: 'PATCH',
       body: JSON.stringify(jobData),

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -267,23 +268,11 @@ const QuickActions = () => (
   </Card>
 )
 
-// Job Provider Dashboard Component
-function JobProviderDashboard() {
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Employer Dashboard</h1>
-      <Card>
-        <CardContent className="py-12 text-center">
-          <p className="text-muted-foreground">Employer dashboard is under construction.</p>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
 
 // --- END: HELPER COMPONENTS ---
 
 export default function DashboardPage() {
+  const router = useRouter()
   const { user } = useAuth()
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -291,13 +280,17 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user) {
+      // Redirect employers to their proper dashboard immediately
+      if (user.role === "JOBPROVIDER") {
+        router.replace("/dashboard/employer")
+        return
+      }
+      // Only load dashboard data for job seekers
       loadDashboardData()
     } else {
-      // If user is null but auth is not loading, it means they are logged out.
-      // This case is handled by ProtectedRoute, but as a fallback:
       setIsLoading(false)
     }
-  }, [user])
+  }, [user, router])
 
   const loadDashboardData = async () => {
     if (!user) return
@@ -339,8 +332,9 @@ export default function DashboardPage() {
     return null;
   }
   
+  // Redirect employers to their proper dashboard (handled in useEffect, but this prevents flicker)
   if (user.role === "JOBPROVIDER") {
-    return <JobProviderDashboard />
+    return null
   }
 
   // Loading state is now handled by loading.tsx, but this is a good fallback.
