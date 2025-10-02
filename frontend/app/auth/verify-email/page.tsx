@@ -75,14 +75,21 @@ function VerifyEmailContent() {
       if (success) {
         setSuccess(true)
         setTimeout(() => {
-          // Check if user is a job seeker and needs profile setup
+          // Check user role and redirect accordingly
           const userData = localStorage.getItem('user_data')
           if (userData) {
             const user = JSON.parse(userData)
+            
             if (user.role === 'JOBSEEKER') {
               // Check if profile is incomplete (no phone number indicates incomplete setup)
               if (!user.phone || !user.desiredTitle) {
                 router.push("/dashboard/profile/setup")
+                return
+              }
+            } else if (user.role === 'JOBPROVIDER') {
+              // Check if employer profile exists
+              if (!user.employerProfile) {
+                router.push("/dashboard/employer/setup")
                 return
               }
             }
