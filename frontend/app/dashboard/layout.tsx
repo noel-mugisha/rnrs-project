@@ -25,8 +25,8 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen w-full bg-background flex">
       <Sidebar userRole={user.role} />
-      <div className="flex-1 lg:ml-56">
-        <main className="p-6 lg:p-8">{children}</main>
+      <div className="flex-1">
+        <main className="p-4 lg:p-6">{children}</main>
       </div>
     </div>
   )

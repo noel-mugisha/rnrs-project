@@ -24,13 +24,13 @@ import { usePathname } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 
 interface SidebarProps {
-  userRole: "JOBSEEKER" | "JOBPROVIDER"
+  userRole: "JOBSEEKER" | "JOBPROVIDER" | "ADMIN" // <-- FIX: Added "ADMIN" role
 }
 
 export function Sidebar({ userRole }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
 
   const jobSeekerNavItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -49,11 +49,14 @@ export function Sidebar({ userRole }: SidebarProps) {
     { href: "/dashboard/notifications", icon: Bell, label: "Notifications" },
   ]
 
+  // Default to jobProviderNavItems for ADMIN role
   const navItems = userRole === "JOBSEEKER" ? jobSeekerNavItems : jobProviderNavItems
 
   const handleLogout = () => {
     logout()
   }
+
+  if (!user) return null
 
   return (
     <>
@@ -73,24 +76,19 @@ export function Sidebar({ userRole }: SidebarProps) {
       )}
 
       {/* Sidebar */}
-      <div
+      <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-full w-64 bg-card/95 backdrop-blur-md border-r border-border/50 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-0 shadow-lg lg:shadow-none",
+          "fixed left-0 top-0 z-40 h-full w-56 bg-card/95 backdrop-blur-md border-r border-border/50 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-0 shadow-lg lg:shadow-none",
           isOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="p-6 border-b border-border/50 bg-gradient-to-r from-primary/5 to-blue-500/5">
+          <div className="p-4 border-b border-border/50 bg-gradient-to-r from-primary/5 to-blue-500/5">
             <div className="flex items-center justify-between">
               <Logo />
-              <div className="flex items-center gap-2">
+              <div className="lg:hidden">
                 <ThemeToggle />
-                <div className="w-8 h-8 bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-lg flex items-center justify-center lg:hidden">
-                  <button onClick={() => setIsOpen(false)}>
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -99,21 +97,20 @@ export function Sidebar({ userRole }: SidebarProps) {
           <div className="p-4 border-b border-border/50">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                {/* This should come from user context */}
-                JS
+                {user.firstName[0]}{user.lastName[0]}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold truncate">Job Seeker</p>
+                <p className="text-sm font-semibold truncate">{user.firstName} {user.lastName}</p>
                 <p className="text-xs text-muted-foreground truncate">
-                  {userRole === 'JOBSEEKER' ? 'Looking for opportunities' : 'Hiring manager'}
+                  {userRole === 'JOBSEEKER' ? 'Looking for opportunities' : 'Hiring Manager'}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
-            {navItems.map((item, index) => {
+          <nav className="flex-1 p-2 space-y-1">
+            {navItems.map((item) => {
               const isActive = pathname === item.href
               return (
                 <Link
@@ -121,32 +118,20 @@ export function Sidebar({ userRole }: SidebarProps) {
                   href={item.href}
                   onClick={() => setIsOpen(false)}
                   className={cn(
-                    "group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-[0.98] active:scale-[0.96]",
+                    "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                     isActive
-                      ? "bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg shadow-primary/25"
-                      : "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-blue-500/10 hover:border-primary/20",
+                      ? "bg-gradient-to-r from-primary to-blue-600 text-white shadow-md shadow-primary/20"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                   )}
                 >
-                  <div className={cn(
-                    "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
-                    isActive 
-                      ? "bg-white/20" 
-                      : "bg-muted/50 group-hover:bg-primary/10"
-                  )}>
-                    <item.icon className={cn(
-                      "h-4 w-4 transition-colors",
-                      isActive ? "text-white" : "text-muted-foreground group-hover:text-primary"
-                    )} />
-                  </div>
+                  <item.icon className="h-4 w-4" />
                   <span className="flex-1">{item.label}</span>
                   {item.badge && (
                     <Badge 
-                      variant={isActive ? "secondary" : "outline"} 
+                      variant={isActive ? "secondary" : "default"} 
                       className={cn(
-                        "text-xs transition-colors",
-                        isActive 
-                          ? "bg-white/20 text-white border-white/30" 
-                          : "border-primary/20 text-primary group-hover:bg-primary/10"
+                        "text-xs",
+                         isActive ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
                       )}
                     >
                       {item.badge}
@@ -158,43 +143,31 @@ export function Sidebar({ userRole }: SidebarProps) {
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-border/50 space-y-2 bg-gradient-to-r from-muted/30 to-muted/10">
+          <div className="p-2 border-t border-border/50 space-y-1">
             <Link
               href="/dashboard/settings"
               className={cn(
-                "group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-[0.98]",
+                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                 pathname === '/dashboard/settings'
-                  ? "bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg shadow-primary/25"
-                  : "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-blue-500/10"
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
-              <div className={cn(
-                "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
-                pathname === '/dashboard/settings'
-                  ? "bg-white/20" 
-                  : "bg-muted/50 group-hover:bg-primary/10"
-              )}>
-                <Settings className={cn(
-                  "h-4 w-4 transition-colors",
-                  pathname === '/dashboard/settings' ? "text-white" : "text-muted-foreground group-hover:text-primary"
-                )} />
-              </div>
-              <span className="flex-1">Settings</span>
+              <Settings className="h-4 w-4" />
+              Settings
             </Link>
             
             <Button
               variant="ghost"
               onClick={handleLogout}
-              className="w-full justify-start text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all duration-200 rounded-xl px-4 py-3 h-auto"
+              className="w-full justify-start text-muted-foreground hover:text-red-600 hover:bg-red-500/10 gap-3 px-3 py-2.5 h-auto"
             >
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-muted/50 group-hover:bg-red-100 dark:group-hover:bg-red-950/30 transition-colors mr-3">
-                <LogOut className="h-4 w-4" />
-              </div>
-              <span className="flex-1 text-left">Sign Out</span>
+              <LogOut className="h-4 w-4" />
+              Sign Out
             </Button>
           </div>
         </div>
-      </div>
+      </aside>
     </>
   )
 }
