@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Briefcase,
@@ -36,7 +35,6 @@ interface DashboardStats {
   totalApplications: number
   activeApplications: number
   interviews: number
-  profileViews: number
 }
 
 interface DashboardData {
@@ -48,140 +46,16 @@ interface DashboardData {
 
 // --- START: HELPER & SKELETON COMPONENTS ---
 
-// Loading skeleton component
-function DashboardSkeleton() {
-  return (
-    <div className="space-y-8">
-      {/* Header Skeleton */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <Skeleton className="h-9 w-64" />
-          <Skeleton className="h-5 w-96" />
+const StatCard = ({ icon: Icon, title, value, color }: { icon: any, title: string, value: number, color: string }) => (
+  <Card className={`hover:shadow-md transition-shadow duration-300 border-l-4 border-l-${color}-500`}>
+    <CardContent className="p-5">
+      <div className="flex items-center gap-4">
+        <div className={`w-10 h-10 bg-${color}-100 dark:bg-${color}-900/50 rounded-lg flex items-center justify-center shrink-0`}>
+          <Icon className={`h-5 w-5 text-${color}-600 dark:text-${color}-400`} />
         </div>
-        <div className="hidden md:flex gap-3">
-          <Skeleton className="h-9 w-32" />
-          <Skeleton className="h-9 w-28" />
-        </div>
-      </div>
-
-      {/* Stats Cards Skeleton */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-8 w-16" />
-                <Skeleton className="h-3 w-20" />
-              </div>
-              <Skeleton className="h-14 w-14 rounded-xl" />
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {/* Content Grid Skeleton */}
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          {/* Profile Card Skeleton */}
-          <Card className="p-6">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-10 w-10 rounded-lg" />
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-40" />
-                  <Skeleton className="h-4 w-60" />
-                </div>
-              </div>
-              <div className="space-y-3">
-                <Skeleton className="h-5 w-48" />
-                <Skeleton className="h-3 w-full" />
-                <div className="space-y-2 pt-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
-                </div>
-                <div className="flex gap-3 pt-2">
-                  <Skeleton className="h-10 w-36" />
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Applications Card Skeleton */}
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-10 w-10 rounded-lg" />
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-40" />
-                  <Skeleton className="h-4 w-60" />
-                </div>
-              </div>
-              <Skeleton className="h-9 w-24" />
-            </div>
-            <div className="space-y-4">
-              {Array.from({ length: 2 }).map((_, i) => (
-                <div key={i} className="p-5 border rounded-xl">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-5 w-48" />
-                      <Skeleton className="h-6 w-20" />
-                    </div>
-                    <div className="flex items-center gap-6 pt-1">
-                      <Skeleton className="h-4 w-24" />
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-4 w-20" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-
-        {/* Sidebar Skeleton */}
-        <div className="space-y-8">
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <Skeleton className="h-10 w-10 rounded-lg" />
-              <div className="space-y-2">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-40" />
-              </div>
-            </div>
-            <div className="space-y-4">
-              {Array.from({ length: 2 }).map((_, i) => (
-                <div key={i} className="p-4 border rounded-xl space-y-3">
-                  <Skeleton className="h-4 w-3/4" />
-                  <div className="space-y-1">
-                    <Skeleton className="h-3 w-1/2" />
-                    <Skeleton className="h-3 w-1/3" />
-                  </div>
-                  <Skeleton className="h-8 w-full" />
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Sub-components for better organization
-
-const StatCard = ({ icon: Icon, title, value, description, color }: { icon: any, title: string, value: number, description: string, color: string }) => (
-  <Card className={`hover:shadow-lg transition-all duration-300 border-l-4 border-l-${color}-500`}>
-    <CardContent className="p-6">
-      <div className="flex items-center justify-between">
-        <div>
+        <div className="space-y-0.5">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className={`text-3xl font-bold text-${color}-600`}>{value}</p>
-          <p className="text-xs text-muted-foreground mt-1">{description}</p>
-        </div>
-        <div className={`w-14 h-14 bg-${color}-100 rounded-xl flex items-center justify-center`}>
-          <Icon className={`h-7 w-7 text-${color}-600`} />
+          <p className={`text-2xl font-bold text-${color}-600 dark:text-${color}-400`}>{value}</p>
         </div>
       </div>
     </CardContent>
@@ -191,18 +65,18 @@ const StatCard = ({ icon: Icon, title, value, description, color }: { icon: any,
 const ProfileCompletenessCard = ({ completeness }: { completeness: ProfileCompleteness }) => {
   if (completeness.percentage === 100) {
     return (
-      <Card className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30">
-        <CardContent className="p-6 flex items-center gap-6">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center shrink-0">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-950/50 dark:to-emerald-950/50 dark:border-green-800/50">
+        <CardContent className="p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center shrink-0">
+            <CheckCircle className="h-6 w-6 text-green-600" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-green-800">Your Profile is Complete!</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              You're all set to attract top employers. Keep your profile updated for the best results.
+            <h3 className="font-semibold text-green-800 dark:text-green-300">Your Profile is Complete!</h3>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              You're all set to attract top employers.
             </p>
           </div>
-          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+          <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
             <Link href="/dashboard/profile">
               View Profile
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -217,312 +91,197 @@ const ProfileCompletenessCard = ({ completeness }: { completeness: ProfileComple
     <Card className="border-2 border-dashed border-primary/20 hover:border-primary/40 transition-all duration-300">
       <CardHeader>
         <CardTitle className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-lg flex items-center justify-center">
             <TrendingUp className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <div className="text-lg font-bold">Profile Completeness</div>
+            <div className="text-lg font-bold">Complete Your Profile</div>
             <div className="text-sm text-muted-foreground font-normal">Boost your visibility to employers</div>
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-base font-semibold">Your profile is {completeness.percentage}% complete</span>
-            <span className="text-sm text-muted-foreground font-mono">{completeness.percentage}/100</span>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-semibold">Profile Progress</span>
+            <span className="font-mono">{completeness.percentage}%</span>
           </div>
-          <Progress value={completeness.percentage} className="h-3 bg-gray-100" />
+          <Progress value={completeness.percentage} className="h-2" />
         </div>
         
         {completeness.suggestions.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-medium">
+          <div className="space-y-2">
+            <p className="text-sm font-medium flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-yellow-500" />
-              Suggestions to improve your profile:
-            </div>
-            <ul className="space-y-2">
-              {completeness.suggestions.map((suggestion, index) => (
-                <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
-                  {suggestion}
-                </li>
+              Next steps:
+            </p>
+            <ul className="space-y-1.5 list-disc pl-5 text-sm text-muted-foreground">
+              {completeness.suggestions.slice(0, 2).map((suggestion, index) => (
+                <li key={index}>{suggestion}</li>
               ))}
             </ul>
           </div>
         )}
         
-        <div className="flex gap-3">
-          <Button asChild className="bg-gradient-to-r from-primary to-blue-600">
-            <Link href={completeness.percentage < 50 ? "/dashboard/profile/setup" : "/dashboard/profile"}>
-              <Plus className="mr-2 h-4 w-4" />
-              Complete Profile
-            </Link>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-const RecentApplications = ({ applications }: { applications: Application[] }) => (
-  <Card className="hover:shadow-md transition-shadow duration-300">
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-lg flex items-center justify-center">
-          <Briefcase className="h-5 w-5 text-blue-600" />
-        </div>
-        <div>
-          <CardTitle className="text-lg">Recent Applications</CardTitle>
-          <p className="text-sm text-muted-foreground font-normal">Track your latest job applications</p>
-        </div>
-      </div>
-      {applications.length > 0 && (
-        <Button variant="outline" size="sm" asChild className="shrink-0">
-          <Link href="/dashboard/applications">
-            View All
-            <ArrowRight className="h-4 w-4 ml-2" />
+        <Button asChild className="bg-gradient-to-r from-primary to-blue-600">
+          <Link href={completeness.percentage < 50 ? "/dashboard/profile/setup" : "/dashboard/profile"}>
+            <Plus className="mr-2 h-4 w-4" />
+            Improve Profile
           </Link>
         </Button>
-      )}
+      </CardContent>
+    </Card>
+  )
+}
+
+const RecentApplications = ({ applications }: { applications: Application[] }) => (
+  <Card>
+    <CardHeader>
+      <div className="flex items-center justify-between">
+        <CardTitle className="text-lg">Recent Applications</CardTitle>
+        {applications.length > 0 && (
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/dashboard/applications">
+              View All <ArrowRight className="h-4 w-4 ml-2" />
+            </Link>
+          </Button>
+        )}
+      </div>
     </CardHeader>
     <CardContent>
       {applications.length === 0 ? (
-        <div className="text-center py-12 space-y-4">
-          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-            <Send className="h-10 w-10 text-gray-400" />
+        <div className="text-center py-10 space-y-3">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
+            <Send className="h-8 w-8 text-muted-foreground" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-2">No applications yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Start applying to jobs that match your skills and interests
+            <h3 className="font-semibold">No applications yet</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Start applying to jobs to track your progress here.
             </p>
-            <Button asChild className="bg-gradient-to-r from-primary to-blue-600">
-              <Link href="/jobs">
-                <Search className="h-4 w-4 mr-2" />
-                Browse Jobs
-              </Link>
-            </Button>
           </div>
+          <Button asChild>
+            <Link href="/jobs">
+              <Search className="h-4 w-4 mr-2" />
+              Browse Jobs
+            </Link>
+          </Button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {applications.map((application) => (
-            <div
-              key={application.id}
-              className="group flex items-center justify-between p-4 border rounded-xl hover:border-primary/20 hover:bg-primary/5 transition-all duration-300"
-            >
-              <div className="space-y-1.5 flex-1">
-                <div className="flex items-center gap-3">
-                  <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                    {application.job.title}
-                  </h4>
-                  <Badge 
-                    className={`${getStatusColor(application.status)} text-white text-xs`}
-                    variant="secondary"
-                  >
-                    {application.status.replace('_', ' ')}
-                  </Badge>
-                </div>
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1.5">
-                    <Building className="h-4 w-4" />
-                    {application.job.employer.name}
+            <Link href={`/dashboard/applications`} key={application.id} className="block group">
+              <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                <div className="space-y-1 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-semibold text-sm group-hover:text-primary transition-colors">
+                      {application.job.title}
+                    </h4>
+                    <Badge className={`${getStatusColor(application.status)} text-white text-xs`} variant="secondary">
+                      {application.status.replace('_', ' ')}
+                    </Badge>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="h-4 w-4" />
-                    {application.job.location || 'Remote'}
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="h-4 w-4" />
-                    {formatRelativeTime(application.appliedAt)}
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1.5"><Building className="h-3 w-3" />{application.job.employer.name}</div>
+                    <div className="flex items-center gap-1.5"><Clock className="h-3 w-3" />{formatRelativeTime(application.appliedAt)}</div>
                   </div>
                 </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <Button asChild variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <Link href={`/dashboard/applications`}>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
+            </Link>
           ))}
         </div>
       )}
     </CardContent>
   </Card>
-);
+)
 
 const SuggestedJobs = ({ jobs }: { jobs: Job[] }) => (
-  <Card className="hover:shadow-md transition-shadow duration-300">
+  <Card>
     <CardHeader>
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-green-500/20 to-green-500/10 rounded-lg flex items-center justify-center">
-          <Star className="h-5 w-5 text-green-600" />
-        </div>
-        <div>
-          <CardTitle className="text-lg">Suggested Jobs</CardTitle>
-          <p className="text-sm text-muted-foreground font-normal">Based on your profile</p>
-        </div>
-      </div>
+      <CardTitle className="text-lg">Suggested Jobs</CardTitle>
     </CardHeader>
     <CardContent>
       {jobs.length === 0 ? (
-        <div className="text-center py-8 space-y-4">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-            <Briefcase className="h-8 w-8 text-gray-400" />
+        <div className="text-center py-10 space-y-3">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
+            <Briefcase className="h-8 w-8 text-muted-foreground" />
           </div>
           <div>
-            <h3 className="font-semibold mb-2">No job suggestions yet</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Complete your profile to get personalized job recommendations
+            <h3 className="font-semibold">No suggestions yet</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Complete your profile to get personalized recommendations.
             </p>
-            <Button asChild size="sm" variant="outline">
-              <Link href="/dashboard/profile">
-                <Users className="h-4 w-4 mr-2" />
-                Update Profile
-              </Link>
-            </Button>
           </div>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard/profile">
+              <Users className="h-4 w-4 mr-2" />
+              Update Profile
+            </Link>
+          </Button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {jobs.map((job) => (
             <Link href={`/jobs/${job.id}`} key={job.id} className="block group">
-              <div className="p-4 border rounded-xl hover:border-green-300 hover:bg-green-50/50 transition-all duration-300 space-y-2">
+              <div className="p-4 border rounded-lg hover:bg-accent/50 transition-colors">
                 <div className="flex items-start justify-between">
-                  <h4 className="font-semibold text-sm group-hover:text-green-800 transition-colors">{job.title}</h4>
-                  <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 border-green-200">
+                  <h4 className="font-semibold text-sm group-hover:text-primary transition-colors mb-1">{job.title}</h4>
+                  <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800">
                     <Star className="h-3 w-3 mr-1" />
                     Match
                   </Badge>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                    <Building className="h-3 w-3" />
-                    {job.employer.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                    <MapPin className="h-3 w-3" />
-                    {job.location || 'Remote'}
-                  </p>
-                </div>
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Building className="h-3 w-3" />
+                  {job.employer.name}
+                </p>
               </div>
             </Link>
           ))}
         </div>
       )}
-      <Button variant="outline" className="w-full mt-6" asChild>
-        <Link href="/jobs">
-          <Search className="h-4 w-4 mr-2" />
-          Browse All Jobs
-        </Link>
-      </Button>
     </CardContent>
   </Card>
-);
+)
 
 const QuickActions = () => (
-  <Card className="bg-gradient-to-br from-primary/5 to-blue-500/5 border-primary/20">
+  <Card>
     <CardHeader>
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-blue-500/10 rounded-lg flex items-center justify-center">
-          <TrendingUp className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <CardTitle className="text-lg">Quick Actions</CardTitle>
-          <p className="text-sm text-muted-foreground font-normal">Boost your job search</p>
-        </div>
-      </div>
+      <CardTitle className="text-lg">Quick Actions</CardTitle>
     </CardHeader>
     <CardContent className="space-y-3">
       <Button className="w-full justify-start h-auto p-3" asChild>
         <Link href="/dashboard/resumes">
-          <FileText className="mr-3 h-5 w-5" />
-          <div className="text-left">
-            <div className="font-semibold">Upload Resume</div>
-            <div className="text-xs opacity-90">Stand out to employers</div>
-          </div>
+          <FileText className="mr-3 h-4 w-4" />
+          <span className="font-semibold">Manage Resumes</span>
         </Link>
       </Button>
-      <Button variant="outline" className="w-full justify-start h-auto p-3 hover:bg-primary/5 hover:border-primary/30" asChild>
+      <Button variant="outline" className="w-full justify-start h-auto p-3" asChild>
         <Link href="/dashboard/profile">
-          <Users className="mr-3 h-5 w-5 text-primary" />
-          <div className="text-left">
-            <div className="font-semibold">Update Profile</div>
-            <div className="text-xs text-muted-foreground">Improve visibility</div>
-          </div>
+          <Users className="mr-3 h-4 w-4" />
+          <span className="font-semibold">Update Profile</span>
         </Link>
       </Button>
     </CardContent>
   </Card>
-);
+)
 
 // Job Provider Dashboard Component
 function JobProviderDashboard() {
-  // This remains unchanged but is necessary for the component to work.
   return (
-    <div className="space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex items-center justify-between"
-      >
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-            Employer Dashboard
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Manage your job postings and find the best candidates
-          </p>
-        </div>
-        <div className="hidden md:flex items-center gap-3">
-          <Button asChild size="sm" className="bg-gradient-to-r from-primary to-blue-600">
-            <Link href="/dashboard/jobs/new">
-              <Plus className="h-4 w-4 mr-2" />
-              Post Job
-            </Link>
-          </Button>
-        </div>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <Card className="bg-gradient-to-br from-primary/5 to-blue-500/5 border-primary/20">
-          <CardContent className="text-center py-16 space-y-6">
-            <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-blue-500/10 rounded-full flex items-center justify-center mx-auto">
-              <TrendingUp className="h-12 w-12 text-primary" />
-            </div>
-            <div className="space-y-3">
-              <h2 className="text-2xl font-bold">Enhanced Features Coming Soon</h2>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                We're building advanced tools to help you find the perfect candidates and manage your hiring process more efficiently.
-              </p>
-            </div>
-            <div className="flex gap-4 justify-center">
-              <Button asChild className="bg-gradient-to-r from-primary to-blue-600">
-                <Link href="/dashboard/jobs">
-                  <Briefcase className="h-4 w-4 mr-2" />
-                  Manage Jobs
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/dashboard/candidates">
-                  <Users className="h-4 w-4 mr-2" />
-                  View Candidates
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Employer Dashboard</h1>
+      <Card>
+        <CardContent className="py-12 text-center">
+          <p className="text-muted-foreground">Employer dashboard is under construction.</p>
+        </CardContent>
+      </Card>
     </div>
   )
 }
 
-// --- END: HELPER & SKELETON COMPONENTS ---
+// --- END: HELPER COMPONENTS ---
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -533,6 +292,10 @@ export default function DashboardPage() {
   useEffect(() => {
     if (user) {
       loadDashboardData()
+    } else {
+      // If user is null but auth is not loading, it means they are logged out.
+      // This case is handled by ProtectedRoute, but as a fallback:
+      setIsLoading(false)
     }
   }, [user])
 
@@ -549,13 +312,12 @@ export default function DashboardPage() {
       ])
 
       const profileCompleteness = calculateProfileCompleteness(user, user.jobSeekerProfile)
-
       const applications = applicationsResponse.success ? (applicationsResponse.data?.applications || []) : []
+      
       const stats: DashboardStats = {
         totalApplications: applicationsResponse.success ? (applicationsResponse.data?.pagination?.total || 0) : 0,
         activeApplications: applications.filter(app => ['APPLIED', 'VIEWED', 'SHORTLISTED'].includes(app.status)).length,
         interviews: applications.filter(app => app.status === 'INTERVIEW_SCHEDULED').length,
-        profileViews: Math.floor(Math.random() * 50) + 10,
       }
 
       setDashboardData({
@@ -572,14 +334,18 @@ export default function DashboardPage() {
     }
   }
 
-  if (!user) return null
+  if (!user) {
+    // This is handled by ProtectedRoute, but it prevents flicker.
+    return null;
+  }
   
   if (user.role === "JOBPROVIDER") {
     return <JobProviderDashboard />
   }
 
+  // Loading state is now handled by loading.tsx, but this is a good fallback.
   if (isLoading) {
-    return <DashboardSkeleton />
+    return null
   }
 
   if (error) {
@@ -600,23 +366,23 @@ export default function DashboardPage() {
   if (!dashboardData) return null
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Welcome Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold">
               Welcome back, {user.firstName}!
             </h1>
-            <p className="text-muted-foreground mt-1">
-              Here's what's happening with your job search today
+            <p className="text-muted-foreground">
+              Here's what's happening with your job search today.
             </p>
           </div>
-          <div className="hidden md:flex items-center gap-3">
-            <Button asChild className="bg-gradient-to-r from-primary to-blue-600">
+          <div className="flex items-center gap-2">
+            <Button asChild>
               <Link href="/jobs">
                 <Search className="h-4 w-4 mr-2" />
                 Browse Jobs
@@ -637,12 +403,11 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        <StatCard icon={Send} title="Total Applications" value={dashboardData.stats.totalApplications} description="All time" color="red" />
-        <StatCard icon={Clock} title="Active Applications" value={dashboardData.stats.activeApplications} description="In progress" color="blue" />
-        <StatCard icon={Calendar} title="Interviews" value={dashboardData.stats.interviews} description="Scheduled" color="green" />
-        <StatCard icon={Eye} title="Profile Views" value={dashboardData.stats.profileViews} description="This month" color="purple" />
+        <StatCard icon={Send} title="Total Applications" value={dashboardData.stats.totalApplications} color="red" />
+        <StatCard icon={Clock} title="Active Applications" value={dashboardData.stats.activeApplications} color="blue" />
+        <StatCard icon={Calendar} title="Interviews" value={dashboardData.stats.interviews} color="green" />
       </motion.div>
 
       <motion.div 
