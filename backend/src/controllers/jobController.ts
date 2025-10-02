@@ -78,4 +78,15 @@ export class JobController {
       sendError(res, error.message, 400);
     }
   }
+
+  async getRecommendedJobs(req: AuthenticatedRequest, res: Response) {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const result = await jobService.getRecommendedJobs(req.user!.id, limit);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('Get recommended jobs error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
 }

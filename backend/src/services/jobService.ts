@@ -272,4 +272,97 @@ export class JobService {
       },
     };
   }
+
+  async getRecommendedJobs(userId: string, limit: number = 10) {
+    // Get job seeker profile with skills and desired title
+    const jobSeeker = await prisma.jobSeekerProfile.findUnique({
+      where: { userId },
+      select: {
+        desiredTitle: true,
+        skills: true,
+      },
+    });
+
+    if (!jobSeeker) {
+      return { jobs: [] };
+    }
+
+    // Get user's applications to exclude already applied jobs
+    const applications = await prisma.application.findMany({
+      where: { jobSeekerId: userId },
+      select: { jobId: true },
+    });
+    const appliedJobIds = applications.map(app => app.jobId);
+
+    // Build search criteria based on profile
+    const where: any = {
+      status: 'PUBLISHED',
+      postedAt: { lte: new Date() },
+      OR: [
+        { expiresAt: null },
+        { expiresAt: { gt: new Date() } },
+      ],
+    };
+
+    // Exclude already applied jobs
+    if (appliedJobIds.length > 0) {
+      where.id = { notIn: appliedJobIds };
+    }
+
+    // Search conditions based on skills and desired title
+    const searchConditions: any[] = [];
+
+    // Match by desired title
+    if (jobSeeker.desiredTitle) {
+      searchConditions.push({
+        title: { contains: jobSeeker.desiredTitle, mode: 'insensitive' },
+      });
+      searchConditions.push({
+        description: { contains: jobSeeker.desiredTitle, mode: 'insensitive' },
+      });
+    }
+
+    // Match by skills - search in job requirements and description
+    if (jobSeeker.skills && Array.isArray(jobSeeker.skills)) {
+      const skills = jobSeeker.skills as Array<{ category: string; work: string }>;
+      skills.forEach(skill => {
+        searchConditions.push({
+          OR: [
+            { title: { contains: skill.work, mode: 'insensitive' } },
+            { description: { contains: skill.work, mode: 'insensitive' } },
+            { requirements: { hasSome: [skill.work] } },
+          ],
+        });
+      });
+    }
+
+    // If we have search conditions, add them
+    if (searchConditions.length > 0) {
+      where.OR = searchConditions;
+    }
+
+    // Fetch recommended jobs
+    const jobs = await prisma.job.findMany({
+      where,
+      include: {
+        employer: {
+          select: {
+            id: true,
+            name: true,
+            website: true,
+            industry: true,
+            location: true,
+            logoKey: true,
+          },
+        },
+        _count: {
+          select: { applications: true },
+        },
+      },
+      orderBy: { postedAt: 'desc' },
+      take: limit,
+    });
+
+    return { jobs };
+  }
 }

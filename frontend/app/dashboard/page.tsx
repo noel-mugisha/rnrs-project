@@ -75,11 +75,17 @@ export default function DashboardPage() {
       // Calculate profile completeness using actual profile data
       const profileCompleteness = calculateProfileCompleteness(user, user.jobSeekerProfile)
 
-      // Mock stats for now - replace with real API calls
+      // Calculate stats from applications data
+      const applications = applicationsResponse.success ? (applicationsResponse.data?.applications || []) : []
+      const activeStatuses = ['APPLIED', 'VIEWED', 'SHORTLISTED']
+      const interviewStatuses = ['INTERVIEW_SCHEDULED']
+      
       const stats: DashboardStats = {
-        totalApplications: applicationsResponse.success ? (applicationsResponse.data?.total || 0) : 0,
-        activeApplications: 0, // Would come from filtering applications by status
-        interviews: 0, // Would come from filtering applications by interview status
+        totalApplications: applicationsResponse.success && applicationsResponse.data?.pagination 
+          ? applicationsResponse.data.pagination.total 
+          : applications.length,
+        activeApplications: applications.filter(app => activeStatuses.includes(app.status)).length,
+        interviews: applications.filter(app => interviewStatuses.includes(app.status)).length,
         profileViews: Math.floor(Math.random() * 50) + 10, // Would come from analytics API
       }
 
@@ -165,64 +171,72 @@ export default function DashboardPage() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
-        <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-primary">
+        {/* Total Applications Card */}
+        <Card className="relative overflow-hidden hover:shadow-xl transition-all duration-300 border-l-4 border-l-red-500">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Total Applications</p>
-                <p className="text-3xl font-bold text-primary">{dashboardData.stats.totalApplications}</p>
-                <p className="text-xs text-muted-foreground mt-1">All time</p>
+                <p className="text-4xl font-bold text-red-600">{dashboardData.stats.totalApplications}</p>
+                <p className="text-xs text-muted-foreground">All time</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center">
-                <Send className="h-7 w-7 text-primary" />
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <Send className="h-6 w-6 text-red-600" />
               </div>
             </div>
           </CardContent>
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-red-600" />
         </Card>
 
-        <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
+        {/* Active Applications Card */}
+        <Card className="relative overflow-hidden hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Active Applications</p>
-                <p className="text-3xl font-bold text-blue-600">{dashboardData.stats.activeApplications}</p>
-                <p className="text-xs text-muted-foreground mt-1">In progress</p>
+                <p className="text-4xl font-bold text-blue-600">{dashboardData.stats.activeApplications}</p>
+                <p className="text-xs text-muted-foreground">In progress</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-xl flex items-center justify-center">
-                <Clock className="h-7 w-7 text-blue-600" />
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <Clock className="h-6 w-6 text-blue-600" />
               </div>
             </div>
           </CardContent>
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600" />
         </Card>
 
-        <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-green-500">
+        {/* Interviews Card */}
+        <Card className="relative overflow-hidden hover:shadow-xl transition-all duration-300 border-l-4 border-l-green-500">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Interviews</p>
-                <p className="text-3xl font-bold text-green-600">{dashboardData.stats.interviews}</p>
-                <p className="text-xs text-muted-foreground mt-1">Scheduled</p>
+                <p className="text-4xl font-bold text-green-600">{dashboardData.stats.interviews}</p>
+                <p className="text-xs text-muted-foreground">Scheduled</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-green-500/20 to-green-500/10 rounded-xl flex items-center justify-center">
-                <Calendar className="h-7 w-7 text-green-600" />
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-green-600" />
               </div>
             </div>
           </CardContent>
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-green-600" />
         </Card>
 
-        <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-purple-500">
+        {/* Profile Views Card */}
+        <Card className="relative overflow-hidden hover:shadow-xl transition-all duration-300 border-l-4 border-l-purple-500">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Profile Views</p>
-                <p className="text-3xl font-bold text-purple-600">{dashboardData.stats.profileViews}</p>
-                <p className="text-xs text-muted-foreground mt-1">This month</p>
+                <p className="text-4xl font-bold text-purple-600">{dashboardData.stats.profileViews}</p>
+                <p className="text-xs text-muted-foreground">This month</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500/20 to-purple-500/10 rounded-xl flex items-center justify-center">
-                <Eye className="h-7 w-7 text-purple-600" />
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <Eye className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </CardContent>
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-purple-600" />
         </Card>
       </motion.div>
 
@@ -235,14 +249,14 @@ export default function DashboardPage() {
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-8">
           {/* Profile Completeness */}
-          <Card className="border-2 border-dashed border-primary/20 hover:border-primary/40 transition-all duration-300">
+          <Card className="border-2 border-dashed hover:shadow-lg transition-all duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-primary" />
+                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-red-600" />
                 </div>
                 <div>
-                  <div className="text-lg font-bold">Profile Completeness</div>
+                  <div className="text-xl font-bold">Profile Completeness</div>
                   <div className="text-sm text-muted-foreground font-normal">Boost your visibility to employers</div>
                 </div>
               </CardTitle>
@@ -251,9 +265,12 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-base font-semibold">Your profile is {dashboardData.profileCompleteness.percentage}% complete</span>
-                  <span className="text-sm text-muted-foreground font-mono">{dashboardData.profileCompleteness.percentage}/100</span>
+                  <span className="text-lg font-bold text-primary">{dashboardData.profileCompleteness.percentage}/100</span>
                 </div>
-                <Progress value={dashboardData.profileCompleteness.percentage} className="h-3 bg-gray-100" />
+                <Progress 
+                  value={dashboardData.profileCompleteness.percentage} 
+                  className="h-2.5"
+                />
               </div>
               
               {dashboardData.profileCompleteness.suggestions.length > 0 && (
@@ -274,24 +291,15 @@ export default function DashboardPage() {
               )}
               
               <div className="flex gap-3">
-                {dashboardData.profileCompleteness.percentage < 100 ? (
-                  <Button asChild className="bg-gradient-to-r from-primary to-blue-600">
-                    <Link href={dashboardData.profileCompleteness.percentage < 50 ? "/dashboard/profile/setup" : "/dashboard/profile"}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Complete Profile
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button asChild variant="outline">
-                    <Link href="/dashboard/profile">
-                      <Users className="mr-2 h-4 w-4" />
-                      View Profile
-                    </Link>
-                  </Button>
-                )}
-                <Button asChild variant="outline">
+                <Button asChild className="bg-gradient-to-r from-primary to-blue-600 flex items-center gap-2">
+                  <Link href="/dashboard/profile">
+                    <Users className="h-4 w-4" />
+                    View Profile
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="flex items-center gap-2">
                   <Link href="/jobs">
-                    <Search className="mr-2 h-4 w-4" />
+                    <Search className="h-4 w-4" />
                     Find Jobs
                   </Link>
                 </Button>
@@ -387,14 +395,14 @@ export default function DashboardPage() {
         {/* Right Column */}
         <div className="space-y-8">
           {/* Suggested Jobs */}
-          <Card className="hover:shadow-md transition-shadow duration-300">
+          <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500/20 to-green-500/10 rounded-lg flex items-center justify-center">
-                  <Star className="h-5 w-5 text-green-600" />
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Star className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">Suggested Jobs</CardTitle>
+                  <CardTitle className="text-xl">Suggested Jobs</CardTitle>
                   <p className="text-sm text-muted-foreground font-normal">Based on your profile</p>
                 </div>
               </div>

@@ -49,6 +49,25 @@ router.get('/search', validateQuery(jobSearchSchema), jobController.searchJobs);
 
 /**
  * @swagger
+ * /jobs/recommended:
+ *   get:
+ *     summary: Get recommended jobs for the authenticated job seeker
+ *     tags: [Jobs]
+ *     description: Returns personalized job recommendations based on the user's profile, skills, and desired title.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10 }
+ *     responses:
+ *       '200':
+ *         description: A list of recommended jobs.
+ */
+router.get('/recommended', authenticate, requireRole(['JOBSEEKER']), jobController.getRecommendedJobs);
+
+/**
+ * @swagger
  * /jobs/{id}:
  *   get:
  *     summary: Get a single job by ID

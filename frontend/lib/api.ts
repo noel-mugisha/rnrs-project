@@ -351,6 +351,11 @@ class ApiClient {
     return this.request(`/jobs/search?${searchParams.toString()}`)
   }
 
+  async getRecommendedJobs(limit?: number): Promise<ApiResponse<{ jobs: Job[] }>> {
+    const params = limit ? `?limit=${limit}` : ''
+    return this.request(`/jobs/recommended${params}`)
+  }
+
   async getJob(jobId: string): Promise<ApiResponse<Job>> {
     return this.request(`/jobs/${jobId}`)
   }
