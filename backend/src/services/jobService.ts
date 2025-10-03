@@ -130,6 +130,44 @@ export class JobService {
     return job;
   }
 
+  async getMyJob(userId: string, jobId: string) {
+    const employer = await prisma.employer.findUnique({
+      where: { ownerId: userId },
+    });
+
+    if (!employer) {
+      throw new Error('Employer profile not found');
+    }
+
+    const job = await prisma.job.findFirst({
+      where: {
+        id: jobId,
+        employerId: employer.id,
+      },
+      include: {
+        employer: {
+          select: {
+            id: true,
+            name: true,
+            website: true,
+            industry: true,
+            location: true,
+            logoKey: true,
+          },
+        },
+        _count: {
+          select: { applications: true },
+        },
+      },
+    });
+
+    if (!job) {
+      throw new Error('Job not found or access denied');
+    }
+
+    return job;
+  }
+
   async searchJobs(query: JobSearchQuery) {
     const where: any = {
       status: 'PUBLISHED',

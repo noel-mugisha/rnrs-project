@@ -32,6 +32,17 @@ export class JobController {
     }
   }
 
+  async getMyJob(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const job = await jobService.getMyJob(req.user!.id, id);
+      sendSuccess(res, job);
+    } catch (error: any) {
+      logger.error('Get my job error:', error);
+      sendError(res, error.message, 404);
+    }
+  }
+
   async getJob(req: Request, res: Response) {
     try {
       const { id } = req.params;

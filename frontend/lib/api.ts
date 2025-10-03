@@ -395,6 +395,10 @@ class ApiClient {
     return this.request(`/jobs/my-jobs?${searchParams.toString()}`)
   }
 
+  async getMyJob(jobId: string): Promise<ApiResponse<Job>> {
+    return this.request(`/jobs/my-jobs/${jobId}`)
+  }
+
   async updateJob(jobId: string, jobData: {
     workCategory?: string
     workType?: string

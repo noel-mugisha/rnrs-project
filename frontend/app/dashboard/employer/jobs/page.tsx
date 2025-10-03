@@ -38,6 +38,8 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -66,6 +68,8 @@ const STATUS_ICONS = {
   ARCHIVED: Trash2,
 }
 
+const PAGE_SIZE = 10
+
 export default function JobsManagementPage() {
   const router = useRouter()
   const { user } = useAuth()
@@ -74,28 +78,42 @@ export default function JobsManagementPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("ALL")
   const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalJobs, setTotalJobs] = useState(0)
 
   useEffect(() => {
     if (user?.role === 'JOBPROVIDER' && user.employerProfile) {
       loadJobs()
     }
-  }, [user, statusFilter])
+  }, [user, statusFilter, currentPage])
 
   const loadJobs = async () => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const params: any = { limit: 100 }
+      const params: any = { 
+        page: currentPage,
+        limit: PAGE_SIZE
+      }
       if (statusFilter !== 'ALL') {
         params.status = statusFilter
       }
 
+      console.log('Loading jobs with params:', params)
       const response = await api.getMyJobs(params)
+      console.log('Jobs response:', response)
 
       if (response.success && response.data) {
         setJobs(response.data.jobs || [])
+        const total = response.data.pagination?.total || response.data.total || response.data.jobs?.length || 0
+        setTotalJobs(total)
+        setTotalPages(Math.ceil(total / PAGE_SIZE))
+        console.log('Loaded jobs:', response.data.jobs)
+        console.log('Pagination info:', response.data.pagination)
       } else {
+        console.error('Failed to load jobs:', response.error)
         setError(response.error || "Failed to load jobs")
       }
     } catch (err) {
@@ -115,7 +133,12 @@ export default function JobsManagementPage() {
       const response = await api.deleteJob(jobId)
       if (response.success) {
         toast.success("Job deleted successfully")
-        loadJobs()
+        // If we delete the last item on a page and it's not the first page, go back one page
+        if (jobs.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1)
+        } else {
+          loadJobs()
+        }
       } else {
         toast.error(response.error || "Failed to delete job")
       }
@@ -138,11 +161,17 @@ export default function JobsManagementPage() {
     }
   }
 
+  // Client-side search filtering on the current page results
   const filteredJobs = jobs.filter(job =>
     job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     job.workCategory.toLowerCase().includes(searchQuery.toLowerCase()) ||
     job.workType.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  // Reset to page 1 when status filter changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [statusFilter])
 
   if (!user || user.role !== 'JOBPROVIDER' || !user.employerProfile) {
     router.push('/dashboard/employer/setup')
@@ -368,20 +397,78 @@ export default function JobsManagementPage() {
         </div>
       )}
 
+      {/* Pagination */}
+      {!isLoading && filteredJobs.length > 0 && totalPages > 1 && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Showing {(currentPage - 1) * PAGE_SIZE + 1} to {Math.min(currentPage * PAGE_SIZE, totalJobs)} of {totalJobs} jobs
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum: number
+                    if (totalPages <= 5) {
+                      pageNum = i + 1
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i
+                    } else {
+                      pageNum = currentPage - 2 + i
+                    }
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(pageNum)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {pageNum}
+                      </Button>
+                    )
+                  })}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Stats Summary */}
       {!isLoading && filteredJobs.length > 0 && (
         <Card className="bg-gradient-to-r from-primary/5 to-blue-500/5">
           <CardContent className="p-6">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">
-                Showing {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'}
+                Total: {totalJobs} {totalJobs === 1 ? 'job' : 'jobs'}
               </span>
               <div className="flex gap-4">
                 <span className="text-muted-foreground">
-                  {jobs.filter(j => j.status === 'PUBLISHED').length} Published
+                  {jobs.filter(j => j.status === 'PUBLISHED').length} Published on this page
                 </span>
                 <span className="text-muted-foreground">
-                  {jobs.filter(j => j.status === 'DRAFT').length} Draft
+                  {jobs.filter(j => j.status === 'DRAFT').length} Draft on this page
                 </span>
               </div>
             </div>
