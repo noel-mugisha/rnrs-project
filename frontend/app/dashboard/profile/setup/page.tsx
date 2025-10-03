@@ -113,6 +113,12 @@ export default function ProfileSetupPage() {
     }
   }
 
+  const handleSkipStep = () => {
+    if (currentStep < steps.length) {
+      nextStep();
+    }
+  };
+
   // Resume upload handler
   const handleResumeUpload = async (file: File) => {
     if (!file) return
@@ -243,10 +249,6 @@ export default function ProfileSetupPage() {
     } else {
       nextStep()
     }
-  }
-
-  const handleSkip = () => {
-    router.push("/dashboard")
   }
 
   const progressPercentage = (currentStep / steps.length) * 100
@@ -544,9 +546,11 @@ export default function ProfileSetupPage() {
                         Previous
                       </Button>
                     )}
-                    <Button variant="ghost" onClick={handleSkip}>
-                      Skip Setup
-                    </Button>
+                    {currentStep < steps.length && (
+                      <Button variant="ghost" onClick={handleSkipStep}>
+                        Skip
+                      </Button>
+                    )}
                   </div>
 
                   <Button
