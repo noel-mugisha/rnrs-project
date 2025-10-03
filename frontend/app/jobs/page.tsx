@@ -109,6 +109,8 @@ export default function JobsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [popularCategories, setPopularCategories] = useState<string[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
   // Fetch jobs from API
   const fetchJobs = async (page: number = 1, forceRefresh: boolean = false) => {
@@ -147,6 +149,25 @@ export default function JobsPage() {
       setIsRefreshing(false)
     }
   }
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setIsLoadingCategories(true);
+      try {
+        const response = await api.getWorkCategories();
+        if (response.success && response.data) {
+          setPopularCategories(response.data.map(cat => cat.category));
+        }
+      } catch (error) {
+        console.error("Failed to fetch popular categories", error);
+        toast.error("Could not load job categories.");
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Initial load and search effects
   useEffect(() => {
@@ -298,7 +319,7 @@ export default function JobsPage() {
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="remote" checked={remoteOnly} onCheckedChange={setRemoteOnly} />
+                      <Checkbox id="remote" checked={remoteOnly} onCheckedChange={(checked) => setRemoteOnly(Boolean(checked))} />
                       <label htmlFor="remote" className="text-sm font-medium">
                         Remote jobs only
                       </label>
@@ -312,8 +333,12 @@ export default function JobsPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {["Technology", "Marketing", "Finance", "Healthcare", "Education", "Construction"].map(
-                        (category) => (
+                      {isLoadingCategories ? (
+                        Array.from({ length: 6 }).map((_, index) => (
+                          <Skeleton key={index} className="h-5 w-3/4" />
+                        ))
+                      ) : (
+                        popularCategories.map((category) => (
                           <button
                             key={category}
                             className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -321,7 +346,7 @@ export default function JobsPage() {
                           >
                             {category}
                           </button>
-                        ),
+                        ))
                       )}
                     </div>
                   </CardContent>
