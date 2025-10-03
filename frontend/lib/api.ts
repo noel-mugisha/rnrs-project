@@ -187,9 +187,6 @@ class ApiClient {
     }
   }
 
-  // ... (rest of the ApiClient methods remain unchanged)
-
-  // Authentication API
   async signup(userData: {
     firstName: string
     lastName: string
@@ -236,7 +233,6 @@ class ApiClient {
     })
   }
 
-  // User API
   async getMe(): Promise<ApiResponse<User>> {
     return this.request('/users/me')
   }
@@ -248,12 +244,10 @@ class ApiClient {
     })
   }
 
-  // Meta API
   async getWorkCategories(): Promise<ApiResponse<WorkCategory[]>> {
     return this.request('/meta/work-categories')
   }
 
-  // Job Seeker Profile API
   async updateJobSeekerProfile(profileData: {
     phone?: string
     desiredTitle?: string
@@ -269,7 +263,6 @@ class ApiClient {
     })
   }
 
-  // Resume API
   async getResumes(): Promise<ApiResponse<Resume[]>> {
     return this.request('/resumes')
   }
@@ -310,7 +303,6 @@ class ApiClient {
     })
   }
 
-  // Employer API
   async createEmployer(employerData: {
     name: string
     website?: string
@@ -334,7 +326,6 @@ class ApiClient {
     })
   }
 
-  // Jobs API
   async searchJobs(params: {
     q?: string
     location?: string
@@ -405,7 +396,6 @@ class ApiClient {
     return this.request(`/jobs/${jobId}/applicants?${searchParams.toString()}`)
   }
 
-  // Applications API
   async applyToJob(jobId: string, applicationData: {
     resumeId?: string
     coverLetter?: string
@@ -423,13 +413,14 @@ class ApiClient {
   }
 
   async getMyApplications(params: {
+    q?: string
     status?: string
     page?: number
     limit?: number
   } = {}): Promise<ApiResponse<{ applications: Application[]; pagination: any }>> {
     const searchParams = new URLSearchParams()
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value !== undefined && value !== null && value !== '') {
         searchParams.append(key, value.toString())
       }
     })
@@ -447,7 +438,6 @@ class ApiClient {
     })
   }
 
-  // Notifications API
   async getNotifications(params: {
     read?: boolean
     page?: number
@@ -477,7 +467,6 @@ class ApiClient {
 
 export const api = new ApiClient()
 
-// Auth context helpers
 export const clearAuthData = () => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('auth_token')

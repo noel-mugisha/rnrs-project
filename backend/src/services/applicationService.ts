@@ -95,7 +95,7 @@ export class ApplicationService {
     return { applicationId: application.id };
   }
 
-  async getMyApplications(userId: string, filters: ApplicationFilters) {
+  async getMyApplications(userId: string, filters: ApplicationFilters & { q?: string }) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { jobSeekerProfile: true },
@@ -109,6 +109,15 @@ export class ApplicationService {
 
     if (filters.status) {
       where.status = filters.status;
+    }
+
+    if (filters.q) {
+      where.job = {
+        OR: [
+          { title: { contains: filters.q, mode: 'insensitive' } },
+          { employer: { name: { contains: filters.q, mode: 'insensitive' } } },
+        ],
+      };
     }
 
     if (filters.dateFrom || filters.dateTo) {
@@ -128,6 +137,9 @@ export class ApplicationService {
       orderBy.appliedAt = 'desc';
     }
 
+    const limit = filters.limit || 5;
+    const page = filters.page || 1;
+
     const [applications, total] = await Promise.all([
       prisma.application.findMany({
         where,
@@ -140,6 +152,7 @@ export class ApplicationService {
               remote: true,
               jobType: true,
               status: true,
+              salaryRange: true, // Include salary range
               employer: {
                 select: {
                   id: true,
@@ -157,8 +170,8 @@ export class ApplicationService {
           },
         },
         orderBy,
-        skip: ((filters.page || 1) - 1) * (filters.limit || 20),
-        take: filters.limit || 20,
+        skip: (page - 1) * limit,
+        take: limit,
       }),
       prisma.application.count({ where }),
     ]);
@@ -166,10 +179,10 @@ export class ApplicationService {
     return {
       applications,
       pagination: {
-        page: filters.page || 1,
-        limit: filters.limit || 20,
+        page: page,
+        limit: limit,
         total,
-        pages: Math.ceil(total / (filters.limit || 20)),
+        pages: Math.ceil(total / limit),
       },
     };
   }

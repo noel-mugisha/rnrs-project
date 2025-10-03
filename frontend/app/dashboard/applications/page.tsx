@@ -1,20 +1,35 @@
+
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect, useCallback } from "react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Search, Filter, Calendar, MapPin, Building, Clock, Eye, ExternalLink, AlertCircle, RefreshCw } from "lucide-react"
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext } from "@/components/ui/pagination"
+import { Search, Calendar, MapPin, Building, Clock, Eye, ExternalLink, RefreshCw, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { api, Application } from "@/lib/api"
 import { toast } from "sonner"
 
-// Status mapping for display and colors
+// Custom hook for debouncing input
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [value, delay])
+  return debouncedValue
+}
+
+// Status mapping
 const statusMapping = {
   APPLIED: { label: "Applied", color: "bg-gray-500" },
   VIEWED: { label: "Under Review", color: "bg-blue-500" },
@@ -26,7 +41,7 @@ const statusMapping = {
 }
 
 const statusOptions = [
-  { value: "", label: "All Status" },
+  { value: "all", label: "All Statuses" },
   { value: "APPLIED", label: "Applied" },
   { value: "VIEWED", label: "Under Review" },
   { value: "SHORTLISTED", label: "Shortlisted" },
@@ -39,27 +54,21 @@ const statusOptions = [
 function ApplicationsSkeleton() {
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="space-y-2">
-        <Skeleton className="h-9 w-64" />
-        <Skeleton className="h-5 w-80" />
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-9 w-64" />
+          <Skeleton className="h-5 w-80" />
+        </div>
       </div>
-
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i}>
             <CardContent className="p-6">
-              <div className="text-center space-y-2">
-                <Skeleton className="h-8 w-12 mx-auto" />
-                <Skeleton className="h-4 w-24 mx-auto" />
-              </div>
+              <Skeleton className="h-12 w-24 mx-auto" />
             </CardContent>
           </Card>
         ))}
       </div>
-
-      {/* Filters */}
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4">
@@ -68,35 +77,9 @@ function ApplicationsSkeleton() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Applications List */}
       <div className="space-y-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Card key={i}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-5 w-20" />
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-28" />
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Skeleton className="h-5 w-16" />
-                    <Skeleton className="h-4 w-32" />
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Skeleton className="h-8 w-24" />
-                  <Skeleton className="h-8 w-24" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <Skeleton key={i} className="h-40 w-full" />
         ))}
       </div>
     </div>
@@ -108,72 +91,50 @@ export default function ApplicationsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("")
-  const [showFilters, setShowFilters] = useState(false)
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [pagination, setPagination] = useState({ page: 1, limit: 5, total: 0, pages: 1 })
 
-  // Load applications on mount
-  useEffect(() => {
-    loadApplications()
-  }, [])
+  const debouncedSearchQuery = useDebounce(searchQuery, 500)
 
-  const loadApplications = async () => {
+  const loadApplications = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
     try {
-      setIsLoading(true)
-      setError(null)
-      
-      const response = await api.getMyApplications()
-      
+      const response = await api.getMyApplications({
+        q: debouncedSearchQuery || undefined,
+        status: statusFilter === "all" ? undefined : statusFilter,
+        page: pagination.page,
+        limit: pagination.limit,
+      })
       if (response.success && response.data) {
         setApplications(response.data.applications || [])
+        setPagination(response.data.pagination)
       } else {
-        setError('Failed to load applications')
+        setError("Failed to load applications")
+        toast.error("Failed to load applications.")
       }
     } catch (err) {
-      console.error('Applications loading error:', err)
-      setError('An error occurred while loading your applications')
+      setError("An error occurred while loading your applications")
+      toast.error("An error occurred while loading your applications.")
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [debouncedSearchQuery, statusFilter, pagination.page, pagination.limit])
 
-  const filteredApplications = applications.filter((app) => {
-    const matchesSearch =
-      app.job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.job.employer.name.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    loadApplications()
+  }, [loadApplications])
 
-    const matchesStatus = !statusFilter || app.status === statusFilter
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, page: 1 }))
+  }, [debouncedSearchQuery, statusFilter])
 
-    return matchesSearch && matchesStatus
-  })
-
-  const getStatusStats = () => {
-    const stats = applications.reduce(
-      (acc, app) => {
-        acc[app.status] = (acc[app.status] || 0) + 1
-        return acc
-      },
-      {} as Record<string, number>,
-    )
-
-    return {
-      total: applications.length,
-      active: (stats.APPLIED || 0) + (stats.VIEWED || 0) + (stats.SHORTLISTED || 0),
-      interviews: stats.INTERVIEW_SCHEDULED || 0,
-      offered: stats.OFFERED || 0,
-      hired: stats.HIRED || 0,
-      rejected: stats.REJECTED || 0,
-    }
-  }
-
-  const stats = getStatusStats()
-  
   const formatSalary = (salaryRange: any) => {
-    if (!salaryRange) return 'Salary not disclosed'
-    if (typeof salaryRange === 'string') return salaryRange
+    if (!salaryRange) return "Salary not disclosed"
     if (salaryRange.min && salaryRange.max) {
       return `$${salaryRange.min.toLocaleString()} - $${salaryRange.max.toLocaleString()}`
     }
-    return 'Salary not disclosed'
+    return "Salary not disclosed"
   }
 
   const getTimeAgo = (dateString: string) => {
@@ -181,95 +142,32 @@ export default function ApplicationsPage() {
     const now = new Date()
     const diffInMs = now.getTime() - date.getTime()
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
-    
-    if (diffInDays === 0) return 'Today'
-    if (diffInDays === 1) return '1 day ago'
-    if (diffInDays < 7) return `${diffInDays} days ago`
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} week${Math.floor(diffInDays / 7) > 1 ? 's' : ''} ago`
-    return `${Math.floor(diffInDays / 30)} month${Math.floor(diffInDays / 30) > 1 ? 's' : ''} ago`
+    if (diffInDays < 1) return "Today"
+    if (diffInDays < 7) return `${diffInDays} day(s) ago`
+    return `${Math.floor(diffInDays / 7)} week(s) ago`
   }
-  
-  if (isLoading) {
+
+  if (isLoading && applications.length === 0) {
     return <ApplicationsSkeleton />
   }
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
-      >
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-            My Applications
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Track the status of your job applications and manage your opportunities
-          </p>
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">My Applications</h1>
+          <Button onClick={loadApplications} variant="outline" size="sm" disabled={isLoading}>
+            {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+            Refresh
+          </Button>
         </div>
-        <Button onClick={loadApplications} variant="outline" size="sm">
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
+        <p className="text-muted-foreground mt-1">
+          Track the status of your job applications and manage your opportunities
+        </p>
       </motion.div>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-4 gap-6"
-      >
-        <Card className="hover:shadow-lg transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.total}</p>
-              <p className="text-sm text-muted-foreground">Total Applications</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-lg transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-500">{stats.active}</p>
-              <p className="text-sm text-muted-foreground">Active</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-lg transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-500">{stats.interviews}</p>
-              <p className="text-sm text-muted-foreground">Interviews</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-lg transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-red-500">{stats.rejected}</p>
-              <p className="text-sm text-muted-foreground">Rejected</p>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <Card className="hover:shadow-lg transition-all duration-300">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+        <Card>
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
@@ -283,7 +181,7 @@ export default function ApplicationsPage() {
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-full md:w-48">
-                  <SelectValue placeholder="Filter by status" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {statusOptions.map((option) => (
@@ -293,103 +191,20 @@ export default function ApplicationsPage() {
                   ))}
                 </SelectContent>
               </Select>
-              <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="md:hidden">
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
             </div>
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* Applications List */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
         className="space-y-4"
       >
-        {filteredApplications.map((application, index) => {
-          const statusInfo = statusMapping[application.status] || { label: application.status, color: "bg-gray-500" }
-          
-          return (
-            <motion.div
-              key={application.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              <Card className="hover:shadow-lg transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 space-y-3">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="text-lg font-semibold">{application.job.title}</h3>
-                            <div className="flex items-center gap-2">
-                              <div className={`w-2 h-2 rounded-full ${statusInfo.color}`} />
-                              <Badge variant="secondary" className="text-xs">
-                                {statusInfo.label}
-                              </Badge>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                            <div className="flex items-center gap-1">
-                              <Building className="h-4 w-4" />
-                              {application.job.employer.name}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-4 w-4" />
-                              {application.job.location || 'Remote'}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
-                              Applied {new Date(application.appliedAt).toLocaleDateString()}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-4 text-sm">
-                            <Badge variant="outline">{application.job.jobType}</Badge>
-                            <span className="font-medium text-primary">{formatSalary(application.job.salaryRange)}</span>
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                              <Clock className="h-4 w-4" />
-                              Updated {getTimeAgo(application.updatedAt)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-2 ml-4">
-                      <Button size="sm" variant="outline" asChild>
-                        <Link href={`/jobs/${application.job.id}`}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Job
-                        </Link>
-                      </Button>
-                      <Button size="sm" variant="ghost" asChild>
-                        <Link href={`/dashboard/applications/${application.id}`}>
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          Details
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )
-        })}
-      </motion.div>
-
-      {filteredApplications.length === 0 && !isLoading && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-xl" />)
+        ) : applications.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
               <div className="space-y-4">
@@ -399,31 +214,118 @@ export default function ApplicationsPage() {
                 <div>
                   <h3 className="text-lg font-semibold mb-2">No applications found</h3>
                   <p className="text-muted-foreground mb-4">
-                    {searchQuery || statusFilter
-                      ? "Try adjusting your search criteria or filters"
-                      : "You haven't applied to any jobs yet. Start exploring opportunities!"}
+                    {searchQuery || statusFilter !== "all"
+                      ? "Try adjusting your search criteria"
+                      : "You haven't applied to any jobs yet."}
                   </p>
-                  <div className="flex gap-3 justify-center">
-                    {(searchQuery || statusFilter) && (
-                      <Button 
-                        variant="outline" 
-                        onClick={() => {
-                          setSearchQuery('')
-                          setStatusFilter('')
-                        }}
-                      >
-                        Clear Filters
-                      </Button>
-                    )}
-                    <Button asChild>
-                      <Link href="/jobs">Browse Jobs</Link>
-                    </Button>
-                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        ) : (
+          applications.map((application, index) => {
+            const statusInfo = statusMapping[application.status] || {
+              label: application.status,
+              color: "bg-gray-500",
+            }
+            return (
+              <motion.div
+                key={application.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Card className="hover:shadow-lg transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-lg font-semibold">{application.job.title}</h3>
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${statusInfo.color}`} />
+                            <Badge variant="secondary" className="text-xs">
+                              {statusInfo.label}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-2">
+                          <div className="flex items-center gap-1">
+                            <Building className="h-4 w-4" />
+                            {application.job.employer.name}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {application.job.location || "Remote"}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            Applied {new Date(application.appliedAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4 text-sm">
+                          <Badge variant="outline">{application.job.jobType}</Badge>
+                          <span className="font-medium text-primary">
+                            {formatSalary(application.job.salaryRange)}
+                          </span>
+                          <div className="flex items-center gap-1 text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            Updated {getTimeAgo(application.updatedAt)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2 ml-4">
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href={`/jobs/${application.job.id}`}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Job
+                          </Link>
+                        </Button>
+                        <Button size="sm" variant="ghost" asChild>
+                          <Link href={`/dashboard/applications/${application.id}`}>
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            Details
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )
+          })
+        )}
+      </motion.div>
+
+      {pagination.pages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setPagination((p) => ({ ...p, page: Math.max(1, p.page - 1) }))
+                }}
+                className={pagination.page === 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+            <PaginationItem>
+              <span className="text-sm p-2">
+                Page {pagination.page} of {pagination.pages}
+              </span>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setPagination((p) => ({ ...p, page: Math.min(p.pages, p.page + 1) }))
+                }}
+                className={pagination.page === pagination.pages ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       )}
     </div>
   )
