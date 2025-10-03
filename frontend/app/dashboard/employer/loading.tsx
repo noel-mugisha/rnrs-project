@@ -75,13 +75,11 @@ export default function EmployerDashboardLoading() {
                             </div>
                           </div>
                         </div>
-                        <div className="grid grid-cols-3 gap-3 pl-15">
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                        </div>
                       </div>
-                      <Skeleton className="h-8 w-8 rounded" />
+                      <div className="flex gap-2">
+                         <Skeleton className="h-8 w-8 rounded" />
+                         <Skeleton className="h-8 w-8 rounded" />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -109,38 +107,7 @@ export default function EmployerDashboardLoading() {
               ))}
             </CardContent>
           </Card>
-
-          {/* Company Info Card */}
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-5 w-28" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="space-y-2 animate-in fade-in duration-500"
-                  style={{ animationDelay: `${600 + i * 100}ms` }}
-                >
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-4 w-full" />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
         </div>
-      </div>
-
-      {/* Floating Loading Indicator */}
-      <div className="fixed bottom-8 right-8 z-50 animate-in fade-in zoom-in-95 duration-500 delay-200">
-        <Card className="shadow-2xl border-primary/20 bg-gradient-to-br from-primary/10 to-blue-500/10">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm font-medium bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-              Loading your dashboard...
-            </span>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )

@@ -19,11 +19,21 @@ import {
   Users,
   BarChart3,
   ChevronLeft,
+  LucideProps,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import React from "react"
+
+// Define the type for navigation items
+interface NavItem {
+  href: string
+  icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>
+  label: string
+  badge?: string // Make badge optional
+}
 
 interface SidebarProps {
   userRole: "JOBSEEKER" | "JOBPROVIDER" | "ADMIN"
@@ -35,7 +45,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   const pathname = usePathname()
   const { user, logout } = useAuth()
 
-  const jobSeekerNavItems = [
+  const jobSeekerNavItems: NavItem[] = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/dashboard/profile", icon: User, label: "My Profile" },
     { href: "/dashboard/applications", icon: Briefcase, label: "Applications", badge: "3" },
@@ -43,7 +53,7 @@ export function Sidebar({ userRole }: SidebarProps) {
     { href: "/dashboard/notifications", icon: Bell, label: "Notifications", badge: "2" },
   ]
 
-  const jobProviderNavItems = [
+  const jobProviderNavItems: NavItem[] = [
     { href: "/dashboard/employer", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/dashboard/employer/jobs", icon: Briefcase, label: "Manage Jobs" },
     { href: "/dashboard/employer/jobs/new", icon: FileText, label: "Post Job" },
