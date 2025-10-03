@@ -29,11 +29,12 @@ export class ApplicationController {
   async getMyApplications(req: AuthenticatedRequest, res: Response) {
     try {
       const filters = {
+        q: req.query.q as string,
         status: req.query.status as string,
         dateFrom: req.query.dateFrom as string,
         dateTo: req.query.dateTo as string,
         page: parseInt(req.query.page as string) || 1,
-        limit: parseInt(req.query.limit as string) || 20,
+        limit: parseInt(req.query.limit as string) || 5, // Defaulting to 5 for pagination
         sortBy: req.query.sortBy as string,
         sortOrder: req.query.sortOrder as 'asc' | 'desc',
       };

@@ -161,7 +161,7 @@ export default function ForEmployersPage() {
             </div>
             <div className="grid md:grid-cols-2 gap-8">
               {testimonials.map((testimonial, index) => (
-                <Card key={index} className="p-8">
+                 <Card key={index} className="p-8">
                   <CardContent className="space-y-4">
                     <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
                     <div className="flex items-center gap-4 pt-4">
