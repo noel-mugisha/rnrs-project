@@ -182,8 +182,9 @@ export class JobService {
       where.OR = [
         { title: { contains: query.q, mode: 'insensitive' } },
         { description: { contains: query.q, mode: 'insensitive' } },
-        { requirements: { hasSome: [query.q] } },
-        { responsibilities: { hasSome: [query.q] } },
+        { requirements: { contains: query.q, mode: 'insensitive' } },
+        { workCategory: { contains: query.q, mode: 'insensitive' } },
+        { workType: { contains: query.q, mode: 'insensitive' } },
       ];
     }
 
@@ -204,14 +205,12 @@ export class JobService {
     }
 
     if (query.salaryMin || query.salaryMax) {
-      where.salaryRange = {};
+      where.salaryAmount = {};
       if (query.salaryMin) {
-        where.salaryRange.path = ['min'];
-        where.salaryRange.gte = query.salaryMin;
+        where.salaryAmount.gte = query.salaryMin;
       }
       if (query.salaryMax) {
-        where.salaryRange.path = ['max'];
-        where.salaryRange.lte = query.salaryMax;
+        where.salaryAmount.lte = query.salaryMax;
       }
     }
 

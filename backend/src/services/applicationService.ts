@@ -152,7 +152,7 @@ export class ApplicationService {
               remote: true,
               jobType: true,
               status: true,
-              salaryRange: true, // Include salary range
+              salaryAmount: true, // Include salary amount
               employer: {
                 select: {
                   id: true,

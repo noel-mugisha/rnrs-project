@@ -82,12 +82,7 @@
  *         remote: { type: boolean, example: true }
  *         jobType: { type: string, enum: [FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP] }
  *         experienceLevel: { type: string, enum: [ENTRY, MID, SENIOR, LEAD, EXECUTIVE] }
- *         salaryRange:
- *           type: object
- *           properties:
- *             min: { type: number, example: 90000 }
- *             max: { type: number, example: 150000 }
- *             currency: { type: string, example: "USD" }
+ *         salaryAmount: { type: number, description: "Salary amount in RWF", example: 2000000 }
  *
  *     UpdateJob:
  *       type: object

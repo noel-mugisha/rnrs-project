@@ -173,4 +173,4 @@ ehthumbs.db
 Thumbs.db
 
 # Prisma
-prisma/migrations/
+# prisma/migrations/
