@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: "RNRS - Raising Non Employed Rwandans",
   description: "Professional job marketplace connecting skilled job seekers with quality employers",
   generator: "v0.app",
+  icons: {
+    icon: "/images/logo.png",
+  },
 }
 
 export default function RootLayout({
