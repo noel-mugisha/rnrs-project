@@ -21,6 +21,7 @@ interface AuthContextType {
   verifyEmail: (userId: string, otp: string) => Promise<boolean>
   resendOTP: (userId: string) => Promise<void>
   refreshUser: () => Promise<void>
+  refreshToken: () => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -40,17 +41,63 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initializeAuth()
   }, [])
 
+  // Auto-refresh on page focus to maintain session
+  useEffect(() => {
+    const handleFocus = async () => {
+      if (isAuthenticated && !isLoading) {
+        try {
+          const response = await api.refreshToken()
+          if (response.success && response.data) {
+            setAuthData(response.data.accessToken, user!)
+          } else {
+            // Session expired
+            clearAuthData()
+            setUser(null)
+          }
+        } catch (error) {
+          console.log('Focus refresh failed:', error)
+        }
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [isAuthenticated, isLoading, user])
+
   const initializeAuth = async () => {
     try {
       const { token, user: userData } = getAuthData()
       
       if (token && userData) {
-        // Try to refresh token to make sure it's still valid
+        // Try to refresh token to ensure session is valid
         const response = await api.refreshToken()
-        if (response.success) {
+        if (response.success && response.data) {
+          // Update stored token and set user
+          setAuthData(response.data.accessToken, userData)
           setUser(userData)
         } else {
+          // Refresh failed, clear auth data
           clearAuthData()
+        }
+      } else {
+        // No stored auth data, try refresh token from cookie
+        try {
+          const response = await api.refreshToken()
+          if (response.success && response.data) {
+            // Get user data with the new token
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('auth_token', response.data.accessToken)
+            }
+            
+            const userResponse = await api.getMe()
+            if (userResponse.success && userResponse.data) {
+              setAuthData(response.data.accessToken, userResponse.data)
+              setUser(userResponse.data)
+            }
+          }
+        } catch (error) {
+          // Silent fail - user will need to login
+          console.log('No valid session found')
         }
       }
     } catch (error) {
@@ -184,6 +231,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const refreshTokenMethod = async (): Promise<boolean> => {
+    try {
+      const response = await api.refreshToken()
+      if (response.success && response.data) {
+        // Update stored token
+        if (user) {
+          setAuthData(response.data.accessToken, user)
+        }
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('Refresh token error:', error)
+      return false
+    }
+  }
+
   const value: AuthContextType = {
     user,
     isLoading,
@@ -194,6 +258,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     verifyEmail,
     resendOTP,
     refreshUser,
+    refreshToken: refreshTokenMethod,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

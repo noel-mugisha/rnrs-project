@@ -142,17 +142,37 @@ class ApiClient {
     return null
   }
 
+  private isRefreshing = false
+  private failedQueue: Array<{
+    resolve: (value: any) => void
+    reject: (reason?: any) => void
+  }> = []
+
+  private processQueue(error: any, token: string | null = null) {
+    this.failedQueue.forEach(({ resolve, reject }) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(token)
+      }
+    })
+    
+    this.failedQueue = []
+  }
+
   private async request<T>(
     endpoint: string, 
-    options: RequestInit = {}
+    options: RequestInit = {},
+    skipAuth = false
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`
     const token = this.getAuthToken()
 
     const config: RequestInit = {
+      credentials: 'include', // Important: include cookies
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token && !skipAuth && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
@@ -160,6 +180,49 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config)
+      
+      // Handle 401 Unauthorized - try to refresh token
+      if (response.status === 401 && !skipAuth && endpoint !== '/auth/refresh' && endpoint !== '/auth/login') {
+        if (this.isRefreshing) {
+          // If already refreshing, queue this request
+          return new Promise((resolve, reject) => {
+            this.failedQueue.push({ resolve, reject })
+          }).then(() => {
+            // Retry the original request with the new token
+            return this.request<T>(endpoint, options, skipAuth)
+          })
+        }
+
+        this.isRefreshing = true
+
+        try {
+          const refreshResponse = await this.refreshToken()
+          if (refreshResponse.success && refreshResponse.data) {
+            // Update stored token
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('auth_token', refreshResponse.data.accessToken)
+            }
+            
+            this.processQueue(null, refreshResponse.data.accessToken)
+            
+            // Retry the original request with the new token
+            return this.request<T>(endpoint, options, skipAuth)
+          } else {
+            throw new Error('Token refresh failed')
+          }
+        } catch (refreshError) {
+          this.processQueue(refreshError, null)
+          clearAuthData()
+          
+          return {
+            success: false,
+            error: 'Session expired. Please login again.'
+          }
+        } finally {
+          this.isRefreshing = false
+        }
+      }
+
       const data = await response.json()
 
       if (!response.ok) {
@@ -220,13 +283,13 @@ class ApiClient {
     return this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
-    })
+    }, true) // Skip auth header for login endpoint
   }
 
   async refreshToken(): Promise<ApiResponse<{ accessToken: string }>> {
     return this.request('/auth/refresh', {
       method: 'POST',
-    })
+    }, true) // Skip auth header for refresh endpoint
   }
 
   async logout(): Promise<ApiResponse> {
