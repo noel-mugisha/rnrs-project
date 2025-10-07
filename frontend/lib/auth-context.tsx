@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { api, User, getAuthData, setAuthData, clearAuthData } from './api'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { LogoutConfirmation } from '@/components/auth/logout-confirmation'
 
 interface AuthContextType {
   user: User | null
@@ -18,6 +19,10 @@ interface AuthContextType {
     role: 'JOBSEEKER' | 'JOBPROVIDER'
   }) => Promise<{ success: boolean; userId?: string }>
   logout: () => Promise<void>
+  requestLogout: () => void
+  confirmLogout: () => Promise<void>
+  cancelLogout: () => void
+  showLogoutConfirmation: boolean
   verifyEmail: (userId: string, otp: string) => Promise<boolean>
   resendOTP: (userId: string) => Promise<void>
   refreshUser: () => Promise<void>
@@ -33,6 +38,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false)
   const router = useRouter()
 
   const isAuthenticated = !!user
@@ -216,6 +222,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const requestLogout = (): void => {
+    setShowLogoutConfirmation(true)
+  }
+
+  const confirmLogout = async (): Promise<void> => {
+    setShowLogoutConfirmation(false)
+    await logout()
+  }
+
+  const cancelLogout = (): void => {
+    setShowLogoutConfirmation(false)
+  }
+
   const refreshUser = async (): Promise<void> => {
     try {
       const response = await api.getMe()
@@ -255,13 +274,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     signup,
     logout,
+    requestLogout,
+    confirmLogout,
+    cancelLogout,
+    showLogoutConfirmation,
     verifyEmail,
     resendOTP,
     refreshUser,
     refreshToken: refreshTokenMethod,
   }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      <LogoutConfirmation
+        isOpen={showLogoutConfirmation}
+        onConfirm={confirmLogout}
+        onCancel={cancelLogout}
+        userName={user ? `${user.firstName} ${user.lastName}` : undefined}
+      />
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {

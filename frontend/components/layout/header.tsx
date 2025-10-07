@@ -19,7 +19,7 @@ import {
 import { LayoutDashboard, User, LogOut } from "lucide-react"
 
 export function Header() {
-  const { user, logout } = useAuth()
+  const { user, requestLogout } = useAuth()
   const pathname = usePathname()
 
   const navLinks = [
@@ -120,7 +120,7 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                  <DropdownMenuItem onClick={requestLogout} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Sign Out</span>
                   </DropdownMenuItem>

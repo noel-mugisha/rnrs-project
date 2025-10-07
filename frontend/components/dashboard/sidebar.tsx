@@ -43,7 +43,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
-  const { user, logout } = useAuth()
+  const { user, requestLogout } = useAuth()
 
   const jobSeekerNavItems: NavItem[] = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -64,7 +64,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   const navItems = userRole === "JOBSEEKER" ? jobSeekerNavItems : jobProviderNavItems
 
   const handleLogout = () => {
-    logout()
+    requestLogout()
   }
 
   if (!user) return null
