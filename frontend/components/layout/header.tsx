@@ -36,7 +36,41 @@ export function Header() {
             <Logo />
           </Link>
           <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+            {navLinks.slice(0, 1).map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  pathname === link.href ? "text-primary" : "hover:text-primary"
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+            
+            {/* New Services Dropdown for internal pages (links back to home page) */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-sm font-medium hover:text-primary transition-colors">
+                  Services
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="start">
+                {/* Links back to the relevant section on the homepage */}
+                <DropdownMenuItem asChild>
+                  <Link href="/#job-seeker-services">Opening Account</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/#">Payroll Services</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/#">Daily Job Matching</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {navLinks.slice(1).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
