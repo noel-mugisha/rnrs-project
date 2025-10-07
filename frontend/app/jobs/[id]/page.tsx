@@ -236,10 +236,17 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
     )
   }
 
-  const formatSalary = (salaryRange: any) => {
-    if (!salaryRange) return 'Not Disclosed'
-    if (salaryRange.min && salaryRange.max && salaryRange.currency) {
-      return `${new Intl.NumberFormat('en-US', { style: 'currency', currency: salaryRange.currency, maximumFractionDigits: 0 }).format(salaryRange.min)} - ${new Intl.NumberFormat('en-US', { style: 'currency', currency: salaryRange.currency, maximumFractionDigits: 0 }).format(salaryRange.max)}`
+  const formatSalary = (job: any) => {
+    // Handle salaryRange object (new format from backend)
+    if (job.salaryRange && job.salaryRange.min && job.salaryRange.currency) {
+      if (job.salaryRange.min === job.salaryRange.max) {
+        return `${job.salaryRange.currency} ${job.salaryRange.min.toLocaleString()}`
+      }
+      return `${job.salaryRange.currency} ${job.salaryRange.min.toLocaleString()} - ${job.salaryRange.max.toLocaleString()}`
+    }
+    // Handle direct salaryAmount (fallback)
+    if (job.salaryAmount) {
+      return `RWF ${job.salaryAmount.toLocaleString()}`
     }
     return 'Not Disclosed'
   }
@@ -293,7 +300,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                   <Badge variant="outline" className="text-sm py-1 px-3">{job.jobType.replace('_', '-')}</Badge>
                   {job.remote && <Badge variant="outline" className="text-sm py-1 px-3 text-green-600 border-green-600">Remote</Badge>}
                   <div className="flex items-center gap-1.5 text-lg font-semibold text-primary">
-                    <DollarSign className="h-5 w-5" /> {formatSalary(job.salaryRange)}
+                    <DollarSign className="h-5 w-5" /> {formatSalary(job)}
                   </div>
                 </div>
                 {job.requirements && (
@@ -315,28 +322,32 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
               <CardHeader><h2 className="text-xl font-semibold">Job Description</h2></CardHeader>
               <CardContent className="space-y-6 prose prose-sm max-w-none text-muted-foreground leading-relaxed">
                 <p>{job.description}</p>
-                <div>
-                  <h3 className="font-semibold mb-3 text-foreground">Key Responsibilities</h3>
-                  <ul className="space-y-2 pl-5 list-disc">
-                    {job.responsibilities && Array.isArray(job.responsibilities) 
-                      ? job.responsibilities.map((item, i) => <li key={i}>{item}</li>)
-                      : job.responsibilities && typeof job.responsibilities === 'string' 
-                        ? job.responsibilities.split(',').map((item, i) => <li key={i}>{item.trim()}</li>)
-                        : <li>No responsibilities specified</li>
-                    }
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-3 text-foreground">Requirements</h3>
-                  <ul className="space-y-2 pl-5 list-disc">
-                    {Array.isArray(job.requirements) 
-                      ? job.requirements.map((item, i) => <li key={i}>{item}</li>)
-                      : typeof job.requirements === 'string' 
-                        ? job.requirements.split(',').map((item, i) => <li key={i}>{item.trim()}</li>)
-                        : <li>No requirements specified</li>
-                    }
-                  </ul>
-                </div>
+                {job.responsibilities && job.responsibilities.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3 text-foreground">Key Responsibilities</h3>
+                    <ul className="space-y-2 pl-5 list-disc">
+                      {Array.isArray(job.responsibilities) 
+                        ? job.responsibilities.map((item, i) => <li key={i}>{item}</li>)
+                        : typeof job.responsibilities === 'string' 
+                          ? job.responsibilities.split(',').map((item, i) => <li key={i}>{item.trim()}</li>)
+                          : null
+                      }
+                    </ul>
+                  </div>
+                )}
+                {job.requirements && job.requirements.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3 text-foreground">Requirements</h3>
+                    <ul className="space-y-2 pl-5 list-disc">
+                      {Array.isArray(job.requirements) 
+                        ? job.requirements.map((item, i) => <li key={i}>{item}</li>)
+                        : typeof job.requirements === 'string' 
+                          ? job.requirements.split(',').map((item, i) => <li key={i}>{item.trim()}</li>)
+                          : null
+                      }
+                    </ul>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

@@ -90,8 +90,21 @@ export class JobService {
       prisma.job.count({ where }),
     ]);
 
+    // Transform jobs data to match expected frontend format
+    const transformedJobs = jobs.map(job => ({
+      ...job,
+      requirements: job.requirements ? 
+        job.requirements.split(/[,\n]/).map(req => req.trim().replace(/^\d+\s*[-.]\s*/, '')).filter(req => req.length > 0) : [],
+      responsibilities: [],
+      salaryRange: job.salaryAmount ? {
+        min: job.salaryAmount,
+        max: job.salaryAmount,
+        currency: 'RWF'
+      } : null
+    }));
+
     return {
-      jobs,
+      jobs: transformedJobs,
       pagination: {
         page: filters.page,
         limit: filters.limit,
@@ -151,9 +164,21 @@ export class JobService {
       }
     }
 
+    // Transform the data to match expected frontend format
     return {
       ...job,
       userApplication,
+      // Transform requirements from string to array if needed
+      requirements: job.requirements ? 
+        job.requirements.split(/[,\n]/).map(req => req.trim().replace(/^\d+\s*[-.]\s*/, '')).filter(req => req.length > 0) : [],
+      // Add empty responsibilities since it was removed from schema
+      responsibilities: [],
+      // Transform salary to expected format
+      salaryRange: job.salaryAmount ? {
+        min: job.salaryAmount,
+        max: job.salaryAmount,
+        currency: 'RWF'
+      } : null
     };
   }
 
@@ -192,7 +217,18 @@ export class JobService {
       throw new Error('Job not found or access denied');
     }
 
-    return job;
+    // Transform job data to match expected frontend format
+    return {
+      ...job,
+      requirements: job.requirements ? 
+        job.requirements.split(/[,\n]/).map(req => req.trim().replace(/^\d+\s*[-.]\s*/, '')).filter(req => req.length > 0) : [],
+      responsibilities: [],
+      salaryRange: job.salaryAmount ? {
+        min: job.salaryAmount,
+        max: job.salaryAmount,
+        currency: 'RWF'
+      } : null
+    };
   }
 
   async searchJobs(query: JobSearchQuery) {
@@ -273,8 +309,21 @@ export class JobService {
       prisma.job.count({ where }),
     ]);
 
+    // Transform jobs data to match expected frontend format
+    const transformedJobs = jobs.map(job => ({
+      ...job,
+      requirements: job.requirements ? 
+        job.requirements.split(/[,\n]/).map(req => req.trim().replace(/^\d+\s*[-.]\s*/, '')).filter(req => req.length > 0) : [],
+      responsibilities: [],
+      salaryRange: job.salaryAmount ? {
+        min: job.salaryAmount,
+        max: job.salaryAmount,
+        currency: 'RWF'
+      } : null
+    }));
+
     return {
-      jobs,
+      jobs: transformedJobs,
       pagination: {
         page: query.page || 1,
         limit: query.limit || 20,
@@ -525,6 +574,19 @@ export class JobService {
       take: limit,
     });
 
-    return { jobs };
+    // Transform jobs data to match expected frontend format
+    const transformedJobs = jobs.map(job => ({
+      ...job,
+      requirements: job.requirements ? 
+        job.requirements.split(/[,\n]/).map(req => req.trim().replace(/^\d+\s*[-.]\s*/, '')).filter(req => req.length > 0) : [],
+      responsibilities: [],
+      salaryRange: job.salaryAmount ? {
+        min: job.salaryAmount,
+        max: job.salaryAmount,
+        currency: 'RWF'
+      } : null
+    }));
+
+    return { jobs: transformedJobs };
   }
 }
