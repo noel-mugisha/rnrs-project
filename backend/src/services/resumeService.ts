@@ -165,4 +165,60 @@ export class ResumeService {
 
     return resume;
   }
+
+  async getResumeForEmployer(employerUserId: string, resumeId: string) {
+    // Check if the employer has access to view this resume through an application
+    const application = await prisma.application.findFirst({
+      where: {
+        resumeId,
+        job: {
+          employer: {
+            OR: [
+              { ownerId: employerUserId },
+              { admins: { some: { userId: employerUserId } } },
+            ],
+          },
+        },
+      },
+      include: {
+        resume: {
+          select: {
+            id: true,
+            fileName: true,
+            fileKey: true,
+            mimeType: true,
+            size: true,
+            parsedJson: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    if (!application || !application.resume) {
+      throw new Error('Resume not found or access denied');
+    }
+
+    const resume = application.resume;
+
+    // Generate a signed URL for temporary access to the resume
+    let downloadUrl = null;
+    if (resume.fileKey) {
+      try {
+        downloadUrl = cloudinary.url(resume.fileKey, {
+          resource_type: 'raw',
+          type: 'upload',
+          sign_url: true,
+          expires_at: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiry
+        });
+      } catch (error) {
+        logger.error('Error generating resume download URL:', error);
+      }
+    }
+
+    return {
+      ...resume,
+      downloadUrl,
+    };
+  }
 }

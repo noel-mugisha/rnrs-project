@@ -1,17 +1,27 @@
 // src/routes/resumeRoutes.ts
 
-import { Router } from 'express';
+import { Router, Response, NextFunction } from 'express';
 import { ResumeController } from '@/controllers/resumeController';
 import { authenticate, requireRole } from '@/middleware/authMiddleware';
 import { validateBody } from '@/middleware/validationMiddleware';
 import { uploadLimiter } from '@/middleware/rateLimiterMiddleware';
 import { requestUploadSchema, completeUploadSchema } from '@/utils/validation';
+import { AuthenticatedRequest } from '@/types';
 
 const router: ReturnType<typeof Router> = Router();
 const resumeController = new ResumeController();
 
 router.use(authenticate);
-router.use(requireRole(['JOBSEEKER']));
+
+// Most routes are for jobseekers only
+router.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  // Allow jobproviders to view resumes via specific routes
+  if (req.path.startsWith('/view/') && req.user?.role === 'JOBPROVIDER') {
+    return next();
+  }
+  // All other routes require JOBSEEKER role
+  return requireRole(['JOBSEEKER'])(req, res, next);
+});
 
 /**
  * @swagger
@@ -127,5 +137,32 @@ router.get('/:id', resumeController.getResume);
  *         description: Resume not found.
  */
 router.delete('/:id', resumeController.deleteResume);
+
+/**
+ * @swagger
+ * /resumes/view/{resumeId}:
+ *   get:
+ *     summary: View a resume (for jobproviders)
+ *     tags: [Resumes]
+ *     description: Allows a JOBPROVIDER to view a resume from a job application.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: resumeId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: The resume ID to view.
+ *     responses:
+ *       '200':
+ *         description: Resume download URL or content.
+ *       '403':
+ *         description: Access denied.
+ *       '404':
+ *         description: Resume not found.
+ */
+router.get('/view/:resumeId', resumeController.viewResumeForEmployer);
 
 export default router;

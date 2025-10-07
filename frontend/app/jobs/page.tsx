@@ -451,12 +451,20 @@ export default function JobsPage() {
                                   </div>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                  {job.requirements && typeof job.requirements === 'string' && (
-                                    job.requirements.split(',').slice(0, 4).map((skill, index) => (
-                                      <Badge key={index} variant="secondary" className="text-xs">
-                                        {skill.trim()}
-                                      </Badge>
-                                    ))
+                                  {job.requirements && (
+                                    Array.isArray(job.requirements) 
+                                      ? job.requirements.slice(0, 4).map((skill, index) => (
+                                          <Badge key={index} variant="secondary" className="text-xs">
+                                            {skill}
+                                          </Badge>
+                                        ))
+                                      : typeof job.requirements === 'string' 
+                                        ? job.requirements.split(',').slice(0, 4).map((skill, index) => (
+                                            <Badge key={index} variant="secondary" className="text-xs">
+                                              {skill.trim()}
+                                            </Badge>
+                                          ))
+                                        : null
                                   )}
                                   <Badge variant="secondary" className="text-xs">
                                     {job.workCategory}

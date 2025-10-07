@@ -100,7 +100,7 @@ export class JobService {
       },
     };
   }
-  async getPublicJob(jobId: string) {
+  async getPublicJob(jobId: string, userId?: string) {
     const job = await prisma.job.findFirst({
       where: {
         id: jobId,
@@ -127,7 +127,34 @@ export class JobService {
       throw new Error('Job not found');
     }
 
-    return job;
+    // If userId is provided, check if the user has already applied
+    let userApplication = null;
+    if (userId) {
+      const jobSeeker = await prisma.jobSeekerProfile.findUnique({
+        where: { userId },
+      });
+      
+      if (jobSeeker) {
+        userApplication = await prisma.application.findUnique({
+          where: {
+            jobId_jobSeekerId: {
+              jobId: job.id,
+              jobSeekerId: jobSeeker.id,
+            },
+          },
+          select: {
+            id: true,
+            status: true,
+            appliedAt: true,
+          },
+        });
+      }
+    }
+
+    return {
+      ...job,
+      userApplication,
+    };
   }
 
   async getMyJob(userId: string, jobId: string) {

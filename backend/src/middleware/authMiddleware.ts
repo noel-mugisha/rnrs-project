@@ -73,3 +73,45 @@ export const requireEmailVerification = (
   }
   next();
 };
+
+// Optional authentication - adds user data if token is present but doesn't require it
+export const optionalAuthenticate = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    // If no auth header, just continue without user data
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      req.user = undefined;
+      next();
+      return;
+    }
+
+    const token = authHeader.substring(7);
+    const payload = verifyAccessToken(token);
+
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      include: {
+        jobSeekerProfile: true,
+        employerProfile: true,
+      },
+    });
+
+    // If user not found or email not verified, continue without user data
+    if (!user || !user.emailVerified) {
+      req.user = undefined;
+    } else {
+      req.user = user;
+    }
+    
+    next();
+  } catch (error) {
+    // If token is invalid, just continue without user data
+    req.user = undefined;
+    next();
+  }
+};

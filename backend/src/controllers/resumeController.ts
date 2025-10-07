@@ -58,4 +58,15 @@ export class ResumeController {
       sendError(res, error.message, 400);
     }
   }
+
+  async viewResumeForEmployer(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { resumeId } = req.params;
+      const result = await resumeService.getResumeForEmployer(req.user!.id, resumeId);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('View resume for employer error:', error);
+      sendError(res, error.message, error.message.includes('not found') ? 404 : 403);
+    }
+  }
 }

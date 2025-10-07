@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { JobService } from '@/services/jobService';
 import { AuthenticatedRequest } from '@/types';
 import { sendSuccess, sendError } from '@/utils/response';
@@ -43,10 +43,12 @@ export class JobController {
     }
   }
 
-  async getJob(req: Request, res: Response) {
+  async getJob(req: AuthenticatedRequest, res: Response) {
     try {
       const { id } = req.params;
-      const job = await jobService.getPublicJob(id);
+      // Check if the request has authentication data (but don't require it)
+      const userId = req.user?.id;
+      const job = await jobService.getPublicJob(id, userId);
       sendSuccess(res, job);
     } catch (error: any) {
       logger.error('Get job error:', error);
@@ -54,7 +56,7 @@ export class JobController {
     }
   }
 
-  async searchJobs(req: Request, res: Response) {
+  async searchJobs(req: AuthenticatedRequest, res: Response) {
     try {
       const query = req.query as any;
       const result = await jobService.searchJobs(query);

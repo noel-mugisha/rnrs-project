@@ -2,7 +2,7 @@
 
 import { Router } from 'express';
 import { JobController } from '@/controllers/jobController';
-import { authenticate, requireRole } from '@/middleware/authMiddleware';
+import { authenticate, requireRole, optionalAuthenticate } from '@/middleware/authMiddleware';
 import { validateBody, validateQuery } from '@/middleware/validationMiddleware';
 import { createJobSchema, updateJobSchema, jobSearchSchema } from '@/utils/validation';
 
@@ -40,11 +40,19 @@ router.get('/search', validateQuery(jobSearchSchema), jobController.searchJobs);
  */
 router.get('/recommended', authenticate, requireRole(['JOBSEEKER']), jobController.getRecommendedJobs);
 
+// Public route for getting a single published job - must be before protected routes
+/**
+ * @swagger
+ * /jobs/{id}:
+ *   get:
+ *     summary: Get a single published job
+ *     tags: [Jobs]
+ *     description: Get details of a published job. Accessible to everyone, with additional info for authenticated users.
+ */
+router.get('/:id', optionalAuthenticate, jobController.getJob);
+
 // ==================== JOB PROVIDER ROUTES ====================
 // All routes below require authentication and JOBPROVIDER role
-
-router.use(authenticate);
-router.use(requireRole(['JOBPROVIDER']));
 
 /**
  * @swagger
@@ -53,7 +61,7 @@ router.use(requireRole(['JOBPROVIDER']));
  *     summary: Create a new job
  *     tags: [Jobs]
  */
-router.post('/', validateBody(createJobSchema), jobController.createJob);
+router.post('/', authenticate, requireRole(['JOBPROVIDER']), validateBody(createJobSchema), jobController.createJob);
 
 /**
  * @swagger
@@ -62,7 +70,7 @@ router.post('/', validateBody(createJobSchema), jobController.createJob);
  *     summary: Get all jobs for the authenticated employer
  *     tags: [Jobs]
  */
-router.get('/my-jobs', jobController.getMyJobs);
+router.get('/my-jobs', authenticate, requireRole(['JOBPROVIDER']), jobController.getMyJobs);
 
 /**
  * @swagger
@@ -71,7 +79,7 @@ router.get('/my-jobs', jobController.getMyJobs);
  *     summary: Get a single job for the authenticated employer
  *     tags: [Jobs]
  */
-router.get('/my-jobs/:id', jobController.getMyJob);
+router.get('/my-jobs/:id', authenticate, requireRole(['JOBPROVIDER']), jobController.getMyJob);
 
 /**
  * @swagger
@@ -80,7 +88,7 @@ router.get('/my-jobs/:id', jobController.getMyJob);
  *     summary: Update a job
  *     tags: [Jobs]
  */
-router.patch('/:id', validateBody(updateJobSchema), jobController.updateJob);
+router.patch('/:id', authenticate, requireRole(['JOBPROVIDER']), validateBody(updateJobSchema), jobController.updateJob);
 
 /**
  * @swagger
@@ -89,7 +97,7 @@ router.patch('/:id', validateBody(updateJobSchema), jobController.updateJob);
  *     summary: Delete a job
  *     tags: [Jobs]
  */
-router.delete('/:id', jobController.deleteJob);
+router.delete('/:id', authenticate, requireRole(['JOBPROVIDER']), jobController.deleteJob);
 
 /**
  * @swagger
@@ -98,7 +106,7 @@ router.delete('/:id', jobController.deleteJob);
  *     summary: Publish a draft job
  *     tags: [Jobs]
  */
-router.post('/:id/publish', jobController.publishJob);
+router.post('/:id/publish', authenticate, requireRole(['JOBPROVIDER']), jobController.publishJob);
 
 /**
  * @swagger
@@ -107,9 +115,6 @@ router.post('/:id/publish', jobController.publishJob);
  *     summary: Get applicants for a job
  *     tags: [Jobs]
  */
-router.get('/:id/applicants', jobController.getJobApplicants);
-
-// Public route for getting a single published job (must be after all specific routes)
-router.get('/:id', jobController.getJob);
+router.get('/:id/applicants', authenticate, requireRole(['JOBPROVIDER']), jobController.getJobApplicants);
 
 export default router;

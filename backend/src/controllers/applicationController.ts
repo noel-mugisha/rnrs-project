@@ -58,6 +58,43 @@ export class ApplicationController {
     }
   }
 
+  async getJobApplications(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { jobId } = req.params;
+      const filters = {
+        status: req.query.status as string,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 20,
+      };
+      
+      const result = await applicationService.getJobApplications(req.user!.id, jobId, filters);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('Get job applications error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
+  async getEmployerApplications(req: AuthenticatedRequest, res: Response) {
+    try {
+      const filters = {
+        q: req.query.q as string,
+        status: req.query.status as string,
+        jobId: req.query.jobId as string,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 20,
+        sortBy: req.query.sortBy as string,
+        sortOrder: req.query.sortOrder as 'asc' | 'desc',
+      };
+      
+      const result = await applicationService.getEmployerApplications(req.user!.id, filters);
+      sendSuccess(res, result);
+    } catch (error: any) {
+      logger.error('Get employer applications error:', error);
+      sendError(res, error.message, 400);
+    }
+  }
+
   async updateApplicationStatus(req: AuthenticatedRequest, res: Response) {
     try {
       const { id } = req.params;

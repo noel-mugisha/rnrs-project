@@ -79,9 +79,15 @@ export interface Job {
   title: string
   slug: string
   description: string
-  requirements: string
+  requirements: string | string[]
+  responsibilities?: string[]
   location: string
   salaryAmount: number
+  salaryRange?: {
+    min: number
+    max: number
+    currency: string
+  }
   remote: boolean
   jobType: string
   experienceLevel: string
@@ -105,7 +111,29 @@ export interface Application {
   status: 'APPLIED' | 'VIEWED' | 'SHORTLISTED' | 'INTERVIEW_SCHEDULED' | 'OFFERED' | 'HIRED' | 'REJECTED'
   appliedAt: string
   updatedAt: string
+  statusHistory?: Array<{
+    status: string
+    byUserId: string
+    at: string
+    note?: string
+  }>
   job: Job
+  jobSeeker?: {
+    id: string
+    userId: string
+    user: {
+      id: string
+      firstName: string
+      lastName: string
+      email: string
+      phone?: string
+    }
+  }
+  resume?: {
+    id: string
+    fileName: string
+    fileKey: string
+  }
 }
 
 export interface Resume {
@@ -368,6 +396,19 @@ class ApiClient {
     })
   }
 
+  async viewResumeForEmployer(resumeId: string): Promise<ApiResponse<{
+    id: string
+    fileName: string
+    fileKey: string
+    mimeType: string
+    size: number
+    parsedJson?: any
+    createdAt: string
+    downloadUrl?: string
+  }>> {
+    return this.request(`/resumes/view/${resumeId}`)
+  }
+
   async createEmployer(employerData: {
     name: string
     website?: string
@@ -484,6 +525,40 @@ class ApiClient {
     })
   }
 
+  // JobProvider Application Management
+  async getJobApplications(jobId: string, params: {
+    status?: string
+    page?: number
+    limit?: number
+  } = {}): Promise<ApiResponse<{ applications: Application[]; pagination: any }>> {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        searchParams.append(key, value.toString())
+      }
+    })
+    return this.request(`/applications/jobs/${jobId}?${searchParams.toString()}`)
+  }
+
+  async getEmployerApplications(params: {
+    q?: string
+    status?: string
+    jobId?: string
+    page?: number
+    limit?: number
+    sortBy?: string
+    sortOrder?: 'asc' | 'desc'
+  } = {}): Promise<ApiResponse<{ applications: Application[]; pagination: any }>> {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, value.toString())
+      }
+    })
+    return this.request(`/applications/employer?${searchParams.toString()}`)
+  }
+
+  // Legacy method for backward compatibility
   async getJobApplicants(jobId: string, params: {
     status?: string
     page?: number

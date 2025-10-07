@@ -18,7 +18,7 @@ import { toast } from "sonner"
 import { formatRelativeTime } from "@/lib/profile-utils"
 import { Label } from "@/components/ui/label"
 
-function ApplyDialog({ job, onApplySuccess }: { job: Job, onApplySuccess: () => void }) {
+function ApplyDialog({ job, onApplySuccess, hasApplied }: { job: Job, onApplySuccess: () => void, hasApplied?: boolean }) {
   const { user } = useAuth()
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
@@ -85,8 +85,20 @@ function ApplyDialog({ job, onApplySuccess }: { job: Job, onApplySuccess: () => 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="lg" className="w-full bg-gradient-to-r from-primary to-blue-600">
-          Apply Now
+        <Button 
+          size="lg" 
+          className="w-full" 
+          variant={hasApplied ? "outline" : "default"}
+          disabled={hasApplied}
+        >
+          {hasApplied ? (
+            <>
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Application Submitted
+            </>
+          ) : (
+            "Apply Now"
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
@@ -170,6 +182,8 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [applicationCount, setApplicationCount] = useState(0)
+  const [hasApplied, setHasApplied] = useState(false)
+  const [userApplication, setUserApplication] = useState<any>(null)
 
   useEffect(() => {
     const fetchJob = async () => {
@@ -180,6 +194,12 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
         if (response.success && response.data) {
           setJob(response.data)
           setApplicationCount(response.data._count?.applications || 0)
+          
+          // Check if user has already applied (for authenticated jobseekers)
+          if (response.data.userApplication) {
+            setHasApplied(true)
+            setUserApplication(response.data.userApplication)
+          }
         } else {
           setError(response.error || 'Job not found.')
         }
@@ -276,11 +296,16 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                     <DollarSign className="h-5 w-5" /> {formatSalary(job.salaryRange)}
                   </div>
                 </div>
-                {job.requirements && job.requirements.length > 0 && (
-                   <div className="flex flex-wrap gap-2">
-                    {job.requirements.slice(0, 5).map((skill, index) => (
-                      <Badge key={index} variant="secondary">{skill}</Badge>
-                    ))}
+                {job.requirements && (
+                  <div className="flex flex-wrap gap-2">
+                    {Array.isArray(job.requirements) 
+                      ? job.requirements.slice(0, 5).map((skill, index) => (
+                          <Badge key={index} variant="secondary">{skill}</Badge>
+                        ))
+                      : typeof job.requirements === 'string' && job.requirements.split(',').slice(0, 5).map((skill, index) => (
+                          <Badge key={index} variant="secondary">{skill.trim()}</Badge>
+                        ))
+                    }
                   </div>
                 )}
               </CardContent>
@@ -293,13 +318,23 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                 <div>
                   <h3 className="font-semibold mb-3 text-foreground">Key Responsibilities</h3>
                   <ul className="space-y-2 pl-5 list-disc">
-                    {job.responsibilities.map((item, i) => <li key={i}>{item}</li>)}
+                    {job.responsibilities && Array.isArray(job.responsibilities) 
+                      ? job.responsibilities.map((item, i) => <li key={i}>{item}</li>)
+                      : job.responsibilities && typeof job.responsibilities === 'string' 
+                        ? job.responsibilities.split(',').map((item, i) => <li key={i}>{item.trim()}</li>)
+                        : <li>No responsibilities specified</li>
+                    }
                   </ul>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-3 text-foreground">Requirements</h3>
                   <ul className="space-y-2 pl-5 list-disc">
-                    {job.requirements.map((item, i) => <li key={i}>{item}</li>)}
+                    {Array.isArray(job.requirements) 
+                      ? job.requirements.map((item, i) => <li key={i}>{item}</li>)
+                      : typeof job.requirements === 'string' 
+                        ? job.requirements.split(',').map((item, i) => <li key={i}>{item.trim()}</li>)
+                        : <li>No requirements specified</li>
+                    }
                   </ul>
                 </div>
               </CardContent>
@@ -329,7 +364,28 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
           <div className="lg:col-span-1 space-y-6">
             <Card className="sticky top-24">
               <CardContent className="p-6 space-y-4">
-                <ApplyDialog job={job} onApplySuccess={() => setApplicationCount(prev => prev + 1)} />
+                <ApplyDialog 
+                  job={job} 
+                  onApplySuccess={() => {
+                    setApplicationCount(prev => prev + 1)
+                    setHasApplied(true)
+                  }}
+                  hasApplied={hasApplied}
+                />
+                
+                {hasApplied && userApplication && (
+                  <div className="text-center space-y-2">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-sm text-muted-foreground">Application Status:</span>
+                      <Badge variant="secondary" className="text-xs">
+                        {userApplication.status.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Applied on {new Date(userApplication.appliedAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                )}
                 <div className="text-center text-sm text-muted-foreground">
                   <div className="flex items-center justify-center gap-4">
                     <div className="flex items-center gap-1"><Users className="h-4 w-4" />{applicationCount} applicants</div>

@@ -96,6 +96,76 @@ router.get('/:id', applicationController.getApplication);
 
 /**
  * @swagger
+ * /applications/jobs/{jobId}:
+ *   get:
+ *     summary: Get applications for a specific job (JOBPROVIDER only)
+ *     tags: [Applications]
+ *     description: Retrieves all applications for a job owned by the authenticated JOBPROVIDER.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: jobId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *       - in: query
+ *         name: status
+ *         schema: { type: string }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *     responses:
+ *       '200':
+ *         description: A list of applications for the job.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ */
+router.get('/jobs/:jobId', requireRole(['JOBPROVIDER']), applicationController.getJobApplications);
+
+/**
+ * @swagger
+ * /applications/employer:
+ *   get:
+ *     summary: Get all applications for employer's jobs (JOBPROVIDER only)
+ *     tags: [Applications]
+ *     description: Retrieves all applications across all jobs owned by the authenticated JOBPROVIDER.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         description: Search by candidate name, job title, or email
+ *         schema: { type: string }
+ *       - in: query
+ *         name: status
+ *         schema: { type: string }
+ *       - in: query
+ *         name: jobId
+ *         description: Filter by specific job
+ *         schema: { type: string, format: uuid }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *       - in: query
+ *         name: sortBy
+ *         schema: { type: string, default: 'appliedAt' }
+ *       - in: query
+ *         name: sortOrder
+ *         schema: { type: string, enum: [asc, desc], default: desc }
+ *     responses:
+ *       '200':
+ *         description: A list of applications across all employer jobs.
+ *       '403': { $ref: '#/components/schemas/Error403' }
+ */
+router.get('/employer', requireRole(['JOBPROVIDER']), applicationController.getEmployerApplications);
+
+/**
+ * @swagger
  * /applications/{id}/status:
  *   patch:
  *     summary: Update application status
