@@ -446,25 +446,16 @@ export default function JobsPage() {
                                     </Badge>
                                   )}
                                   <div className="flex items-center gap-1 text-sm font-medium text-primary">
-                                    <DollarSign className="h-4 w-4" />
                                     {formatSalary(job)}
                                   </div>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                  {job.requirements && (
-                                    Array.isArray(job.requirements) 
-                                      ? job.requirements.slice(0, 4).map((skill, index) => (
-                                          <Badge key={index} variant="secondary" className="text-xs">
-                                            {skill}
-                                          </Badge>
-                                        ))
-                                      : typeof job.requirements === 'string' 
-                                        ? job.requirements.split(',').slice(0, 4).map((skill, index) => (
-                                            <Badge key={index} variant="secondary" className="text-xs">
-                                              {skill.trim()}
-                                            </Badge>
-                                          ))
-                                        : null
+                                  {job.requirements && typeof job.requirements === 'string' && (
+                                    job.requirements.split(',').slice(0, 4).map((skill, index) => (
+                                      <Badge key={index} variant="secondary" className="text-xs">
+                                        {skill.trim()}
+                                      </Badge>
+                                    ))
                                   )}
                                   <Badge variant="secondary" className="text-xs">
                                     {job.workCategory}

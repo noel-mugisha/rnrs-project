@@ -47,10 +47,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initializeAuth()
   }, [])
 
-  // Auto-refresh on page focus to maintain session
+  // Auto-refresh on page focus to maintain session (with throttling)
   useEffect(() => {
+    let lastRefreshTime = 0
+    const REFRESH_THROTTLE_MS = 60000 // Only allow refresh once per minute
+    
     const handleFocus = async () => {
-      if (isAuthenticated && !isLoading) {
+      const now = Date.now()
+      if (isAuthenticated && !isLoading && (now - lastRefreshTime) > REFRESH_THROTTLE_MS) {
+        lastRefreshTime = now
         try {
           const response = await api.refreshToken()
           if (response.success && response.data) {
@@ -62,6 +67,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           }
         } catch (error) {
           console.log('Focus refresh failed:', error)
+          // Don't clear auth data on refresh failure - let the user continue
         }
       }
     }
