@@ -40,19 +40,9 @@ router.get('/search', validateQuery(jobSearchSchema), jobController.searchJobs);
  */
 router.get('/recommended', authenticate, requireRole(['JOBSEEKER']), jobController.getRecommendedJobs);
 
-// Public route for getting a single published job - must be before protected routes
-/**
- * @swagger
- * /jobs/{id}:
- *   get:
- *     summary: Get a single published job
- *     tags: [Jobs]
- *     description: Get details of a published job. Accessible to everyone, with additional info for authenticated users.
- */
-router.get('/:id', optionalAuthenticate, jobController.getJob);
-
 // ==================== JOB PROVIDER ROUTES ====================
 // All routes below require authentication and JOBPROVIDER role
+// IMPORTANT: Specific routes must come BEFORE dynamic routes (/:id)
 
 /**
  * @swagger
@@ -80,6 +70,17 @@ router.get('/my-jobs', authenticate, requireRole(['JOBPROVIDER']), jobController
  *     tags: [Jobs]
  */
 router.get('/my-jobs/:id', authenticate, requireRole(['JOBPROVIDER']), jobController.getMyJob);
+
+// Public route for getting a single published job - must be AFTER specific routes
+/**
+ * @swagger
+ * /jobs/{id}:
+ *   get:
+ *     summary: Get a single published job
+ *     tags: [Jobs]
+ *     description: Get details of a published job. Accessible to everyone, with additional info for authenticated users.
+ */
+router.get('/:id', optionalAuthenticate, jobController.getJob);
 
 /**
  * @swagger

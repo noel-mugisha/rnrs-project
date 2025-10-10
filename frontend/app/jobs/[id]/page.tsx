@@ -1,183 +1,23 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Header } from "@/components/layout/header"
-import { MapPin, Clock, DollarSign, Building, Users, Calendar, ArrowLeft, CheckCircle, Upload, AlertCircle, Share2, Heart, Loader2 } from "lucide-react"
+import { MapPin, Clock, Building, Users, Calendar, ArrowLeft, CheckCircle, AlertCircle, Share2, Heart } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
-import { api, Job, Resume } from "@/lib/api"
+import { api, Job } from "@/lib/api"
 import { toast } from "sonner"
 import { formatRelativeTime } from "@/lib/profile-utils"
-import { Label } from "@/components/ui/label"
 
-function ApplyDialog({ job, onApplySuccess, hasApplied }: { job: Job, onApplySuccess: () => void, hasApplied?: boolean }) {
-  const { user } = useAuth()
-  const router = useRouter()
-  const [isOpen, setIsOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [coverLetter, setCoverLetter] = useState("")
-  const [selectedResumeId, setSelectedResumeId] = useState("")
-  const [resumes, setResumes] = useState<Resume[]>([])
-  const [isFetchingResumes, setIsFetchingResumes] = useState(true)
-
-  useEffect(() => {
-    if (isOpen && user) {
-      const fetchResumes = async () => {
-        setIsFetchingResumes(true)
-        const response = await api.getResumes()
-        if (response.success && response.data) {
-          setResumes(response.data)
-        }
-        setIsFetchingResumes(false)
-      }
-      fetchResumes()
-    }
-  }, [isOpen, user])
-
-  const handleApply = async () => {
-    if (!selectedResumeId) {
-      toast.error("Please select a resume to apply.")
-      return
-    }
-
-    setIsLoading(true)
-    try {
-      const response = await api.applyToJob(job.id, {
-        resumeId: selectedResumeId,
-        coverLetter: coverLetter || undefined,
-      })
-
-      if (response.success) {
-        toast.success("Application submitted successfully!")
-        onApplySuccess()
-        setIsOpen(false)
-      } else {
-        toast.error(response.error || "Failed to submit application.")
-      }
-    } catch (err) {
-      toast.error("An error occurred. Please try again.")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleOpenChange = (open: boolean) => {
-    if (open && !user) {
-      toast.info("Please sign in to apply for this job.", {
-        action: {
-          label: "Sign In",
-          onClick: () => router.push('/auth/login'),
-        },
-      })
-    } else {
-      setIsOpen(open)
-    }
-  }
-
-  return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button 
-          size="lg" 
-          className="w-full" 
-          variant={hasApplied ? "outline" : "default"}
-          disabled={hasApplied}
-        >
-          {hasApplied ? (
-            <>
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Application Submitted
-            </>
-          ) : (
-            "Apply Now"
-          )}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Apply for {job.title}</DialogTitle>
-          <DialogDescription>
-            You are applying as {user?.firstName} {user?.lastName}.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="resume" className="mb-2 block">Select Resume *</Label>
-            {isFetchingResumes ? (
-              <div className="flex items-center justify-center h-24">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : resumes.length > 0 ? (
-              <>
-                <Select value={selectedResumeId} onValueChange={setSelectedResumeId}>
-                  <SelectTrigger id="resume">
-                    <SelectValue placeholder="Choose a resume" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {resumes.map((resume) => (
-                      <SelectItem key={resume.id} value={resume.id}>
-                        {resume.fileName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button variant="ghost" size="sm" className="mt-2" asChild>
-                  <Link href="/dashboard/resumes">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Manage Resumes
-                  </Link>
-                </Button>
-              </>
-            ) : (
-              <div className="text-center p-4 border-2 border-dashed rounded-lg">
-                <p className="text-sm text-muted-foreground mb-2">You have no resumes uploaded.</p>
-                <Button size="sm" asChild>
-                  <Link href="/dashboard/resumes">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Your First Resume
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </div>
-          <div>
-            <Label htmlFor="coverLetter" className="mb-2 block">Cover Letter (Optional)</Label>
-            <Textarea
-              id="coverLetter"
-              placeholder="Tell the employer why you're interested in this role..."
-              value={coverLetter}
-              onChange={(e) => setCoverLetter(e.target.value)}
-              rows={4}
-            />
-          </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={handleApply}
-              disabled={!selectedResumeId || isLoading}
-              className="flex-1"
-            >
-              {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Submit Application
-            </Button>
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
-}
 
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
+  const { user } = useAuth()
+  const router = useRouter()
   const [job, setJob] = useState<Job | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -261,6 +101,38 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
     return `${diffInDays} day${diffInDays !== 1 ? 's' : ''}`
   }
 
+  const renderStringArrayAsList = (items: string | string[] | undefined) => {
+    if (!items) return null
+    
+    if (Array.isArray(items)) {
+      return items.map((item: string, i: number) => <li key={i}>{item}</li>)
+    }
+    
+    if (typeof items === 'string') {
+      return items.split(',').map((item: string, i: number) => <li key={i}>{item.trim()}</li>)
+    }
+    
+    return null
+  }
+
+  const renderStringArrayAsBadges = (items: string | string[] | undefined, maxItems: number = 5) => {
+    if (!items) return null
+    
+    if (Array.isArray(items)) {
+      return items.slice(0, maxItems).map((skill: string, index: number) => (
+        <Badge key={index} variant="secondary">{skill}</Badge>
+      ))
+    }
+    
+    if (typeof items === 'string') {
+      return items.split(',').slice(0, maxItems).map((skill: string, index: number) => (
+        <Badge key={index} variant="secondary">{skill.trim()}</Badge>
+      ))
+    }
+    
+    return null
+  }
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -281,7 +153,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                     <h1 className="text-3xl font-bold">{job.title}</h1>
                     <div className="flex items-center gap-4 text-muted-foreground">
                       <div className="flex items-center gap-1.5">
-                        <Building className="h-4 w-4" /> {job.employer.name}
+                        <Building className="h-4 w-4" /> {job.employer?.name || 'Unknown Company'}
                       </div>
                       <div className="flex items-center gap-1.5">
                         <MapPin className="h-4 w-4" /> {job.location}
@@ -300,19 +172,12 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                   <Badge variant="outline" className="text-sm py-1 px-3">{job.jobType.replace('_', '-')}</Badge>
                   {job.remote && <Badge variant="outline" className="text-sm py-1 px-3 text-green-600 border-green-600">Remote</Badge>}
                   <div className="flex items-center gap-1.5 text-lg font-semibold text-primary">
-                    <DollarSign className="h-5 w-5" /> {formatSalary(job)}
+                    {formatSalary(job)}
                   </div>
                 </div>
                 {job.requirements && (
                   <div className="flex flex-wrap gap-2">
-                    {Array.isArray(job.requirements) 
-                      ? job.requirements.slice(0, 5).map((skill, index) => (
-                          <Badge key={index} variant="secondary">{skill}</Badge>
-                        ))
-                      : typeof job.requirements === 'string' && job.requirements.split(',').slice(0, 5).map((skill, index) => (
-                          <Badge key={index} variant="secondary">{skill.trim()}</Badge>
-                        ))
-                    }
+                    {renderStringArrayAsBadges(job.requirements, 5)}
                   </div>
                 )}
               </CardContent>
@@ -326,12 +191,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                   <div>
                     <h3 className="font-semibold mb-3 text-foreground">Key Responsibilities</h3>
                     <ul className="space-y-2 pl-5 list-disc">
-                      {Array.isArray(job.responsibilities) 
-                        ? job.responsibilities.map((item, i) => <li key={i}>{item}</li>)
-                        : typeof job.responsibilities === 'string' 
-                          ? job.responsibilities.split(',').map((item, i) => <li key={i}>{item.trim()}</li>)
-                          : null
-                      }
+                      {renderStringArrayAsList(job.responsibilities)}
                     </ul>
                   </div>
                 )}
@@ -339,12 +199,7 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
                   <div>
                     <h3 className="font-semibold mb-3 text-foreground">Requirements</h3>
                     <ul className="space-y-2 pl-5 list-disc">
-                      {Array.isArray(job.requirements) 
-                        ? job.requirements.map((item, i) => <li key={i}>{item}</li>)
-                        : typeof job.requirements === 'string' 
-                          ? job.requirements.split(',').map((item, i) => <li key={i}>{item.trim()}</li>)
-                          : null
-                      }
+                      {renderStringArrayAsList(job.requirements)}
                     </ul>
                   </div>
                 )}
@@ -352,16 +207,16 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
             </Card>
 
             <Card>
-              <CardHeader><h2 className="text-xl font-semibold">About {job.employer.name}</h2></CardHeader>
+              <CardHeader><h2 className="text-xl font-semibold">About {job.employer?.name || 'Company'}</h2></CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
                     <div className="text-muted-foreground">Industry</div>
-                    <div className="font-medium">{job.employer.industry || 'N/A'}</div>
+                    <div className="font-medium">{job.employer?.industry || 'N/A'}</div>
                   </div>
                   <div>
                     <div className="text-muted-foreground">Location</div>
-                    <div className="font-medium">{job.employer.location || 'N/A'}</div>
+                    <div className="font-medium">{job.employer?.location || 'N/A'}</div>
                   </div>
                 </div>
                 <Separator />
@@ -375,25 +230,45 @@ export default function JobDetailsPage({ params }: { params: { id: string } }) {
           <div className="lg:col-span-1 space-y-6">
             <Card className="sticky top-24">
               <CardContent className="p-6 space-y-4">
-                <ApplyDialog 
-                  job={job} 
-                  onApplySuccess={() => {
-                    setApplicationCount(prev => prev + 1)
-                    setHasApplied(true)
+                {/* Apply Button - Redirect to protected application page */}
+                <Button 
+                  size="lg" 
+                  className="w-full" 
+                  variant={hasApplied ? "outline" : "default"}
+                  disabled={hasApplied}
+                  onClick={() => {
+                    if (hasApplied) {
+                      toast.info("You have already applied for this job.")
+                      return
+                    }
+                    if (!user) {
+                      toast.info("Redirecting to secure application page...")
+                      router.push(`/auth/login?redirect=/dashboard/jobs/${job.id}/apply`)
+                    } else {
+                      router.push(`/dashboard/jobs/${job.id}/apply`)
+                    }
                   }}
-                  hasApplied={hasApplied}
-                />
+                >
+                  {hasApplied ? (
+                    <>
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Application Submitted
+                    </>
+                  ) : (
+                    "Apply Now"
+                  )}
+                </Button>
                 
                 {hasApplied && userApplication && (
                   <div className="text-center space-y-2">
                     <div className="flex items-center justify-center gap-2">
                       <span className="text-sm text-muted-foreground">Application Status:</span>
                       <Badge variant="secondary" className="text-xs">
-                        {userApplication.status.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
+                        {userApplication.status.replace('_', ' ').toLowerCase().replace(/\b\w/g, (l: string) => l.toUpperCase())}
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Applied on {new Date(userApplication.appliedAt).toLocaleDateString()}
+                      Applied on {new Date(userApplication.appliedAt || userApplication.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 )}

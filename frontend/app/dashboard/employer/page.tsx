@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -21,6 +21,7 @@ import {
   FileText,
   Edit,
   Trash2,
+  RefreshCw,
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -49,6 +50,8 @@ export default function EmployerDashboardPage() {
   const [recentJobs, setRecentJobs] = useState<Job[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const lastLoadTime = useRef<number>(0)
 
   useEffect(() => {
     if (user?.role === 'JOBPROVIDER' && user.employerProfile) {
@@ -61,9 +64,54 @@ export default function EmployerDashboardPage() {
     }
   }, [user, router])
 
+  // Auto-refresh dashboard when page becomes visible (when returning from job creation)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user?.role === 'JOBPROVIDER' && user.employerProfile) {
+        // Only refresh if it's been more than 5 seconds since last load (avoids excessive calls)
+        const now = Date.now()
+        if (now - lastLoadTime.current > 5000) {
+          loadDashboardData()
+        }
+      }
+    }
+
+    const handleFocus = () => {
+      if (user?.role === 'JOBPROVIDER' && user.employerProfile) {
+        // Only refresh if it's been more than 5 seconds since last load
+        const now = Date.now()
+        if (now - lastLoadTime.current > 5000) {
+          loadDashboardData()
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [user])
+  
+  // Check for fresh data every 30 seconds when page is active
+  useEffect(() => {
+    if (user?.role === 'JOBPROVIDER' && user.employerProfile && !isLoading) {
+      const interval = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          loadDashboardData()
+        }
+      }, 30000) // Refresh every 30 seconds
+      
+      return () => clearInterval(interval)
+    }
+  }, [user, isLoading])
+
   const loadDashboardData = async () => {
     setIsLoading(true)
     setError(null)
+    lastLoadTime.current = Date.now()
 
     try {
       // Load jobs data
@@ -71,22 +119,40 @@ export default function EmployerDashboardPage() {
 
       if (jobsResponse.success && jobsResponse.data) {
         const jobs = jobsResponse.data.jobs || []
+        const previousJobCount = recentJobs.length
         setRecentJobs(jobs)
+        
+        // Show notification if new jobs were found
+        if (jobs.length > previousJobCount && previousJobCount > 0) {
+          toast.success(`🎉 Found ${jobs.length - previousJobCount} new job${jobs.length - previousJobCount === 1 ? '' : 's'}!`)
+        }
 
         // Calculate stats from jobs
-        const totalJobs = jobsResponse.data.pagination?.total || 0;
+        const totalJobs = jobsResponse.data.pagination?.total || jobs.length;
         const activeJobs = jobs.filter(j => j.status === 'PUBLISHED').length;
         const draftJobs = jobs.filter(j => j.status === 'DRAFT').length;
         const totalApplications = jobs.reduce((sum, job) => sum + (job._count?.applications || 0), 0);
-        
         setStats({
           totalJobs,
           activeJobs,
           draftJobs,
           totalApplications,
         })
+        setLastUpdated(new Date())
       } else {
-        setError(jobsResponse.error || "Failed to load dashboard data")
+        // Handle "Job not found" as no jobs case (empty employer)
+        if (jobsResponse.error === "Job not found" || jobsResponse.error?.includes("not found")) {
+          setRecentJobs([])
+          setStats({
+            totalJobs: 0,
+            activeJobs: 0,
+            draftJobs: 0,
+            totalApplications: 0,
+          })
+          setError(null) // Clear the error for empty state
+        } else {
+          setError(jobsResponse.error || "Failed to load dashboard data")
+        }
       }
     } catch (err) {
       console.error("Error loading dashboard:", err)
@@ -140,12 +206,24 @@ export default function EmployerDashboardPage() {
             Manage your job postings and find the best candidates
           </p>
         </div>
-        <Button asChild className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
-          <Link href="/dashboard/employer/jobs/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Post a Job
-          </Link>
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadDashboardData}
+            disabled={isLoading}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button asChild className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
+            <Link href="/dashboard/employer/jobs/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Post a Job
+            </Link>
+          </Button>
+        </div>
       </motion.div>
 
       {error && (
@@ -201,7 +279,14 @@ export default function EmployerDashboardPage() {
                       <Briefcase className="h-5 w-5 text-primary" />
                       Recent Job Postings
                     </CardTitle>
-                    <CardDescription className="mt-1">Your latest job listings</CardDescription>
+                    <CardDescription className="mt-1">
+                      Your latest job listings
+                      {lastUpdated && (
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          • Updated {lastUpdated.toLocaleTimeString()}
+                        </span>
+                      )}
+                    </CardDescription>
                   </div>
                   <Button variant="outline" size="sm" asChild>
                     <Link href="/dashboard/employer/jobs">
@@ -213,42 +298,74 @@ export default function EmployerDashboardPage() {
               </CardHeader>
               <CardContent>
                 {recentJobs.length > 0 ? (
-                  <div className="space-y-4">
-                    {recentJobs.map((job) => (
-                      <Link key={job.id} href={`/dashboard/employer/jobs/${job.id}`} className="block group">
-                        <div className="p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                           <div className="flex items-start justify-between">
-                            <div className="flex-1 space-y-3">
-                              <div className="flex items-start gap-3">
-                                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                                  <Briefcase className="h-6 w-6 text-primary" />
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="font-semibold text-lg group-hover:text-primary">{job.title}</h3>
-                                    <Badge variant={job.status === "PUBLISHED" ? "default" : "secondary"}>
-                                      {job.status}
-                                    </Badge>
+                  <div className="space-y-3">
+                    {recentJobs.map((job, index) => (
+                      <motion.div
+                        key={job.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <Link href={`/dashboard/employer/jobs/${job.id}`} className="block group">
+                          <div className="p-5 border-2 rounded-xl hover:border-primary/50 hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 space-y-3">
+                                <div className="flex items-start gap-4">
+                                  <div className="w-14 h-14 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                    <Briefcase className="h-7 w-7 text-primary" />
                                   </div>
-                                  <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap mt-1">
-                                    <div className="flex items-center gap-1"><MapPin className="h-4 w-4" />{job.location}</div>
-                                    <div className="flex items-center gap-1"><Users className="h-4 w-4" />{job._count?.applications || 0} applicants</div>
-                                    <div className="flex items-center gap-1"><Calendar className="h-4 w-4" />{new Date(job.createdAt).toLocaleDateString()}</div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap mb-2">
+                                      <h3 className="font-bold text-lg group-hover:text-primary transition-colors truncate">{job.title}</h3>
+                                      <Badge 
+                                        variant={job.status === "PUBLISHED" ? "default" : "secondary"}
+                                        className={job.status === "PUBLISHED" ? "bg-green-500 hover:bg-green-600" : ""}
+                                      >
+                                        {job.status === "PUBLISHED" ? "✓ Published" : job.status}
+                                      </Badge>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-muted-foreground">
+                                      <div className="flex items-center gap-1.5">
+                                        <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                                        <span className="truncate">{job.location}</span>
+                                      </div>
+                                      <div className="flex items-center gap-1.5">
+                                        <Users className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                                        <span className="font-medium">{job._count?.applications || 0} applicant{(job._count?.applications || 0) !== 1 ? 's' : ''}</span>
+                                      </div>
+                                      <div className="flex items-center gap-1.5">
+                                        <Calendar className="h-4 w-4 text-green-500 flex-shrink-0" />
+                                        <span>{new Date(job.createdAt).toLocaleDateString()}</span>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Button variant="ghost" size="icon" asChild onClick={(e) => { e.stopPropagation(); e.preventDefault(); router.push(`/dashboard/employer/jobs/${job.id}/edit`); }}>
-                                <Link href={`/dashboard/employer/jobs/${job.id}/edit`}><Edit className="h-4 w-4" /></Link>
-                              </Button>
-                              <Button variant="ghost" size="icon" onClick={(e) => handleDeleteJob(job.id, e)}>
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="hover:bg-primary/10 hover:text-primary" 
+                                  asChild 
+                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); router.push(`/dashboard/employer/jobs/${job.id}/edit`); }}
+                                >
+                                  <Link href={`/dashboard/employer/jobs/${job.id}/edit`}>
+                                    <Edit className="h-4 w-4" />
+                                  </Link>
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950" 
+                                  onClick={(e) => handleDeleteJob(job.id, e)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </Link>
+                        </Link>
+                      </motion.div>
                     ))}
                   </div>
                 ) : (

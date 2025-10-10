@@ -136,10 +136,13 @@ const ProfileCompletenessCard = ({ completeness }: { completeness: ProfileComple
 }
 
 const RecentApplications = ({ applications }: { applications: Application[] }) => (
-  <Card>
+  <Card className="border-2">
     <CardHeader>
       <div className="flex items-center justify-between">
-        <CardTitle className="text-lg">Recent Applications</CardTitle>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Send className="h-5 w-5 text-primary" />
+          Recent Applications
+        </CardTitle>
         {applications.length > 0 && (
           <Button variant="ghost" size="sm" asChild>
             <Link href="/dashboard/applications">
@@ -152,8 +155,8 @@ const RecentApplications = ({ applications }: { applications: Application[] }) =
     <CardContent>
       {applications.length === 0 ? (
         <div className="text-center py-10 space-y-3">
-          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
-            <Send className="h-8 w-8 text-muted-foreground" />
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full flex items-center justify-center mx-auto">
+            <Send className="h-8 w-8 text-blue-600 dark:text-blue-500" />
           </div>
           <div>
             <h3 className="font-semibold">No applications yet</h3>
@@ -161,7 +164,7 @@ const RecentApplications = ({ applications }: { applications: Application[] }) =
               Start applying to jobs to track your progress here.
             </p>
           </div>
-          <Button asChild>
+          <Button asChild className="bg-gradient-to-r from-primary to-blue-600">
             <Link href="/jobs">
               <Search className="h-4 w-4 mr-2" />
               Browse Jobs
@@ -170,26 +173,41 @@ const RecentApplications = ({ applications }: { applications: Application[] }) =
         </div>
       ) : (
         <div className="space-y-3">
-          {applications.map((application) => (
-            <Link href={`/dashboard/applications`} key={application.id} className="block group">
-              <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                <div className="space-y-1 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-sm group-hover:text-primary transition-colors">
-                      {application.job.title}
-                    </h4>
-                    <Badge className={`${getStatusColor(application.status)} text-white text-xs`} variant="secondary">
-                      {application.status.replace('_', ' ')}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1.5"><Building className="h-3 w-3" />{application.job.employer.name}</div>
-                    <div className="flex items-center gap-1.5"><Clock className="h-3 w-3" />{formatRelativeTime(application.appliedAt)}</div>
+          {applications.map((application, index) => (
+            <motion.div
+              key={application.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <Link href={`/dashboard/applications`} className="block group">
+                <div className="p-4 border-2 rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300 bg-gradient-to-br from-white to-gray-50/30 dark:from-gray-900 dark:to-gray-800/30">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="space-y-2 flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-bold text-sm group-hover:text-primary transition-colors">
+                          {application.job.title}
+                        </h4>
+                        <Badge className={`${getStatusColor(application.status)} text-white text-xs whitespace-nowrap`} variant="secondary">
+                          {application.status.replace('_', ' ')}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+                        <div className="flex items-center gap-1.5">
+                          <Building className="h-3.5 w-3.5 text-primary" />
+                          <span className="font-medium">{application.job.employer.name}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="h-3.5 w-3.5 text-blue-500" />
+                          <span>{formatRelativeTime(application.appliedAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0" />
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            </Link>
+              </Link>
+            </motion.div>
           ))}
         </div>
       )}
@@ -198,15 +216,18 @@ const RecentApplications = ({ applications }: { applications: Application[] }) =
 )
 
 const SuggestedJobs = ({ jobs }: { jobs: Job[] }) => (
-  <Card>
+  <Card className="border-2">
     <CardHeader>
-      <CardTitle className="text-lg">Suggested Jobs</CardTitle>
+      <CardTitle className="text-lg flex items-center gap-2">
+        <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+        Suggested Jobs
+      </CardTitle>
     </CardHeader>
     <CardContent>
       {jobs.length === 0 ? (
         <div className="text-center py-10 space-y-3">
-          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
-            <Briefcase className="h-8 w-8 text-muted-foreground" />
+          <div className="w-16 h-16 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-full flex items-center justify-center mx-auto">
+            <Briefcase className="h-8 w-8 text-yellow-600 dark:text-yellow-500" />
           </div>
           <div>
             <h3 className="font-semibold">No suggestions yet</h3>
@@ -225,18 +246,35 @@ const SuggestedJobs = ({ jobs }: { jobs: Job[] }) => (
         <div className="space-y-3">
           {jobs.map((job) => (
             <Link href={`/jobs/${job.id}`} key={job.id} className="block group">
-              <div className="p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                <div className="flex items-start justify-between">
-                  <h4 className="font-semibold text-sm group-hover:text-primary transition-colors mb-1">{job.title}</h4>
-                  <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800">
-                    <Star className="h-3 w-3 mr-1" />
+              <div className="p-4 border-2 rounded-xl hover:border-primary/50 hover:shadow-md transition-all duration-300 bg-gradient-to-br from-white to-gray-50/30 dark:from-gray-900 dark:to-gray-800/30">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <h4 className="font-bold text-sm group-hover:text-primary transition-colors flex-1">{job.title}</h4>
+                  <Badge variant="secondary" className="text-xs bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200 dark:from-green-900/50 dark:to-emerald-900/50 dark:text-green-300 dark:border-green-800 flex-shrink-0">
+                    <Star className="h-3 w-3 mr-1 fill-green-600 dark:fill-green-400" />
                     Match
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                  <Building className="h-3 w-3" />
-                  {job.employer.name}
-                </p>
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    <Building className="h-3.5 w-3.5 text-primary" />
+                    <span className="font-medium">{job.employer.name}</span>
+                  </p>
+                  {job.location && (
+                    <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-blue-500" />
+                      <span>{job.location}</span>
+                    </p>
+                  )}
+                  {job.salary && (
+                    <p className="text-xs font-semibold text-green-600 dark:text-green-400">
+                      {job.salary}
+                    </p>
+                  )}
+                </div>
+                <div className="mt-2 pt-2 border-t flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">View details</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                </div>
               </div>
             </Link>
           ))}

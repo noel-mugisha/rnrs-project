@@ -179,10 +179,14 @@ export default function NewJobPage() {
       if (response.success) {
         toast.success(
           status === 'PUBLISHED' 
-            ? "Job posted successfully!" 
-            : "Job saved as draft!"
+            ? "🎉 Job posted successfully! Redirecting to your dashboard..." 
+            : "📝 Job saved as draft! Redirecting to your dashboard..."
         )
-        router.push("/dashboard/employer/jobs")
+        
+        // Small delay to let user see the success message, then redirect to main dashboard
+        setTimeout(() => {
+          router.push("/dashboard/employer")
+        }, 1000)
       } else {
         setError(response.error || "Failed to create job")
         toast.error(response.error || "Failed to create job")

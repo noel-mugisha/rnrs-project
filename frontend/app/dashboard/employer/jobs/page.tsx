@@ -40,6 +40,7 @@ import {
   XCircle,
   ChevronLeft,
   ChevronRight,
+  RefreshCw,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -87,6 +88,29 @@ export default function JobsManagementPage() {
       loadJobs()
     }
   }, [user, statusFilter, currentPage])
+  
+  // Auto-refresh jobs when page becomes visible (returning from job creation)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user?.role === 'JOBPROVIDER' && user.employerProfile) {
+        loadJobs()
+      }
+    }
+
+    const handleFocus = () => {
+      if (user?.role === 'JOBPROVIDER' && user.employerProfile) {
+        loadJobs()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [user])
 
   const loadJobs = async () => {
     setIsLoading(true)
@@ -101,20 +125,23 @@ export default function JobsManagementPage() {
         params.status = statusFilter
       }
 
-      console.log('Loading jobs with params:', params)
       const response = await api.getMyJobs(params)
-      console.log('Jobs response:', response)
 
       if (response.success && response.data) {
         setJobs(response.data.jobs || [])
         const total = response.data.pagination?.total || response.data.total || response.data.jobs?.length || 0
         setTotalJobs(total)
         setTotalPages(Math.ceil(total / PAGE_SIZE))
-        console.log('Loaded jobs:', response.data.jobs)
-        console.log('Pagination info:', response.data.pagination)
       } else {
-        console.error('Failed to load jobs:', response.error)
-        setError(response.error || "Failed to load jobs")
+        // Handle "Job not found" as no jobs case (empty employer)
+        if (response.error === "Job not found" || response.error?.includes("not found")) {
+          setJobs([])
+          setTotalJobs(0)
+          setTotalPages(1)
+          setError(null) // Clear the error for empty state
+        } else {
+          setError(response.error || "Failed to load jobs")
+        }
       }
     } catch (err) {
       console.error("Error loading jobs:", err)
@@ -194,12 +221,24 @@ export default function JobsManagementPage() {
             View and manage all your job postings
           </p>
         </div>
-        <Button asChild className="bg-gradient-to-r from-primary to-blue-600">
-          <Link href="/dashboard/employer/jobs/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Post New Job
-          </Link>
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadJobs}
+            disabled={isLoading}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button asChild className="bg-gradient-to-r from-primary to-blue-600">
+            <Link href="/dashboard/employer/jobs/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Post New Job
+            </Link>
+          </Button>
+        </div>
       </motion.div>
 
       {/* Filters */}

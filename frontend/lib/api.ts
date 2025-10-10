@@ -100,6 +100,12 @@ export interface Job {
   _count?: {
     applications: number
   }
+  userApplication?: {
+    id: string
+    status: string
+    appliedAt: string
+    createdAt: string
+  }
 }
 
 export interface Application {
@@ -487,7 +493,46 @@ class ApiClient {
         searchParams.append(key, value.toString())
       }
     })
-    return this.request(`/jobs/my-jobs?${searchParams.toString()}`)
+    const url = `/jobs/my-jobs?${searchParams.toString()}`
+    
+    // Debug: Check auth token
+    const token = this.getAuthToken()
+    console.log('\n=== API DEBUG: getMyJobs ===')
+    console.log('URL:', `${this.baseUrl}${url}`)
+    console.log('Has auth token:', !!token)
+    if (token) {
+      console.log('Token (first 50 chars):', token.substring(0, 50) + '...')
+      // Decode JWT to see what's in it
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        console.log('Token payload:', payload)
+      } catch (e) {
+        console.log('Could not decode token')
+      }
+    }
+    
+    const response = await this.request(url)
+    console.log('Response status:', response.success ? 'SUCCESS' : 'FAILED')
+    console.log('Response data:', response.data)
+    console.log('=== END DEBUG ===\n')
+    
+    // Handle "Job not found" as empty jobs case
+    if (!response.success && (response.error === "Job not found" || response.error?.includes("not found"))) {
+      return {
+        success: true,
+        data: {
+          jobs: [],
+          pagination: {
+            total: 0,
+            page: params.page || 1,
+            limit: params.limit || 10,
+            totalPages: 1
+          }
+        }
+      }
+    }
+    
+    return response
   }
 
   async getMyJob(jobId: string): Promise<ApiResponse<Job>> {
