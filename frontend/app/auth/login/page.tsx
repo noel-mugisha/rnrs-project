@@ -2,8 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
+import { useState } from "react"
 import { Logo } from "@/components/ui/logo"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,24 +18,15 @@ import { motion } from "framer-motion"
 
 export default function LoginPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { login } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-  const [redirectUrl, setRedirectUrl] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   })
-
-  useEffect(() => {
-    const redirect = searchParams.get('redirect')
-    if (redirect) {
-      setRedirectUrl(decodeURIComponent(redirect))
-    }
-  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,12 +37,6 @@ export default function LoginPage() {
       const success = await login(formData.email, formData.password)
       
       if (success) {
-        // Check if there's a redirect URL first
-        if (redirectUrl) {
-          router.push(redirectUrl)
-          return
-        }
-        
         // Get user data to determine redirect
         const userData = localStorage.getItem('user_data')
         if (userData) {

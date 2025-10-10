@@ -100,12 +100,6 @@ export interface Job {
   _count?: {
     applications: number
   }
-  userApplication?: {
-    id: string
-    status: string
-    appliedAt?: string
-    createdAt: string
-  }
 }
 
 export interface Application {
@@ -197,10 +191,8 @@ class ApiClient {
   private async request<T>(
     endpoint: string, 
     options: RequestInit = {},
-    skipAuth = false,
-    retryCount = 0
+    skipAuth = false
   ): Promise<ApiResponse<T>> {
-    const maxRetries = 1 // Only retry once for auth issues
     const url = `${this.baseUrl}${endpoint}`
     const token = this.getAuthToken()
 
@@ -214,36 +206,18 @@ class ApiClient {
       ...options,
     }
 
-
-
     try {
       const response = await fetch(url, config)
       
-      // Handle 429 Too Many Requests - don't retry
-      if (response.status === 429) {
-        const data = await response.json()
-        return {
-          success: false,
-          error: data.message || 'Too many requests, please try again later.'
-        }
-      }
-      
-      // Handle 401 Unauthorized - try to refresh token (but only once)
-      if (response.status === 401 && !skipAuth && endpoint !== '/auth/refresh' && endpoint !== '/auth/login' && retryCount === 0) {
+      // Handle 401 Unauthorized - try to refresh token
+      if (response.status === 401 && !skipAuth && endpoint !== '/auth/refresh' && endpoint !== '/auth/login') {
         if (this.isRefreshing) {
           // If already refreshing, queue this request
           return new Promise((resolve, reject) => {
             this.failedQueue.push({ resolve, reject })
           }).then(() => {
-            // Retry the original request with the new token (but mark as retry)
-            return this.request<T>(endpoint, options, skipAuth, 1)
-          }).catch(() => {
-            // If queued request also fails, clear auth and return error
-            clearAuthData()
-            return {
-              success: false,
-              error: 'Session expired. Please login again.'
-            }
+            // Retry the original request with the new token
+            return this.request<T>(endpoint, options, skipAuth)
           })
         }
 
@@ -259,8 +233,8 @@ class ApiClient {
             
             this.processQueue(null, refreshResponse.data.accessToken)
             
-            // Retry the original request with the new token (mark as retry)
-            return this.request<T>(endpoint, options, skipAuth, 1)
+            // Retry the original request with the new token
+            return this.request<T>(endpoint, options, skipAuth)
           } else {
             throw new Error('Token refresh failed')
           }
